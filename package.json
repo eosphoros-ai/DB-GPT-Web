@@ -1,5 +1,5 @@
 {
-  "name": "datacenter",
+  "name": "db-gpt-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -58,5 +58,12 @@
     "@types/lodash": "^4.14.195",
     "@types/nprogress": "^0.2.0",
     "@types/react-syntax-highlighter": "^15.5.7"
-  }
+  },
+  "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
+  "main": "next.config.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "author": "",
+  "license": "ISC"
 }
