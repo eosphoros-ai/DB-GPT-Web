@@ -4,7 +4,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 First, Config Server Url:
 next.config.js
-```json
+```javascript
     const nextConfig = {
         output: 'export',
         experimental: {
