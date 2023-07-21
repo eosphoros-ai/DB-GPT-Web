@@ -12,9 +12,6 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
-import AceEditor from 'react-ace';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/ext-language_tools';
 import { message } from 'antd';
 
 type Props = {
@@ -100,6 +97,17 @@ const ChatBoxComp = ({
     }
     return res;
   };
+
+  const MyAceEditor = React.useMemo(() => {
+    // fix npm run compile 'window is not defined' error
+    if (typeof window !== 'undefined' && typeof window?.fetch === 'function') {
+      const AceEditor = require('react-ace');
+      require('ace-builds/src-noconflict/mode-json');
+      require('ace-builds/src-noconflict/ext-language_tools');
+      return AceEditor.default;
+    }
+    return undefined;
+  }, []);
 
   React.useEffect(() => {
     if (!scrollableRef.current) {
@@ -312,24 +320,27 @@ const ChatBoxComp = ({
         >
           <ModalClose />
           <Box sx={{ marginTop: '32px' }}>
-            <AceEditor
-              mode="json"
-              value={jsonValue}
-              height={'600px'}
-              width={'820px'}
-              onChange={setJsonValue}
-              placeholder={'默认json数据'}
-              debounceChangePeriod={100}
-              showPrintMargin={true}
-              showGutter={true}
-              highlightActiveLine={true}
-              setOptions={{
-                useWorker: true,
-                showLineNumbers: true,
-                highlightSelectedWord: true,
-                tabSize: 2,
-              }}
-            />
+            {!!MyAceEditor && (
+              <MyAceEditor
+                mode="json"
+                value={jsonValue}
+                height={'600px'}
+                width={'820px'}
+                onChange={setJsonValue}
+                placeholder={'默认json数据'}
+                debounceChangePeriod={100}
+                showPrintMargin={true}
+                showGutter={true}
+                highlightActiveLine={true}
+                setOptions={{
+                  useWorker: true,
+                  showLineNumbers: true,
+                  highlightSelectedWord: true,
+                  tabSize: 2,
+                }}
+              />
+            )}
+            
             <Button
               variant="outlined"
               className="w-full"
