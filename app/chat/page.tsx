@@ -1,22 +1,52 @@
 "use client"
+import { useEffect, useMemo, useState } from 'react';
+import { Chart, LineAdvance, Interval, Tooltip, getTheme } from "bizcharts";
+import { Card, CardContent, Typography, Grid, Table, Skeleton, AspectRatio, Box, aspectRatioClasses } from "@/lib/mui";
 import { useRequest } from 'ahooks';
 import { sendGetRequest, sendPostRequest } from '@/utils/request';
-import { Card, CardContent, Typography, Grid, Table } from "@/lib/mui";
 import useAgentChat from '@/hooks/useAgentChat';
 import ChatBoxComp from '@/components/chatBoxTemp';
 import { useDialogueContext } from '@/app/context/dialogue';
 import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
-import { Chart, LineAdvance, Interval, Tooltip, getTheme } from "bizcharts";
+
 import lodash from 'lodash';
 
+const ChartSkeleton = () => {
+	return (
+		<Card className="h-full w-full flex bg-transparent">
+			<Skeleton
+				animation="wave"
+				variant="text"
+				level="body2"
+			/>
+			<Skeleton
+				animation="wave"
+				variant="text"
+				level="body2"
+			/>
+			<AspectRatio 
+				ratio="21/9"
+				className="flex-1"
+				sx={{
+					[`& .${aspectRatioClasses.content}`]: {
+						height: '100%'
+					}
+				}}
+			>
+				<Skeleton variant="overlay" className="h-full" />
+			</AspectRatio>
+		</Card>
+	)
+};
+
 const AgentPage = () => {
+	const [chartsData, setChartsData] = useState();
 	const searchParams = useSearchParams();
 	const { refreshDialogList } = useDialogueContext();
 	const id = searchParams.get('id');
 	const scene = searchParams.get('scene');
 
-	const { data: historyList } = useRequest(async () => await sendGetRequest('/v1/chat/dialogue/messages/history', {
+	const { data: historyList, run: runHistoryList } = useRequest(async () => await sendGetRequest('/v1/chat/dialogue/messages/history', {
 		con_uid: id
 	}), {
 		ready: !!id,
@@ -34,16 +64,17 @@ const AgentPage = () => {
 			conv_uid: id,
 			chat_mode: scene || 'chat_normal',
 		},
-		initHistory: historyList?.data
+		initHistory: historyList?.data,
+		runHistoryList
 	});
 
-	const chartsData = useMemo(() => {
+	useEffect(() => {
 		try {
 			const contextTemp = history?.[history.length - 1]?.context;
 			const contextObj = JSON.parse(contextTemp);
-			return contextObj?.template_name === 'sales_report' ? contextObj?.charts : undefined;
+			setChartsData(contextObj?.template_name === 'sales_report' ? contextObj?.charts : undefined);
 		} catch (e) {
-			return undefined;
+			setChartsData(undefined);
 		}
 	}, [history]);
 
@@ -117,7 +148,7 @@ const AgentPage = () => {
 											>
 												{col.values.map((item) => (
 													<div key={item.name} className="flex-1">
-														<Card>
+														<Card sx={{ background: 'transparent' }}>
 															<CardContent className="justify-around">
 																<Typography gutterBottom component="div">
 																	{item.name}
@@ -132,10 +163,13 @@ const AgentPage = () => {
 									} else if (col.chart_type === "LineChart") {
 										return (
 											<div className="flex-1 overflow-hidden" key={col.chart_uid}>
-												<Card className="h-full">
+												<Card className="h-full" sx={{ background: 'transparent' }}>
 													<CardContent className="h-full">
 														<Typography gutterBottom component="div">
 															{col.chart_name}
+														</Typography>
+														<Typography gutterBottom level="body3">
+															{col.chart_desc}
 														</Typography>
 														<div className="flex-1 h-full">
 															<Chart
@@ -159,10 +193,13 @@ const AgentPage = () => {
 									} else if (col.chart_type === "BarChart") {
 										return (
 											<div className="flex-1" key={col.chart_uid}>
-												<Card className="h-full">
+												<Card className="h-full" sx={{ background: 'transparent' }}>
 													<CardContent className="h-full">
 														<Typography gutterBottom component="div">
 															{col.chart_name}
+														</Typography>
+														<Typography gutterBottom level="body3">
+															{col.chart_desc}
 														</Typography>
 														<div className="flex-1">
 															<Chart autoFit data={col.values}>
@@ -184,11 +221,13 @@ const AgentPage = () => {
 										const data = lodash.groupBy(col.values, 'type');
 										return (
 											<div className="flex-1" key={col.chart_uid}>
-												<Card className="h-full overflow-auto">
-													
+												<Card className="h-full overflow-auto" sx={{ background: 'transparent' }}>
 													<CardContent className="h-full">
 														<Typography gutterBottom component="div">
 															{col.chart_name}
+														</Typography>
+														<Typography gutterBottom level="body3">
+															{col.chart_desc}
 														</Typography>
 														<div className="flex-1">
 															<Table
@@ -226,15 +265,39 @@ const AgentPage = () => {
 					</div>
 				</Grid>
 			)}
-			<Grid xs={chartsData ? 4 : 12} className="h-full max-h-full">
-				<div className='h-full' style={{ boxShadow: chartsData ? '0px 0px 9px 0px #c1c0c080' : 'unset' }}>
+			{!chartsData && scene === 'chat_dashboard' && (
+				<Grid xs={8} className="max-h-full p-6">
+					<div className="flex flex-col gap-3 h-full">
+						<Grid container spacing={2} sx={{ flexGrow: 1 }}>
+							<Grid xs={8}>
+							<Box className="h-full w-full" sx={{ display: 'flex', gap: 2 }}>
+								<ChartSkeleton />
+							</Box>
+							</Grid>
+							<Grid xs={4}>
+								<ChartSkeleton />
+							</Grid>
+							<Grid xs={4}>
+								<ChartSkeleton />
+							</Grid>
+							<Grid xs={8}>
+								<ChartSkeleton />
+							</Grid>
+						</Grid>
+					</div>
+				</Grid>
+			)}
+			<Grid xs={scene === 'chat_dashboard' ? 4 : 12} className="h-full max-h-full">
+				<div className='h-full' style={{ boxShadow: scene === 'chat_dashboard' ? '0px 0px 9px 0px #c1c0c080' : 'unset' }}>
 					<ChatBoxComp
 						clearIntialMessage={async () => {
 							await refreshDialogList();
 						}}
+						isChartChat={scene === 'chat_dashboard'}
 						messages={history || []}
 						onSubmit={handleChatSubmit}
 						paramsList={paramsList?.data}
+						setChartsData={setChartsData}
 					/>
 				</div>
 			</Grid>

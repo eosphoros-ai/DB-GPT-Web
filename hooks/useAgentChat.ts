@@ -12,23 +12,41 @@ type Props = {
   channel?: "dashboard" | "website" | "slack" | "crisp";
   queryBody?: any;
   initHistory?: Message[];
+  runHistoryList?: () => void;
 };
 
 const useAgentChat = ({
   queryAgentURL,
   channel,
   queryBody,
-  initHistory
+  initHistory,
+  runHistoryList
 }: Props) => {
   const [state, setState] = useStateReducer({
     history: (initHistory || []) as { role: 'human' | 'view'; context: string; id?: string }[],
   });
 
   const { refreshDialogList } = useDialogueContext();
+  const ctrl = new AbortController();
 
   useEffect(() => {
     if (initHistory) setState({ history: initHistory });
   }, [initHistory]);
+
+  const handleVisibleChange = async () => {
+    if (document.visibilityState === 'hidden') {
+      ctrl.abort();
+    } else {
+      await runHistoryList?.();
+      document.removeEventListener('visibilitychange', handleVisibleChange);
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibleChange);
+    }
+  }, []);
 
   const handleChatSubmit = async (context: string, otherQueryBody?: any) => {
     if (!context) {
@@ -43,12 +61,8 @@ const useAgentChat = ({
     });
 
     let answer = '';
-    let error = '';
 
     try {
-      const ctrl = new AbortController();
-      let buffer = '';
-
       await fetchEventSource(`${process.env.API_BASE_URL ? process.env.API_BASE_URL : ''}${"/api" + queryAgentURL}`, {
         method: 'POST',
         headers: {
@@ -91,15 +105,19 @@ const useAgentChat = ({
         onclose() {
           // if the server closes the connection unexpectedly, retry:
           console.log('onclose');
+          document.removeEventListener('visibilitychange', handleVisibleChange);
         },
-        onerror(err) {            
+        onerror(err) {       
+          console.log('onerror');     
           throw new Error(err);
         },
         onmessage: (event) => {
+          document.addEventListener('visibilitychange', handleVisibleChange);
           event.data = event.data.replaceAll('\\n', '\n');
           
           if (event.data === '[DONE]') {
             ctrl.abort();
+            document.removeEventListener('visibilitychange', handleVisibleChange);
           } else if (event.data?.startsWith('[ERROR]')) {
             ctrl.abort();
             setState({
@@ -136,29 +154,9 @@ const useAgentChat = ({
           { role: 'view', context: answer || '请求出错' as string },
         ] as any,
       });
-      // if (err instanceof ApiError) {
-      //   if (err?.message) {
-      //     error = err?.message;
-
-      //     if (error === ApiErrorType.USAGE_LIMIT) {
-      //       answer =
-      //         'Usage limit reached. Please upgrade your plan to get higher usage.';
-      //     } else {
-      //       answer = `Error: ${error}`;
-      //     }
-      //   } else {
-      //     answer = `Error: ${error}`;
-      //   }
-
-      //   setState({
-      //     history: [
-      //       ...history,
-      //       { from: 'ai', message: answer as string },
-      //     ] as any,
-      //   });
-      // }
     }
   };
+
   return {
     handleChatSubmit,
     history: state.history,
