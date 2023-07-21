@@ -33,21 +33,6 @@ const useAgentChat = ({
     if (initHistory) setState({ history: initHistory });
   }, [initHistory]);
 
-  const handleVisibleChange = async () => {
-    if (document.visibilityState === 'hidden') {
-      ctrl.abort();
-    } else {
-      await runHistoryList?.();
-      document.removeEventListener('visibilitychange', handleVisibleChange);
-    }
-  }
-
-  useEffect(() => {
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibleChange);
-    }
-  }, []);
-
   const handleChatSubmit = async (context: string, otherQueryBody?: any) => {
     if (!context) {
       return;
@@ -75,7 +60,6 @@ const useAgentChat = ({
           channel,
         }),
         signal: ctrl.signal,
-
         async onopen(response) {
           if (history.length <= 1) {
             refreshDialogList();
@@ -105,21 +89,18 @@ const useAgentChat = ({
         onclose() {
           // if the server closes the connection unexpectedly, retry:
           console.log('onclose');
-          document.removeEventListener('visibilitychange', handleVisibleChange);
         },
         onerror(err) {       
           console.log('onerror');     
           throw new Error(err);
         },
         onmessage: (event) => {
-          document.addEventListener('visibilitychange', handleVisibleChange);
           event.data = event.data.replaceAll('\\n', '\n');
           
           if (event.data === '[DONE]') {
-            ctrl.abort();
-            document.removeEventListener('visibilitychange', handleVisibleChange);
+            // ctrl.abort();
           } else if (event.data?.startsWith('[ERROR]')) {
-            ctrl.abort();
+            //ctrl.abort();
             setState({
               history: [
                 ...history,
