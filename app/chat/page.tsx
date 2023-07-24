@@ -72,7 +72,7 @@ const AgentPage = () => {
 		try {
 			const contextTemp = history?.[history.length - 1]?.context;
 			const contextObj = JSON.parse(contextTemp);
-			setChartsData(contextObj?.template_name === 'sales_report' ? contextObj?.charts : undefined);
+			setChartsData(contextObj?.template_name === 'report' ? contextObj?.charts : undefined);
 		} catch (e) {
 			setChartsData(undefined);
 		}
