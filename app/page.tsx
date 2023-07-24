@@ -58,10 +58,19 @@ export default function Home() {
                   '&: hover': {
                     backgroundColor: 'var(--joy-palette-primary-solidHoverBg)',
                   }
+                }, 
+                [`& .${buttonClasses.disabled}`]: {
+                  cursor: 'not-allowed',
+                  pointerEvents: 'unset',
+                  color: 'var(--joy-palette-primary-plainColor)',
+                  backgroundColor: 'var(--joy-palette-primary-softDisabledBg)',
+                  '&: hover': {
+                    backgroundColor: 'var(--joy-palette-primary-softDisabledBg)',
+                  }
                 }
               }}
             >
-              {scenesList?.data?.map(scene => (
+              {scenesList?.data?.map((scene) => (
                 <Button
                   key={scene['chat_scene']}
                   disabled={scene?.show_disable}
