@@ -64,6 +64,7 @@ export default function Home() {
               {scenesList?.data?.map(scene => (
                 <Button
                   key={scene['chat_scene']}
+                  disabled={scene?.show_disable}
                   size="md"
                   variant="solid"
                   className='text-base rounded-none'
