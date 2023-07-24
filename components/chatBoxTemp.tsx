@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { Card, CircularProgress, IconButton, Input, Stack, Select, Option, Tooltip, Box, useColorScheme } from '@/lib/mui';
-import React, { useState } from 'react';
+import { Card, CircularProgress, IconButton, Input, Stack, Select, Option, Box, Modal, ModalDialog, ModalClose, Button, Link } from '@/lib/mui';
+import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Message } from '@/types';
@@ -11,13 +11,17 @@ import Markdown from 'markdown-to-jsx';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSearchParams } from 'next/navigation';
+import lodash from 'lodash';
+import { message } from 'antd';
 
 type Props = {
   messages: Message[];
   onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
   readOnly?: boolean;
   paramsList?: { [key: string]: string };
+  isChartChat: boolean;
   clearIntialMessage?: () => void;
+  setChartsData?: (chartsData: any) => void;
 }; 
 
 const Schema = z.object({ query: z.string().min(1) });
@@ -27,13 +31,19 @@ const ChatBoxComp = ({
   onSubmit,
   readOnly,
   paramsList,
-  clearIntialMessage
+  isChartChat = false,
+  clearIntialMessage,
+  setChartsData
 }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams.get('initMessage');
-  const scrollableRef = React.useRef<HTMLDivElement>(null);
+  const scrollableRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentParam, setCurrentParam] = useState<string | undefined | null>();
+  const [jsonModalOpen, setJsonModalOpen] = useState(false);
+  const [currentJsonIndex, setCurrentJsonIndex] = useState<number>();
+  const [showMessages, setShowMessages] = useState(messages);
+  const [jsonValue, setJsonValue] = useState('');
 
   const methods = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
@@ -42,7 +52,6 @@ const ChatBoxComp = ({
 
   const submit = async ({ query }: z.infer<typeof Schema>) => {
     try {
-      console.log('submit');
       setIsLoading(true);
       methods.reset();
       await onSubmit(query, {
@@ -79,11 +88,31 @@ const ChatBoxComp = ({
     wrapper: React.Fragment,
   };
 
+  const handleJson2Obj = (jsonStr: string) => {
+    let res = jsonStr;
+    try {
+      res = JSON.parse(jsonStr);
+    } catch (e) {
+      console.log(e);
+    }
+    return res;
+  };
+
+  const MyAceEditor = React.useMemo(() => {
+    // fix npm run compile 'window is not defined' error
+    if (typeof window !== 'undefined' && typeof window?.fetch === 'function') {
+      const AceEditor = require('react-ace');
+      require('ace-builds/src-noconflict/mode-json');
+      require('ace-builds/src-noconflict/ext-language_tools');
+      return AceEditor.default;
+    }
+    return undefined;
+  }, []);
+
   React.useEffect(() => {
     if (!scrollableRef.current) {
       return;
     }
-
     scrollableRef.current.scrollTo(0, scrollableRef.current.scrollHeight);
   }, [messages?.length]);
   
@@ -98,6 +127,20 @@ const ChatBoxComp = ({
       setCurrentParam(Object.keys(paramsList || {})?.[0]);
     }
   }, [paramsList]);
+
+  React.useEffect(() => {
+    if (isChartChat) {
+      let temp = lodash.cloneDeep(messages);
+      temp.forEach(item => {
+        if (item?.role === 'view' && typeof item?.context === 'string') {
+          item.context = handleJson2Obj(item?.context);
+        }
+      })
+      setShowMessages(temp.filter(item => ['view', 'human'].includes(item.role)));
+    } else {
+      setShowMessages(messages.filter(item => ['view', 'human'].includes(item.role)));
+    }
+  }, [isChartChat, messages]);
 
   return (
     <div className='w-full h-full'>
@@ -125,7 +168,7 @@ const ChatBoxComp = ({
             flex: 1
           }}
         >
-          {messages.filter(item => ['view', 'human'].includes(item.role))?.map((each, index) => {
+          {showMessages.map((each, index) => {
             return (
               <Stack
                 key={index}
@@ -151,9 +194,30 @@ const ChatBoxComp = ({
                       )}
                     </div>
                     <div className='inline align-middle mt-0.5 max-w-full flex-1 overflow-auto'>
-                      <Markdown options={options}>
-                        {each.context?.replaceAll('\\n', '\n')}
-                      </Markdown>
+                      {
+                        (isChartChat && each.role === 'view' && typeof each?.context === 'object') ? (
+                          <>
+                            {`[${each.context.template_name}]: `}
+                            <Link
+                              sx={{
+                                color: '#1677ff'
+                              }}
+                              component="button"
+                              onClick={() => {
+                                setJsonModalOpen(true);
+                                setCurrentJsonIndex(index);
+                                setJsonValue(JSON.stringify(each?.context, null, 2)); 
+                              }}
+                            >
+                              {each.context.template_introduce || '暂无介绍'}
+                            </Link>
+                          </>
+                        ) : (
+                          <Markdown options={options}>
+                            {each.context?.replaceAll?.('\\n', '\n')}
+                          </Markdown>
+                        )
+                      }
                     </div>
                   </Box>
                 </Card>
@@ -246,6 +310,64 @@ const ChatBoxComp = ({
           </Box>
         )}
       </Stack>
+      <Modal
+        open={jsonModalOpen}
+        onClose={() => setJsonModalOpen(false)}
+      >
+        <ModalDialog
+          aria-labelledby="variant-modal-title"
+          aria-describedby="variant-modal-description"
+        >
+          <ModalClose />
+          <Box sx={{ marginTop: '32px' }}>
+            {!!MyAceEditor && (
+              <MyAceEditor
+                mode="json"
+                value={jsonValue}
+                height={'600px'}
+                width={'820px'}
+                onChange={setJsonValue}
+                placeholder={'默认json数据'}
+                debounceChangePeriod={100}
+                showPrintMargin={true}
+                showGutter={true}
+                highlightActiveLine={true}
+                setOptions={{
+                  useWorker: true,
+                  showLineNumbers: true,
+                  highlightSelectedWord: true,
+                  tabSize: 2,
+                }}
+              />
+            )}
+            
+            <Button
+              variant="outlined"
+              className="w-full"
+              sx={{
+                marginTop: '12px'
+              }}
+              onClick={() => {
+                if (currentJsonIndex) {
+                  try {
+                    const temp = lodash.cloneDeep(showMessages);
+                    const jsonObj = JSON.parse(jsonValue);
+                    temp[currentJsonIndex].context = jsonObj;
+                    setShowMessages(temp);
+                    setChartsData?.(jsonObj?.charts);
+                    setJsonModalOpen(false);
+                    setJsonValue('');
+                  } catch (e) {
+                    message.error('JSON 格式化出错');
+                  }
+                }
+              }}
+            >
+              Submit
+            </Button>
+          </Box>
+        </ModalDialog>
+      </Modal>
     </div>
   );
 }
