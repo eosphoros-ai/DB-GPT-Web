@@ -1,34 +1,38 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useState, useEffect } from 'react'
-import { InboxOutlined } from '@ant-design/icons'
-import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
-import ContentPasteSearchOutlinedIcon from '@mui/icons-material/ContentPasteSearchOutlined'
-import type { UploadProps } from 'antd'
-import { message, Upload } from 'antd'
 import {
   useColorScheme,
-  Modal,
   Button,
+  Table,
   Sheet,
-  Stack,
+  Modal,
   Box,
+  Stack,
   Input,
   Textarea,
+  Chip,
   Switch,
   Typography,
+  Breadcrumbs,
+  Link,
   styled
 } from '@/lib/mui'
+import moment from 'moment'
+import { InboxOutlined } from '@ant-design/icons'
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
+import CachedIcon from '@mui/icons-material/Cached'
+import type { UploadProps } from 'antd'
+import { Upload, Pagination, Popover, message } from 'antd'
 import {
   sendSpacePostRequest,
   sendSpaceUploadPostRequest
 } from '@/utils/request'
 
 const { Dragger } = Upload
-
 const Item = styled(Sheet)(({ theme }) => ({
-  width: '33%',
+  width: '50%',
   backgroundColor:
     theme.palette.mode === 'dark' ? theme.palette.background.level1 : '#fff',
   ...theme.typography.body2,
@@ -37,9 +41,7 @@ const Item = styled(Sheet)(({ theme }) => ({
   borderRadius: 4,
   color: theme.vars.palette.text.secondary
 }))
-
-const stepsOfAddingSpace = [
-  'Knowledge Space Config',
+const stepsOfAddingDocument = [
   'Choose a Datasource type',
   'Setup the Datasource'
 ]
@@ -61,22 +63,24 @@ const documentTypeList = [
       'Upload a document, document type can be PDF, CSV, Text, PowerPoint, Word, Markdown'
   }
 ]
+const page_size = 20
 
-const Index = () => {
+const Documents = () => {
   const router = useRouter()
+  const spaceName = useSearchParams().get('name')
+  const { mode } = useColorScheme()
+  const [isAddDocumentModalShow, setIsAddDocumentModalShow] =
+    useState<boolean>(false)
   const [activeStep, setActiveStep] = useState<number>(0)
   const [documentType, setDocumentType] = useState<string>('')
-  const [knowledgeSpaceList, setKnowledgeSpaceList] = useState<any>([])
-  const [isAddKnowledgeSpaceModalShow, setIsAddKnowledgeSpaceModalShow] =
-    useState<boolean>(false)
-  const [knowledgeSpaceName, setKnowledgeSpaceName] = useState<string>('')
-  const [owner, setOwner] = useState<string>('')
-  const [description, setDescription] = useState<string>('')
+  const [documents, setDocuments] = useState<any>([])
   const [webPageUrl, setWebPageUrl] = useState<string>('')
   const [documentName, setDocumentName] = useState<any>('')
   const [textSource, setTextSource] = useState<string>('')
   const [text, setText] = useState<string>('')
   const [originFileObj, setOriginFileObj] = useState<any>(null)
+  const [total, setTotal] = useState<number>(0)
+  const [current, setCurrent] = useState<number>(0)
   const [synchChecked, setSynchChecked] = useState<boolean>(true)
   const props: UploadProps = {
     name: 'file',
@@ -93,193 +97,217 @@ const Index = () => {
     }
   }
   useEffect(() => {
-    async function fetchData() {
-      const data = await sendSpacePostRequest('/knowledge/space/list', {})
+    async function fetchDocuments() {
+      const data = await sendSpacePostRequest(
+        `/knowledge/${spaceName}/document/list`,
+        {
+          page: 1,
+          page_size
+        }
+      )
       if (data.success) {
-        setKnowledgeSpaceList(data.data)
+        setDocuments(data.data.data)
+        setTotal(data.data.total)
+        setCurrent(data.data.page)
       }
     }
-    fetchData()
+    fetchDocuments()
   }, [])
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%'
-      }}
-      className="bg-[#F1F2F5] dark:bg-[#212121]"
-    >
-      <Box
-        className="page-body p-4"
-        sx={{
-          '&': {
-            height: '90%',
-            overflow: 'auto'
-          },
-          '&::-webkit-scrollbar': {
-            display: 'none'
-          }
-        }}
+    <div className="p-4">
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ marginBottom: '20px' }}
       >
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          flexWrap="wrap"
-          sx={{
-            '& i': {
-              width: '430px',
-              marginRight: '30px'
-            }
-          }}
+        <Breadcrumbs aria-label="breadcrumbs">
+          <Link
+            onClick={() => {
+              router.push('/datastores')
+            }}
+            key="Knowledge Space"
+            underline="hover"
+            color="neutral"
+            fontSize="inherit"
+          >
+            Knowledge Space
+          </Link>
+          <Typography fontSize="inherit">Documents</Typography>
+        </Breadcrumbs>
+        <Button
+          variant="outlined"
+          onClick={() => setIsAddDocumentModalShow(true)}
         >
-          <Box
+          + Add Datasource
+        </Button>
+      </Stack>
+      {documents.length ? (
+        <>
+          <Table
+            color="primary"
+            variant="plain"
+            size="lg"
             sx={{
-              display: 'flex',
-              alignContent: 'start',
-              boxSizing: 'content-box',
-              width: '390px',
-              height: '79px',
-              padding: '33px 20px 40px',
-              marginRight: '30px',
-              marginBottom: '30px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              color: 'black',
-              flexShrink: 0,
-              flexGrow: 0,
-              cursor: 'pointer',
-              borderRadius: '16px',
-              '&: hover': {
-                boxShadow:
-                  '0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);'
+              '& tbody tr: hover': {
+                backgroundColor:
+                  mode === 'light' ? 'rgb(246, 246, 246)' : 'rgb(33, 33, 40)'
+              },
+              '& tbody tr: hover a': {
+                textDecoration: 'underline'
               }
             }}
-            onClick={() => setIsAddKnowledgeSpaceModalShow(true)}
-            className="bg-[#E9EBEE] dark:bg-[#484848]"
           >
-            <Box
-              sx={{
-                width: '32px',
-                height: '32px',
-                lineHeight: '28px',
-                border: '1px solid #2AA3FF',
-                textAlign: 'center',
-                borderRadius: '5px',
-                marginRight: '5px',
-                fontWeight: '300',
-                color: '#2AA3FF'
-              }}
-            >
-              +
-            </Box>
-            <Box
-              sx={{
-                fontSize: '16px'
-              }}
-            >
-              space
-            </Box>
-          </Box>
-          {knowledgeSpaceList.map((item: any, index: number) => (
-            <Box
-              key={index}
-              sx={{
-                padding: '30px 20px 40px',
-                marginRight: '30px',
-                marginBottom: '30px',
-                borderTop: '4px solid rgb(84, 164, 248)',
-                flexShrink: 0,
-                flexGrow: 0,
-                cursor: 'pointer',
-                borderRadius: '10px',
-                '&: hover': {
-                  boxShadow:
-                    '0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);'
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Size</th>
+                <th>Last Synch</th>
+                <th>Status</th>
+                <th>Result</th>
+                <th>Operation</th>
+              </tr>
+            </thead>
+            <tbody>
+              {documents.map((row: any) => (
+                <tr key={row.id}>
+                  <td>{row.doc_name}</td>
+                  <td>
+                    <Chip variant="solid" color="neutral" sx={{ opacity: 0.5 }}>
+                      {row.doc_type}
+                    </Chip>
+                  </td>
+                  <td>{row.chunk_size} chunks</td>
+                  <td>{moment(row.last_sync).format('YYYY-MM-DD HH:MM:SS')}</td>
+                  <td>
+                    <Chip
+                      sx={{ opacity: 0.5 }}
+                      variant="solid"
+                      color={(function () {
+                        switch (row.status) {
+                          case 'TODO':
+                            return 'neutral'
+                          case 'RUNNING':
+                            return 'primary'
+                          case 'FINISHED':
+                            return 'success'
+                          case 'FAILED':
+                            return 'danger'
+                        }
+                      })()}
+                    >
+                      {row.status}
+                    </Chip>
+                  </td>
+                  <td>
+                    {(function () {
+                      if (row.status === 'TODO' || row.status === 'RUNNING') {
+                        return ''
+                      } else if (row.status === 'FINISHED') {
+                        return (
+                          <Popover content={row.result} trigger="hover">
+                            <Chip
+                              variant="solid"
+                              color="success"
+                              sx={{ opacity: 0.5 }}
+                            >
+                              SUCCESS
+                            </Chip>
+                          </Popover>
+                        )
+                      } else {
+                        return (
+                          <Popover content={row.result} trigger="hover">
+                            <Chip
+                              variant="solid"
+                              color="danger"
+                              sx={{ opacity: 0.5 }}
+                            >
+                              FAILED
+                            </Chip>
+                          </Popover>
+                        )
+                      }
+                    })()}
+                  </td>
+                  <td>
+                    {
+                      <>
+                        <Button
+                          variant="outlined"
+                          size="sm"
+                          sx={{
+                            marginRight: '20px'
+                          }}
+                          onClick={async () => {
+                            const data = await sendSpacePostRequest(
+                              `/knowledge/${spaceName}/document/sync`,
+                              {
+                                doc_ids: [row.id]
+                              }
+                            )
+                            if (data.success) {
+                              message.success('success')
+                            } else {
+                              message.error(data.err_msg || 'failed')
+                            }
+                          }}
+                        >
+                          Synch
+                          <CachedIcon />
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size="sm"
+                          onClick={() => {
+                            router.push(
+                              `/datastores/documents/chunklist?spacename=${spaceName}&documentid=${row.id}`
+                            )
+                          }}
+                        >
+                          Details
+                        </Button>
+                      </>
+                    }
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            sx={{
+              marginTop: '20px'
+            }}
+          >
+            <Pagination
+              defaultPageSize={20}
+              showSizeChanger={false}
+              current={current}
+              total={total}
+              onChange={async (page) => {
+                const data = await sendSpacePostRequest(
+                  `/knowledge/${spaceName}/document/list`,
+                  {
+                    page,
+                    page_size
+                  }
+                )
+                if (data.success) {
+                  setDocuments(data.data.data)
+                  setTotal(data.data.total)
+                  setCurrent(data.data.page)
                 }
               }}
-              onClick={() => {
-                router.push(`/datastores/documents?name=${item.name}`)
-              }}
-              className="bg-[#FFFFFF] dark:bg-[#484848]"
-            >
-              <Box
-                sx={{
-                  fontSize: '18px',
-                  marginBottom: '10px',
-                  fontWeight: 'bold',
-                  color: 'black'
-                }}
-              >
-                <ContentPasteSearchOutlinedIcon
-                  sx={{ marginRight: '5px', color: '#2AA3FF' }}
-                />
-                {item.name}
-              </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'flex-start'
-                }}
-              >
-                <Box
-                  sx={{
-                    width: '130px',
-                    flexGrow: 0,
-                    flexShrink: 0
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: '#2AA3FF'
-                    }}
-                  >
-                    {item.vector_type}
-                  </Box>
-                  <Box sx={{ fontSize: '12px', color: 'black' }}>Vector</Box>
-                </Box>
-                <Box
-                  sx={{
-                    width: '130px',
-                    flexGrow: 0,
-                    flexShrink: 0
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: '#2AA3FF'
-                    }}
-                  >
-                    {item.owner}
-                  </Box>
-                  <Box sx={{ fontSize: '12px', color: 'black' }}>Owner</Box>
-                </Box>
-                <Box
-                  sx={{
-                    width: '130px',
-                    flexGrow: 0,
-                    flexShrink: 0
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: '#2AA3FF'
-                    }}
-                  >
-                    {item.docs || 0}
-                  </Box>
-                  <Box sx={{ fontSize: '12px', color: 'black' }}>Docs</Box>
-                </Box>
-              </Box>
-            </Box>
-          ))}
-          <i></i>
-          <i></i>
-          <i></i>
-          <i></i>
-          <i></i>
-        </Stack>
-      </Box>
+              hideOnSinglePage
+            />
+          </Stack>
+        </>
+      ) : (
+        <></>
+      )}
       <Modal
         sx={{
           display: 'flex',
@@ -287,8 +315,8 @@ const Index = () => {
           alignItems: 'center',
           'z-index': 1000
         }}
-        open={isAddKnowledgeSpaceModalShow}
-        onClose={() => setIsAddKnowledgeSpaceModalShow(false)}
+        open={isAddDocumentModalShow}
+        onClose={() => setIsAddDocumentModalShow(false)}
       >
         <Sheet
           variant="outlined"
@@ -301,7 +329,7 @@ const Index = () => {
         >
           <Box sx={{ width: '100%' }}>
             <Stack spacing={2} direction="row">
-              {stepsOfAddingSpace.map((item: any, index: number) => (
+              {stepsOfAddingDocument.map((item: any, index: number) => (
                 <Item
                   key={item}
                   sx={{
@@ -322,70 +350,6 @@ const Index = () => {
           {activeStep === 0 ? (
             <>
               <Box sx={{ margin: '30px auto' }}>
-                Knowledge Space Name:
-                <Input
-                  placeholder="Please input the name"
-                  onChange={(e: any) => setKnowledgeSpaceName(e.target.value)}
-                  sx={{ marginBottom: '20px' }}
-                />
-                Owner:
-                <Input
-                  placeholder="Please input the owner"
-                  onChange={(e: any) => setOwner(e.target.value)}
-                  sx={{ marginBottom: '20px' }}
-                />
-                Description:
-                <Input
-                  placeholder="Please input the description"
-                  onChange={(e: any) => setDescription(e.target.value)}
-                  sx={{ marginBottom: '20px' }}
-                />
-              </Box>
-              <Button
-                variant="outlined"
-                onClick={async () => {
-                  if (knowledgeSpaceName === '') {
-                    message.error('please input the name')
-                    return
-                  }
-                  if (owner === '') {
-                    message.error('please input the owner')
-                    return
-                  }
-                  if (description === '') {
-                    message.error('please input the description')
-                    return
-                  }
-                  const data = await sendSpacePostRequest(
-                    `/knowledge/space/add`,
-                    {
-                      name: knowledgeSpaceName,
-                      vector_type: 'Chroma',
-                      owner,
-                      desc: description
-                    }
-                  )
-                  if (data.success) {
-                    message.success('success')
-                    setActiveStep(1)
-                    const data = await sendSpacePostRequest(
-                      '/knowledge/space/list',
-                      {}
-                    )
-                    if (data.success) {
-                      setKnowledgeSpaceList(data.data)
-                    }
-                  } else {
-                    message.error(data.err_msg || 'failed')
-                  }
-                }}
-              >
-                Next
-              </Button>
-            </>
-          ) : activeStep === 1 ? (
-            <>
-              <Box sx={{ margin: '30px auto' }}>
                 {documentTypeList.map((item: any) => (
                   <Sheet
                     key={item.type}
@@ -403,7 +367,7 @@ const Index = () => {
                     }}
                     onClick={() => {
                       setDocumentType(item.type)
-                      setActiveStep(2)
+                      setActiveStep(1)
                     }}
                   >
                     <Sheet sx={{ fontSize: '20px', fontWeight: 'bold' }}>
@@ -492,7 +456,7 @@ const Index = () => {
                 <Button
                   variant="outlined"
                   sx={{ marginRight: '20px' }}
-                  onClick={() => setActiveStep(1)}
+                  onClick={() => setActiveStep(0)}
                 >
                   {'< Back'}
                 </Button>
@@ -509,23 +473,36 @@ const Index = () => {
                         return
                       }
                       const data = await sendSpacePostRequest(
-                        `/knowledge/${knowledgeSpaceName}/document/add`,
+                        `/knowledge/${spaceName}/document/add`,
                         {
                           doc_name: documentName,
                           content: webPageUrl,
                           doc_type: 'URL'
                         }
                       )
+                      data.success &&
+                        synchChecked &&
+                        sendSpacePostRequest(
+                          `/knowledge/${spaceName}/document/sync`,
+                          {
+                            doc_ids: [data.data]
+                          }
+                        )
                       if (data.success) {
                         message.success('success')
-                        setIsAddKnowledgeSpaceModalShow(false)
-                        synchChecked &&
-                          sendSpacePostRequest(
-                            `/knowledge/${knowledgeSpaceName}/document/sync`,
-                            {
-                              doc_ids: [data.data]
-                            }
-                          )
+                        setIsAddDocumentModalShow(false)
+                        const data = await sendSpacePostRequest(
+                          `/knowledge/${spaceName}/document/list`,
+                          {
+                            page: current,
+                            page_size
+                          }
+                        )
+                        if (data.success) {
+                          setDocuments(data.data.data)
+                          setTotal(data.data.total)
+                          setCurrent(data.data.page)
+                        }
                       } else {
                         message.error(data.err_msg || 'failed')
                       }
@@ -538,21 +515,33 @@ const Index = () => {
                       formData.append('doc_name', documentName)
                       formData.append('doc_file', originFileObj)
                       formData.append('doc_type', 'DOCUMENT')
-
                       const data = await sendSpaceUploadPostRequest(
-                        `/knowledge/${knowledgeSpaceName}/document/upload`,
+                        `/knowledge/${spaceName}/document/upload`,
                         formData
                       )
+                      data.success &&
+                        synchChecked &&
+                        sendSpacePostRequest(
+                          `/knowledge/${spaceName}/document/sync`,
+                          {
+                            doc_ids: [data.data]
+                          }
+                        )
                       if (data.success) {
                         message.success('success')
-                        setIsAddKnowledgeSpaceModalShow(false)
-                        synchChecked &&
-                          sendSpacePostRequest(
-                            `/knowledge/${knowledgeSpaceName}/document/sync`,
-                            {
-                              doc_ids: [data.data]
-                            }
-                          )
+                        setIsAddDocumentModalShow(false)
+                        const data = await sendSpacePostRequest(
+                          `/knowledge/${spaceName}/document/list`,
+                          {
+                            page: current,
+                            page_size
+                          }
+                        )
+                        if (data.success) {
+                          setDocuments(data.data.data)
+                          setTotal(data.data.total)
+                          setCurrent(data.data.page)
+                        }
                       } else {
                         message.error(data.err_msg || 'failed')
                       }
@@ -562,7 +551,7 @@ const Index = () => {
                         return
                       }
                       const data = await sendSpacePostRequest(
-                        `/knowledge/${knowledgeSpaceName}/document/add`,
+                        `/knowledge/${spaceName}/document/add`,
                         {
                           doc_name: documentName,
                           source: textSource,
@@ -570,16 +559,29 @@ const Index = () => {
                           doc_type: 'TEXT'
                         }
                       )
+                      data.success &&
+                        synchChecked &&
+                        sendSpacePostRequest(
+                          `/knowledge/${spaceName}/document/sync`,
+                          {
+                            doc_ids: [data.data]
+                          }
+                        )
                       if (data.success) {
                         message.success('success')
-                        setIsAddKnowledgeSpaceModalShow(false)
-                        synchChecked &&
-                          sendSpacePostRequest(
-                            `/knowledge/${knowledgeSpaceName}/document/sync`,
-                            {
-                              doc_ids: [data.data]
-                            }
-                          )
+                        setIsAddDocumentModalShow(false)
+                        const data = await sendSpacePostRequest(
+                          `/knowledge/${spaceName}/document/list`,
+                          {
+                            page: current,
+                            page_size
+                          }
+                        )
+                        if (data.success) {
+                          setDocuments(data.data.data)
+                          setTotal(data.data.total)
+                          setCurrent(data.data.page)
+                        }
                       } else {
                         message.error(data.err_msg || 'failed')
                       }
@@ -593,8 +595,8 @@ const Index = () => {
           )}
         </Sheet>
       </Modal>
-    </Box>
+    </div>
   )
 }
 
-export default Index
+export default Documents
