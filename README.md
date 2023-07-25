@@ -56,6 +56,6 @@ Check out our Next.js deployment documentation for more details.
 npm run compile
 
 # copy compile file to DB-GPT static file dictory
-cp -r -f /Db-GPT-Web/out/* /DB-GPT/pilot/server/static/*
+cp -r -f /Db-GPT-Web/out/* /DB-GPT/pilot/server/static/
 
 ```
