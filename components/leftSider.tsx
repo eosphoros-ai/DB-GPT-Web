@@ -12,6 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';import { useDialogueContext } from '@/app/context/dialogue';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { sendPostRequest } from '@/utils/request';
+import Image from 'next/image'
 
 const LeftSider =  () => {
   const pathname = usePathname();
@@ -79,10 +80,15 @@ const LeftSider =  () => {
 							alignItems: 'center',
 						}}
 					>
-						<div className='flex items-center  gap-3'>
-							<Typography component="h1" fontWeight="xl">
-								DB-GPT
-							</Typography>
+						<div className='flex items-center gap-3'>
+							<Image
+								src="/LOGO_1.png"
+								alt="DB-GPT"
+								width={633}
+								height={157}
+								className='w-full max-w-full'
+								unoptimized
+							/>
 						</div>
 					</Box>
 					<Box
