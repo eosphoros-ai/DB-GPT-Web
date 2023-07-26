@@ -9,8 +9,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { sendPostRequest } from '@/utils/request';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image'
 
-export default function Home() {
+function Home() {
   const Schema = z.object({ query: z.string().min(1) });
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -38,12 +39,16 @@ export default function Home() {
 
   return (
     <>
-      <div className='mx-auto h-full justify-center flex max-w-3xl flex-col gap-8 px-5 pt-6 xl:max-w-4xl'>
-        <div className='max-w-xs my-0 mx-auto'>
-          <Typography level="h3" className="text-center">DB-GPT</Typography>
-          <Typography level="body1" className="text-center pt-4">
-            Revolutionizing Database Interactions with Private LLM Technology
-          </Typography>
+      <div className='mx-auto h-full justify-center flex max-w-3xl flex-col gap-8 px-5 pt-6'>
+        <div className='my-0 mx-auto'>
+          <Image
+            src="/LOGO.png"
+            alt="Revolutionizing Database Interactions with Private LLM Technology"
+            width={856}
+            height={160}
+            className='w-full'
+            unoptimized
+          />
         </div>
         <div className='grid gap-8 lg:grid-cols-3'>
           <div className='lg:col-span-3'>
@@ -130,3 +135,5 @@ export default function Home() {
     
   )
 }
+
+export default Home;
