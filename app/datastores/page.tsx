@@ -643,7 +643,8 @@ const Index = () => {
           <Typography
             id="alert-dialog-modal-title"
             component="h2"
-            startDecorator={<WarningRoundedIcon />}
+            startDecorator={<WarningRoundedIcon style={{ color: 'rgb(205, 32, 41)' }} />}
+            sx={{ color: 'black' }}
           >
             Confirmation
           </Typography>
@@ -651,6 +652,7 @@ const Index = () => {
           <Typography
             id="alert-dialog-modal-description"
             textColor="text.tertiary"
+            sx={{ fontWeight: '500', color: 'black' }}
           >
             Sure to delete {knowledgeSpaceToDelete?.name}?
           </Typography>
@@ -689,7 +691,7 @@ const Index = () => {
                 }
               }}
             >
-              Sure
+              Yes
             </Button>
           </Box>
         </ModalDialog>
