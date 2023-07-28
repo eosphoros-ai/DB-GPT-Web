@@ -5,6 +5,8 @@ import React, { useState, useEffect } from 'react'
 import { InboxOutlined } from '@ant-design/icons'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
 import ContentPasteSearchOutlinedIcon from '@mui/icons-material/ContentPasteSearchOutlined'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
 import type { UploadProps } from 'antd'
 import { message, Upload } from 'antd'
 import {
@@ -18,6 +20,8 @@ import {
   Textarea,
   Switch,
   Typography,
+  Divider,
+  ModalDialog,
   styled
 } from '@/lib/mui'
 import {
@@ -78,11 +82,13 @@ const Index = () => {
   const [text, setText] = useState<string>('')
   const [originFileObj, setOriginFileObj] = useState<any>(null)
   const [synchChecked, setSynchChecked] = useState<boolean>(true)
+  const [isDeleteKnowledgeSpaceModalShow, setIsDeleteKnowledgeSpaceModalShow] =
+    useState<boolean>(false)
+  const [knowledgeSpaceToDelete, setKnowledgeSpaceToDelete] = useState<any>({})
   const props: UploadProps = {
     name: 'file',
     multiple: false,
     onChange(info) {
-      console.log(info)
       if (info.fileList.length === 0) {
         setOriginFileObj(null)
         setDocumentName('')
@@ -185,6 +191,7 @@ const Index = () => {
             <Box
               key={index}
               sx={{
+                position: 'relative',
                 padding: '30px 20px 40px',
                 marginRight: '30px',
                 marginBottom: '30px',
@@ -271,8 +278,38 @@ const Index = () => {
                   <Box sx={{ fontSize: '12px', color: 'black' }}>Docs</Box>
                 </Box>
               </Box>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '10px',
+                  color: 'rgb(205, 32, 41)'
+                }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setKnowledgeSpaceToDelete(item)
+                  setIsDeleteKnowledgeSpaceModalShow(true)
+                }}
+              >
+                <DeleteOutlineIcon sx={{ fontSize: '30px' }} />
+              </Box>
             </Box>
           ))}
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
           <i></i>
           <i></i>
           <i></i>
@@ -592,6 +629,70 @@ const Index = () => {
             </>
           )}
         </Sheet>
+      </Modal>
+      <Modal
+        open={isDeleteKnowledgeSpaceModalShow}
+        onClose={() => setIsDeleteKnowledgeSpaceModalShow(false)}
+      >
+        <ModalDialog
+          variant="outlined"
+          role="alertdialog"
+          aria-labelledby="alert-dialog-modal-title"
+          aria-describedby="alert-dialog-modal-description"
+        >
+          <Typography
+            id="alert-dialog-modal-title"
+            component="h2"
+            startDecorator={<WarningRoundedIcon />}
+          >
+            Confirmation
+          </Typography>
+          <Divider />
+          <Typography
+            id="alert-dialog-modal-description"
+            textColor="text.tertiary"
+          >
+            Sure to delete {knowledgeSpaceToDelete?.name}?
+          </Typography>
+          <Box
+            sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', pt: 2 }}
+          >
+            <Button
+              variant="outlined"
+              color="neutral"
+              onClick={() => setIsDeleteKnowledgeSpaceModalShow(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="outlined"
+              color="danger"
+              onClick={async () => {
+                setIsDeleteKnowledgeSpaceModalShow(false)
+                const res = await sendSpacePostRequest(
+                  `/knowledge/space/delete`,
+                  {
+                    name: knowledgeSpaceToDelete?.name
+                  }
+                )
+                if (res.success) {
+                  message.success('success')
+                  const data = await sendSpacePostRequest(
+                    '/knowledge/space/list',
+                    {}
+                  )
+                  if (data.success) {
+                    setKnowledgeSpaceList(data.data)
+                  }
+                } else {
+                  message.error(res.err_msg || 'failed')
+                }
+              }}
+            >
+              Sure
+            </Button>
+          </Box>
+        </ModalDialog>
       </Modal>
     </Box>
   )
