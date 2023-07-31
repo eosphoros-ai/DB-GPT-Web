@@ -161,13 +161,13 @@ const Documents = () => {
           >
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Size</th>
-                <th>Last Synch</th>
-                <th>Status</th>
-                <th>Result</th>
-                <th>Operation</th>
+                <th style={{ width: '10%' }}>Name</th>
+                <th style={{ width: '100px' }}>Type</th>
+                <th style={{ width: '100px' }}>Size</th>
+                <th style={{ width: '10%' }}>Last Synch</th>
+                <th style={{ width: '100px' }}>Status</th>
+                <th style={{ width: '100px' }}>Result</th>
+                <th style={{ width: '40%' }}>Operation</th>
               </tr>
             </thead>
             <tbody>
@@ -175,7 +175,12 @@ const Documents = () => {
                 <tr key={row.id}>
                   <td>{row.doc_name}</td>
                   <td>
-                    <Chip variant="solid" color="neutral" sx={{ opacity: 0.5 }}>
+                    <Chip
+                      size="sm"
+                      variant="solid"
+                      color="neutral"
+                      sx={{ opacity: 0.5 }}
+                    >
                       {row.doc_type}
                     </Chip>
                   </td>
@@ -183,6 +188,7 @@ const Documents = () => {
                   <td>{moment(row.last_sync).format('YYYY-MM-DD HH:MM:SS')}</td>
                   <td>
                     <Chip
+                      size="sm"
                       sx={{ opacity: 0.5 }}
                       variant="solid"
                       color={(function () {
@@ -209,6 +215,7 @@ const Documents = () => {
                         return (
                           <Popover content={row.result} trigger="hover">
                             <Chip
+                              size="sm"
                               variant="solid"
                               color="success"
                               sx={{ opacity: 0.5 }}
@@ -221,6 +228,7 @@ const Documents = () => {
                         return (
                           <Popover content={row.result} trigger="hover">
                             <Chip
+                              size="sm"
                               variant="solid"
                               color="danger"
                               sx={{ opacity: 0.5 }}
