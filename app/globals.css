@@ -32,3 +32,9 @@ body .ant-btn-primary {
 .ant-pagination .ant-pagination-item.ant-pagination-item-active a {
   color: white !important;
 }
+
+table tr td {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

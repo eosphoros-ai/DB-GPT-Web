@@ -1,7 +1,7 @@
 "use client"
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Chart, LineAdvance, Interval, Tooltip, getTheme } from "bizcharts";
-import { Card, CardContent, Typography, Grid, Table, Skeleton, AspectRatio, Box, aspectRatioClasses } from "@/lib/mui";
+import { Card, CardContent, Typography, Grid, Table, Skeleton, AspectRatio, Box, aspectRatioClasses, Menu, MenuItem, Button } from "@/lib/mui";
 import { useRequest } from 'ahooks';
 import { sendGetRequest, sendPostRequest } from '@/utils/request';
 import useAgentChat from '@/hooks/useAgentChat';
@@ -41,6 +41,8 @@ const ChartSkeleton = () => {
 
 const AgentPage = () => {
 	const [chartsData, setChartsData] = useState();
+	const buttonRef = React.useRef(null);
+	const [open, setOpen] = React.useState(false);
 	const searchParams = useSearchParams();
 	const { refreshDialogList } = useDialogueContext();
 	const id = searchParams.get('id');
@@ -51,6 +53,14 @@ const AgentPage = () => {
 	}), {
 		ready: !!id,
 		refreshDeps: [id]
+	});
+
+	const { data: dbList, run: runDbList } = useRequest(async () => await sendGetRequest('/v1/chat/db/list'), {
+		ready: !!scene && !!['chat_with_db_execute', 'chat_with_db_qa'].includes(scene)
+	});
+
+	const { data: supportTypes } = useRequest(async () => await sendGetRequest('/v1/chat/db/support/type'), {
+		ready: !!scene && !!['chat_with_db_execute', 'chat_with_db_qa'].includes(scene)
 	});
 
 	const { data: paramsList } = useRequest(async () => await sendPostRequest(`/v1/chat/mode/params/list?chat_mode=${scene}`), {
@@ -293,6 +303,9 @@ const AgentPage = () => {
 						clearIntialMessage={async () => {
 							await refreshDialogList();
 						}}
+						dbList={dbList?.data}
+						runDbList={runDbList}
+						supportTypes={supportTypes?.data}
 						isChartChat={scene === 'chat_dashboard'}
 						messages={history || []}
 						onSubmit={handleChatSubmit}

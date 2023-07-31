@@ -1,7 +1,23 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { Card, CircularProgress, IconButton, Input, Stack, Select, Option, Box, Modal, ModalDialog, ModalClose, Button, Link } from '@/lib/mui';
-import React, { useState, useRef } from 'react';
+import { 
+  Card, 
+  CircularProgress, 
+  IconButton, 
+  Input, 
+  Stack, 
+  Select,
+  Option, 
+  Box, 
+  Modal, 
+  ModalDialog, 
+  ModalClose, 
+  Button, 
+  Link, 
+  Table,
+  buttonClasses
+} from '@/lib/mui';
+import React, { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Message } from '@/types';
@@ -13,6 +29,8 @@ import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
 import { message } from 'antd';
+import EditIcon from '@mui/icons-material/Edit';
+import { sendSpacePostRequest } from '@/utils/request';
 
 type Props = {
   messages: Message[];
@@ -20,6 +38,9 @@ type Props = {
   readOnly?: boolean;
   paramsList?: { [key: string]: string };
   isChartChat: boolean;
+  dbList?: Record<string, string | undefined | null | boolean>[];
+  runDbList: () => void;
+  supportTypes?: Record<string, string | undefined | null | boolean>[],
   clearIntialMessage?: () => void;
   setChartsData?: (chartsData: any) => void;
 }; 
@@ -32,6 +53,9 @@ const ChatBoxComp = ({
   readOnly,
   paramsList,
   isChartChat = false,
+  dbList,
+  runDbList,
+  supportTypes,
   clearIntialMessage,
   setChartsData
 }: Props) => {
@@ -43,7 +67,20 @@ const ChatBoxComp = ({
   const [jsonModalOpen, setJsonModalOpen] = useState(false);
   const [currentJsonIndex, setCurrentJsonIndex] = useState<number>();
   const [showMessages, setShowMessages] = useState(messages);
-  const [jsonValue, setJsonValue] = useState('');
+  const [jsonValue, setJsonValue] = useState(''); 
+  const [editSqlModalOpen, setEditSqlModalOpen] = useState(false);
+  const [rows, setRows] = useState(dbList);
+
+  const handleChangeRows = (index: number, name: string, value?: string | null) => {
+    const temp = lodash.cloneDeep(rows);
+    if (temp) {
+      if (typeof rows?.[index] === 'undefined') {
+        temp[index] = {};
+      }
+      temp[index][name] = value;
+      setRows(temp);
+    }
+  };
 
   const methods = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
@@ -68,7 +105,7 @@ const ChatBoxComp = ({
       const searchParamsTemp = new URLSearchParams(window.location.search);
       const initMessage = searchParamsTemp.get('initMessage');
       searchParamsTemp.delete('initMessage');
-      window.history.replaceState(null, null, `?${searchParamsTemp.toString()}`);
+      window.history?.replaceState(null, null, `?${searchParamsTemp.toString()}`);
       await submit({ query: (initMessage as string) });
     } catch (err) {
       console.log(err);
@@ -142,6 +179,15 @@ const ChatBoxComp = ({
     }
   }, [isChartChat, messages]);
 
+  useEffect(() => {
+    const temp = lodash.cloneDeep(dbList);
+    temp?.forEach(item =>{
+      const currentType = supportTypes?.find(type => type.db_type === item.db_type);
+      item.isfileDb = currentType?.is_file_db;
+    })
+    setRows(temp);
+  }, [dbList, supportTypes]);
+
   return (
     <div className='w-full h-full'>
       <Stack
@@ -168,7 +214,7 @@ const ChatBoxComp = ({
             flex: 1
           }}
         >
-          {showMessages.map((each, index) => {
+          {showMessages?.map((each, index) => {
             return (
               <Stack
                 key={index}
@@ -283,7 +329,7 @@ const ChatBoxComp = ({
                     }}
                     sx={{ maxWidth: '100%' }}
                   >
-                    {Object.keys(paramsList || {}).map(paramItem => (
+                    {Object.keys(paramsList || {})?.map(paramItem => (
                       <Option
                         key={paramItem}
                         value={paramItem}
@@ -292,10 +338,21 @@ const ChatBoxComp = ({
                       </Option>
                     ))}
                   </Select>
-
+                  <Button
+                    aria-label="Like"
+                    variant="plain"
+                    color="neutral"
+                    sx={{
+                      '&: hover': {
+                        backgroundColor: 'unset'
+                      }
+                    }}
+                    onClick={() => { setEditSqlModalOpen(true) }}
+                  >
+                    <EditIcon />
+                  </Button>
                 </div>
               )}
-
               <Input
                 className='w-full h-12'
                 variant="outlined"
@@ -366,6 +423,245 @@ const ChatBoxComp = ({
               Submit
             </Button>
           </Box>
+        </ModalDialog>
+      </Modal>
+      <Modal
+        open={editSqlModalOpen}
+        onClose={() => { setEditSqlModalOpen(false) }}
+      >
+        <ModalDialog>
+          <ModalClose />
+          <Table>
+            <caption>
+              <h3 style={{ fontWeight: 'bold' }}>数据库列表</h3>
+            </caption>
+            <thead>
+              <tr>
+                <th style={{ width: '140px' }}>数据库类型</th>
+                <th style={{ width: '130px' }}>数据库名</th>
+                <th style={{ width: '150px' }}>链接地址/域名</th>
+                <th style={{ width: '100px' }}>端口</th>
+                <th style={{ width: '140px' }}>用户名</th>
+                <th style={{ width: '140px' }}>密码</th>
+                <th style={{ width: '140px' }}>备注</th>
+                <th style={{ width: '140px' }}>
+                  操作
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows?.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  <td>
+                    {row?.isEdit ? (
+                      <Select
+                        defaultValue={row?.db_type}
+                        onChange={(e, newValue) => {
+                          const isfileDb = supportTypes?.find(item => item.db_type === newValue);
+                          const temp = lodash.cloneDeep(rows);
+                          temp[rowIndex]['db_type'] = newValue;
+                          temp[rowIndex]['isfileDb'] = isfileDb?.is_file_db;
+                          if (isfileDb) {
+                            temp[rowIndex]['db_host'] = '';
+                            temp[rowIndex]['db_port'] = '';
+                          } else {
+                            temp[rowIndex]['db_path'] = '';
+                          }
+                          setRows(temp);
+                        }}
+                      >
+                        {supportTypes?.map((type) => (
+                          <Option
+                            key={type.db_type}
+                            value={type.db_type}
+                          >
+                            {type?.db_type}
+                          </Option>
+                        ))}
+                      </Select>
+                    ) : (
+                      <>{row?.db_type}</>
+                    )}
+                  </td>
+                  <td>
+                    {row?.isNew ? (
+                      <Input
+                        value={row?.db_name}
+                        onChange={(e) => { handleChangeRows(rowIndex, 'db_name', e.target.value) }}
+                      />
+                    ) : (
+                      <>{row?.db_name}</>
+                    )}
+                  </td>
+                  <td>
+                    {row?.isEdit ? (
+                      <Input
+                        value={row?.isfileDb ? row?.db_path : row?.db_host}
+                        onChange={(e) => {
+                          if (row?.isfileDb) {
+                            handleChangeRows(rowIndex, 'db_path', e.target.value);
+                          } else {
+                            handleChangeRows(rowIndex, 'db_host', e.target.value);
+                          }
+                        }}
+                      />
+                    ) : (
+                      <>{row?.isfileDb ? row?.db_path : row?.db_host}</>
+                    )}
+                  </td>
+                  <td>
+                    {row?.isEdit ? (row?.isfileDb ? '-' :(
+                      <Input
+                        value={row?.db_port}
+                        onChange={(e) => { handleChangeRows(rowIndex, 'db_port', e.target.value) }}
+                      />
+                    )) : (
+                      <>{row?.db_port}</>
+                    )}
+                  </td>
+                  <td>
+                    {row?.isEdit ? (
+                      <Input
+                        defaultValue={row.db_user}
+                        onChange={(e) => { handleChangeRows(rowIndex, 'db_user', e.target.value) }}
+                      />
+                    ) : (
+                      <>{row?.db_user}</>
+                    )}
+                  </td>
+                  <td>
+                    {row?.isEdit ? (
+                      <Input
+                        defaultValue={row.db_pwd}
+                        type="password"
+                        onChange={(e) => { handleChangeRows(rowIndex, 'db_pwd', e.target.value) }}
+                      />
+                    ) : (
+                      <>******</>
+                    )}
+                  </td>
+                  <td>
+                    {row?.isEdit ? (
+                      <Input
+                        defaultValue={row?.comment}
+                        onChange={(e) => { handleChangeRows(rowIndex, 'comment', e.target.value) }}
+                      />
+                    ) : (
+                      <>{row?.comment}</>
+                    )}
+                  </td>
+                  <td>
+                    <Box sx={{
+                      gap: 1,
+                      [`& .${buttonClasses.root}`]: {
+                        padding: 0,
+                        '&:hover': {
+                          background: 'transparent',
+                        }
+                      }
+                    }}>
+                      {row?.isEdit ? (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="plain"
+                            color="neutral"
+                            sx={{ marginRight: '8px' }}
+                            onClick={async () => {
+                              const temp = lodash.cloneDeep(row);
+                              const params = {
+                                db_type: temp?.db_type,
+                                db_name: temp?.db_name,
+                                file_path: temp?.isfileDb ? temp?.db_path : undefined,
+                                db_host: temp?.isfileDb ? undefined : temp?.db_host,
+                                db_port: temp?.isfileDb ? undefined : temp?.db_port,
+                                db_user: temp?.db_user,
+                                db_pwd: temp?.db_pwd,
+                                comment: temp?.comment
+                              };
+                              let res;
+                              if (temp.isNew) {
+                                const names = dbList?.map(db => db?.db_name);
+                                if (names?.includes(temp?.db_name)) {
+                                  message.error('该数据库名称已存在');
+                                  return;
+                                } else {
+                                  res = await sendSpacePostRequest('/api/v1/chat/db/add', params);
+                                }
+                              } else {
+                                res = await sendSpacePostRequest('/api/v1/chat/db/edit', params);
+                              }
+                              await runDbList?.();
+                            }}
+                          >
+                            保存
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="plain"
+                            color="neutral"
+                            sx={{ marginRight: '8px' }}
+                            onClick={() => {
+                              const temp = lodash.cloneDeep(rows);
+                              if (row?.isNew) {
+                                temp.splice(rowIndex, 1);
+                              } else {
+                                temp[rowIndex].isEdit = false;
+                                temp[rowIndex] = dbList?.[rowIndex];
+                              }
+                              setRows(temp);
+                            }}
+                          >
+                            取消
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="plain"
+                          color="neutral"
+                          sx={{ marginRight: '8px' }}
+                          onClick={() => {
+                            const temp = lodash.cloneDeep(rows);
+                            temp[rowIndex].isEdit = true;
+                            setRows(temp);
+                          }}
+                        >
+                          编辑
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="soft"
+                        color="danger"
+                        onClick={async () => {
+                          if (row?.db_name) {
+                            await sendSpacePostRequest(`/api/v1/chat/db/delete?db_name=${row?.db_name}`);
+                            await runDbList?.();
+                          }
+                        }}
+                      >
+                        删除
+                      </Button>
+                    </Box>
+                  </td>
+                </tr>
+              ))}
+              <tr>
+                <td colSpan={8}>
+                  <Button
+                    variant='outlined'
+                    sx={{ width: '100%' }}
+                    onClick={() => {
+                      const temp = lodash.cloneDeep(rows);
+                      temp?.push({ isEdit: true, isNew: true, db_name: '' });
+                      setRows(temp);
+                    }}
+                  >+ 新增一行</Button>
+                </td>
+              </tr>
+            </tbody>
+          </Table>
         </ModalDialog>
       </Modal>
     </div>
