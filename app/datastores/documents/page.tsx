@@ -161,13 +161,13 @@ const Documents = () => {
           >
             <thead>
               <tr>
-                <th style={{ width: '10%' }}>Name</th>
-                <th style={{ width: '100px' }}>Type</th>
-                <th style={{ width: '100px' }}>Size</th>
-                <th style={{ width: '10%' }}>Last Synch</th>
-                <th style={{ width: '100px' }}>Status</th>
-                <th style={{ width: '100px' }}>Result</th>
-                <th style={{ width: '40%' }}>Operation</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Size</th>
+                <th>Last Synch</th>
+                <th>Status</th>
+                <th>Result</th>
+                <th style={{ width: '30%' }}>Operation</th>
               </tr>
             </thead>
             <tbody>
@@ -247,7 +247,7 @@ const Documents = () => {
                           variant="outlined"
                           size="sm"
                           sx={{
-                            marginRight: '20px'
+                            marginRight: '2px'
                           }}
                           onClick={async () => {
                             const data = await sendSpacePostRequest(
@@ -270,7 +270,7 @@ const Documents = () => {
                           variant="outlined"
                           size="sm"
                           sx={{
-                            marginRight: '20px'
+                            marginRight: '2px'
                           }}
                           onClick={() => {
                             router.push(
