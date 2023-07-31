@@ -63,6 +63,7 @@ const ChatBoxComp = ({
 }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams.get('initMessage');
+  const scene = searchParams.get('scene');
   const scrollableRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentParam, setCurrentParam] = useState<string | undefined | null>();
@@ -322,24 +323,29 @@ const ChatBoxComp = ({
                 methods.handleSubmit(submit)(e);
               }}
             >
-              {(Object.keys(paramsList || {}).length > 0) && (
-                <div className='flex items-center gap-3'>
-                  <Select
-                    value={currentParam}
-                    onChange={(e, newValue) => {
-                      setCurrentParam(newValue);
-                    }}
-                    sx={{ maxWidth: '100%' }}
-                  >
-                    {Object.keys(paramsList || {})?.map(paramItem => (
-                      <Option
-                        key={paramItem}
-                        value={paramItem}
-                      >
-                        {paramItem}
-                      </Option>
-                    ))}
-                  </Select>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {(Object.keys(paramsList || {}).length > 0) && (
+                  <div className='flex items-center gap-3'>
+                    <Select
+                      value={currentParam}
+                      onChange={(e, newValue) => {
+                        setCurrentParam(newValue);
+                      }}
+                      sx={{ maxWidth: '100%' }}
+                    >
+                      {Object.keys(paramsList || {})?.map(paramItem => (
+                        <Option
+                          key={paramItem}
+                          value={paramItem}
+                        >
+                          {paramItem}
+                        </Option>
+                      ))}
+                    </Select>
+                    
+                  </div>
+                )}
+                {['chat_with_db_execute', 'chat_with_db_qa'].includes(scene) && (
                   <Button
                     aria-label="Like"
                     variant="plain"
@@ -357,8 +363,8 @@ const ChatBoxComp = ({
                       <span style={{ display: 'block', lineHeight: '25px', fontSize: 12, marginLeft: 6 }}>DB Connect Setting</span>
                     </div>
                   </Button>
-                </div>
-              )}
+                )}
+              </div>
               <Input
                 className='w-full h-12'
                 variant="outlined"
