@@ -63,7 +63,7 @@ const AgentPage = () => {
 		ready: !!scene && !!['chat_with_db_execute', 'chat_with_db_qa'].includes(scene)
 	});
 
-	const { data: paramsList } = useRequest(async () => await sendPostRequest(`/v1/chat/mode/params/list?chat_mode=${scene}`), {
+	const { data: paramsList, run: runParamsList } = useRequest(async () => await sendPostRequest(`/v1/chat/mode/params/list?chat_mode=${scene}`), {
 		ready: !!scene,
 		refreshDeps: [id, scene]
 	});
@@ -310,6 +310,7 @@ const AgentPage = () => {
 						messages={history || []}
 						onSubmit={handleChatSubmit}
 						paramsList={paramsList?.data}
+						runParamsList={runParamsList}
 						setChartsData={setChartsData}
 					/>
 				</div>

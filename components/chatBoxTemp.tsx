@@ -28,15 +28,16 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
-import { message } from 'antd';
-import EditIcon from '@mui/icons-material/Edit';
+import { message, Tooltip } from 'antd';
 import { sendSpacePostRequest } from '@/utils/request';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 
 type Props = {
   messages: Message[];
   onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
   readOnly?: boolean;
   paramsList?: { [key: string]: string };
+  runParamsList: () => void;
   isChartChat: boolean;
   dbList?: Record<string, string | undefined | null | boolean>[];
   runDbList: () => void;
@@ -52,6 +53,7 @@ const ChatBoxComp = ({
   onSubmit,
   readOnly,
   paramsList,
+  runParamsList,
   isChartChat = false,
   dbList,
   runDbList,
@@ -343,13 +345,17 @@ const ChatBoxComp = ({
                     variant="plain"
                     color="neutral"
                     sx={{
+                      padding: 0,
                       '&: hover': {
                         backgroundColor: 'unset'
                       }
                     }}
                     onClick={() => { setEditSqlModalOpen(true) }}
                   >
-                    <EditIcon />
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <SettingsSuggestIcon style={{ marginBottom: '0.125rem', fontSize: '28px' }}/>
+                      <span style={{ display: 'block', lineHeight: '25px', fontSize: 12, marginLeft: 6 }}>DB Connect Setting</span>
+                    </div>
                   </Button>
                 </div>
               )}
@@ -369,7 +375,7 @@ const ChatBoxComp = ({
       </Stack>
       <Modal
         open={jsonModalOpen}
-        onClose={() => setJsonModalOpen(false)}
+        onClose={() => { setJsonModalOpen(false); } }
       >
         <ModalDialog
           aria-labelledby="variant-modal-title"
@@ -427,7 +433,7 @@ const ChatBoxComp = ({
       </Modal>
       <Modal
         open={editSqlModalOpen}
-        onClose={() => { setEditSqlModalOpen(false) }}
+        onClose={() => { setEditSqlModalOpen(false); runParamsList?.(); }}
       >
         <ModalDialog>
           <ModalClose />
@@ -480,7 +486,7 @@ const ChatBoxComp = ({
                         ))}
                       </Select>
                     ) : (
-                      <>{row?.db_type}</>
+                      <Tooltip title={row?.db_type}>{row?.db_type}</Tooltip>
                     )}
                   </td>
                   <td>
@@ -490,7 +496,7 @@ const ChatBoxComp = ({
                         onChange={(e) => { handleChangeRows(rowIndex, 'db_name', e.target.value) }}
                       />
                     ) : (
-                      <>{row?.db_name}</>
+                      <Tooltip title={row?.db_name}>{row?.db_name}</Tooltip>
                     )}
                   </td>
                   <td>
@@ -506,7 +512,9 @@ const ChatBoxComp = ({
                         }}
                       />
                     ) : (
-                      <>{row?.isfileDb ? row?.db_path : row?.db_host}</>
+                      <Tooltip title={row?.isfileDb ? row?.db_path : row?.db_host}>
+                        {row?.isfileDb ? row?.db_path : row?.db_host}
+                      </Tooltip>
                     )}
                   </td>
                   <td>
@@ -516,7 +524,7 @@ const ChatBoxComp = ({
                         onChange={(e) => { handleChangeRows(rowIndex, 'db_port', e.target.value) }}
                       />
                     )) : (
-                      <>{row?.db_port}</>
+                      <Tooltip title={row?.db_port}>{row?.db_port}</Tooltip>
                     )}
                   </td>
                   <td>
@@ -526,7 +534,7 @@ const ChatBoxComp = ({
                         onChange={(e) => { handleChangeRows(rowIndex, 'db_user', e.target.value) }}
                       />
                     ) : (
-                      <>{row?.db_user}</>
+                      <Tooltip title={row?.db_user}>{row?.db_user}</Tooltip>
                     )}
                   </td>
                   <td>
@@ -547,7 +555,7 @@ const ChatBoxComp = ({
                         onChange={(e) => { handleChangeRows(rowIndex, 'comment', e.target.value) }}
                       />
                     ) : (
-                      <>{row?.comment}</>
+                      <Tooltip title={row?.comment}>{row?.comment}</Tooltip>
                     )}
                   </td>
                   <td>
