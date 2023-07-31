@@ -37,6 +37,7 @@ const ChatBoxComp = ({
 }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams.get('initMessage');
+  const spaceNameOriginal = searchParams.get('spaceNameOriginal');
   const scrollableRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentParam, setCurrentParam] = useState<string | undefined | null>();
@@ -124,7 +125,7 @@ const ChatBoxComp = ({
 
   React.useEffect(() => {
     if (paramsList && Object.keys(paramsList || {})?.length > 0) {
-      setCurrentParam(Object.keys(paramsList || {})?.[0]);
+      setCurrentParam(spaceNameOriginal || Object.keys(paramsList || {})?.[0]);
     }
   }, [paramsList]);
 
@@ -279,6 +280,7 @@ const ChatBoxComp = ({
                   <Select
                     value={currentParam}
                     onChange={(e, newValue) => {
+                      console.log(newValue);
                       setCurrentParam(newValue);
                     }}
                     sx={{ maxWidth: '100%' }}

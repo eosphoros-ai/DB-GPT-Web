@@ -136,12 +136,30 @@ const Documents = () => {
           </Link>
           <Typography fontSize="inherit">Documents</Typography>
         </Breadcrumbs>
-        <Button
-          variant="outlined"
-          onClick={() => setIsAddDocumentModalShow(true)}
-        >
-          + Add Datasource
-        </Button>
+        <Stack direction="row" alignItems="center">
+          <Button
+            variant="outlined"
+            onClick={async () => {
+              const res = await sendSpacePostRequest('/api/v1/chat/dialogue/new', {
+                chat_mode: 'chat_knowledge'
+              })
+              if (res?.success && res?.data?.conv_uid) {
+                router.push(
+                  `/chat?id=${res?.data?.conv_uid}&scene=chat_knowledge&spaceNameOriginal=${spaceName}`
+                )
+              }
+            }}
+            sx={{ marginRight: '20px' }}
+          >
+            Chat Knowledge
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => setIsAddDocumentModalShow(true)}
+          >
+            + Add Datasource
+          </Button>
+        </Stack>
       </Stack>
       {documents.length ? (
         <>
