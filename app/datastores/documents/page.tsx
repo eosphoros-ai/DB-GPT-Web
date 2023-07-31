@@ -156,7 +156,8 @@ const Documents = () => {
               },
               '& tbody tr: hover a': {
                 textDecoration: 'underline'
-              }
+              },
+              '& tr > *:last-child': { textAlign: 'right' }
             }}
           >
             <thead>
