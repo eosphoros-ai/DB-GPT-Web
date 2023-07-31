@@ -23,6 +23,7 @@ import moment from 'moment'
 import { InboxOutlined } from '@ant-design/icons'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
 import CachedIcon from '@mui/icons-material/Cached'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import type { UploadProps } from 'antd'
 import { Upload, Pagination, Popover, message } from 'antd'
 import {
@@ -147,7 +148,7 @@ const Documents = () => {
           <Table
             color="primary"
             variant="plain"
-            size="lg"
+            size="sm"
             sx={{
               '& tbody tr: hover': {
                 backgroundColor:
@@ -260,6 +261,9 @@ const Documents = () => {
                         <Button
                           variant="outlined"
                           size="sm"
+                          sx={{
+                            marginRight: '20px'
+                          }}
                           onClick={() => {
                             router.push(
                               `/datastores/documents/chunklist?spacename=${spaceName}&documentid=${row.id}`
@@ -267,6 +271,39 @@ const Documents = () => {
                           }}
                         >
                           Details
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size="sm"
+                          color="danger"
+                          onClick={async () => {
+                            const res = await sendSpacePostRequest(
+                              `/knowledge/${spaceName}/document/delete`,
+                              {
+                                doc_name: row.doc_name
+                              }
+                            )
+                            if (res.success) {
+                              message.success('success')
+                              const data = await sendSpacePostRequest(
+                                `/knowledge/${spaceName}/document/list`,
+                                {
+                                  page: current,
+                                  page_size
+                                }
+                              )
+                              if (data.success) {
+                                setDocuments(data.data.data)
+                                setTotal(data.data.total)
+                                setCurrent(data.data.page)
+                              }
+                            } else {
+                              message.error(res.err_msg || 'failed')
+                            }
+                          }}
+                        >
+                          Delete
+                          <DeleteOutlineIcon />
                         </Button>
                       </>
                     }
