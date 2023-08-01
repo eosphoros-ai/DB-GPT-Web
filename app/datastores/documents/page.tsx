@@ -24,6 +24,7 @@ import { InboxOutlined } from '@ant-design/icons'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
 import CachedIcon from '@mui/icons-material/Cached'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import ChatIcon from '@mui/icons-material/Chat';
 import type { UploadProps } from 'antd'
 import { Upload, Pagination, Popover, message } from 'antd'
 import {
@@ -149,9 +150,10 @@ const Documents = () => {
                 )
               }
             }}
-            sx={{ marginRight: '20px' }}
+            sx={{ marginRight: '20px', backgroundColor: 'rgb(39, 155, 255) !important', color: 'white', border: 'none' }}
           >
-            Chat Knowledge
+            <ChatIcon sx={{ marginRight: '6px', fontSize: '18px' }}/>
+            Chat
           </Button>
           <Button
             variant="outlined"
