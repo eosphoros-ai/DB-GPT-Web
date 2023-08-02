@@ -264,7 +264,7 @@ const ChatBoxComp = ({
                           <>
                             {typeof each.context === 'string' && (
                               <Markdown options={options}>
-                                {each.context}
+                                {each.context?.replaceAll?.('\\n', '\n')}
                               </Markdown>
                             )}
                           </>
