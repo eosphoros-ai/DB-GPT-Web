@@ -56,7 +56,7 @@ const ChatBoxComp = ({
     try {
       const searchParams = new URLSearchParams(window.location.search);
       searchParams.delete('initMessage');
-      window.history.replaceState(null, null, `?${searchParams.toString()}`);
+      window.history?.replaceState(null, null, `?${searchParams.toString()}`);
       await submit({ query: (initialMessage as string) });
     } catch (err) {
       console.log(err);

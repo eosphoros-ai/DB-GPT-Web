@@ -70,4 +70,7 @@ export const joyTheme = extendTheme({
       WebkitTextFillColor: 'transparent',
     },
   },
+  zIndex: {
+    modal: 1001
+  }
 });

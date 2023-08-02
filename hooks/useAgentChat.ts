@@ -65,7 +65,7 @@ const useAgentChat = ({
             refreshDialogList();
             const searchParams = new URLSearchParams(window.location.search);
             searchParams.delete('initMessage');
-            window.history.replaceState(null, null, `?${searchParams.toString()}`);
+            window.history?.replaceState(null, null, `?${searchParams.toString()}`);
           }
           if (
             response.ok &&
@@ -95,7 +95,7 @@ const useAgentChat = ({
           throw new Error(err);
         },
         onmessage: (event) => {
-          event.data = event.data.replaceAll('\\n', '\n');
+          event.data = event.data?.replaceAll('\\n', '\n');
           
           if (event.data === '[DONE]') {
             // ctrl.abort();
@@ -106,7 +106,7 @@ const useAgentChat = ({
                 ...history,
                 {
                   role: 'view',
-                  context: event.data.replace('[ERROR]', ''),
+                  context: event.data?.replace('[ERROR]', ''),
                 } as any,
               ],
             });
