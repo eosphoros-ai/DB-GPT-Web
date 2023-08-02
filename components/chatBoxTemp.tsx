@@ -63,6 +63,7 @@ const ChatBoxComp = ({
 }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams.get('initMessage');
+  const spaceNameOriginal = searchParams.get('spaceNameOriginal');
   const scene = searchParams.get('scene');
   const scrollableRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -164,7 +165,7 @@ const ChatBoxComp = ({
 
   React.useEffect(() => {
     if (paramsList && Object.keys(paramsList || {})?.length > 0) {
-      setCurrentParam(Object.keys(paramsList || {})?.[0]);
+      setCurrentParam(spaceNameOriginal || Object.keys(paramsList || {})?.[0]);
     }
   }, [paramsList]);
 

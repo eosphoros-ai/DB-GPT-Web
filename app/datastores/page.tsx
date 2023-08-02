@@ -385,6 +385,10 @@ const Index = () => {
                     message.error('please input the name')
                     return
                   }
+                  if (/[^0-9a-zA-Z_-]/.test(knowledgeSpaceName)) {
+                    message.error('the name can only contain numbers, letters, "-" and "_"');
+                    return
+                  }
                   if (owner === '') {
                     message.error('please input the owner')
                     return
