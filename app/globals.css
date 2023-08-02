@@ -17,16 +17,16 @@ body .ant-btn-primary {
 }
 
 .ant-pagination .ant-pagination-prev * {
-  color: rgb(145, 35, 167) !important;
+  color: rgb(39, 155, 255) !important;
 }
 
 .ant-pagination .ant-pagination-next * {
-  color: rgb(145, 35, 167) !important;
+  color: rgb(39, 155, 255) !important;
 }
 
 .ant-pagination .ant-pagination-item {
-  border-color: rgb(145, 35, 167) !important;
-  background-color: rgb(145, 35, 167) !important;
+  border-color: rgb(39, 155, 255) !important;
+  background-color: rgb(39, 155, 255) !important;
 }
 
 .ant-pagination .ant-pagination-item.ant-pagination-item-active a {
