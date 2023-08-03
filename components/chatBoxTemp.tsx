@@ -38,7 +38,6 @@ type Props = {
   readOnly?: boolean;
   paramsList?: { [key: string]: string };
   runParamsList: () => void;
-  isChartChat: boolean;
   dbList?: Record<string, string | undefined | null | boolean>[];
   runDbList: () => void;
   supportTypes?: Record<string, string | undefined | null | boolean>[],
@@ -54,7 +53,6 @@ const ChatBoxComp = ({
   readOnly,
   paramsList,
   runParamsList,
-  isChartChat = false,
   dbList,
   runDbList,
   supportTypes,
@@ -65,6 +63,7 @@ const ChatBoxComp = ({
   const initMessage = searchParams.get('initMessage');
   const spaceNameOriginal = searchParams.get('spaceNameOriginal');
   const scene = searchParams.get('scene');
+  const isChartChat = scene === 'chat_dashboard'
   const scrollableRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentParam, setCurrentParam] = useState<string | undefined | null>();
@@ -263,9 +262,13 @@ const ChatBoxComp = ({
                             </Link>
                           </>
                         ) : (
-                          <Markdown options={options}>
-                            {each.context?.replaceAll?.('\\n', '\n')}
-                          </Markdown>
+                          <>
+                            {typeof each.context === 'string' && (
+                              <Markdown options={options}>
+                                {each.context?.replaceAll?.('\\n', '\n')}
+                              </Markdown>
+                            )}
+                          </>
                         )
                       }
                     </div>
