@@ -31,6 +31,7 @@ import {
   sendSpacePostRequest,
   sendSpaceUploadPostRequest
 } from '@/utils/request'
+import SpaceParameter from '@/components/SpaceParameter'
 
 const { Dragger } = Upload
 const Item = styled(Sheet)(({ theme }) => ({
@@ -158,9 +159,11 @@ const Documents = () => {
           <Button
             variant="outlined"
             onClick={() => setIsAddDocumentModalShow(true)}
+            sx={{ marginRight: '20px' }}
           >
             + Add Datasource
           </Button>
+          <SpaceParameter spaceName={spaceName} />
         </Stack>
       </Stack>
       {documents.length ? (

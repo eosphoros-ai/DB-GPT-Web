@@ -24,8 +24,11 @@ body .ant-btn-primary {
   color: rgb(39, 155, 255) !important;
 }
 
-.ant-pagination .ant-pagination-item {
-  border-color: rgb(39, 155, 255) !important;
+.ant-pagination .ant-pagination-item a {
+  color: rgb(176, 176, 191);
+}
+
+.ant-pagination .ant-pagination-item.ant-pagination-item-active {
   background-color: rgb(39, 155, 255) !important;
 }
 
