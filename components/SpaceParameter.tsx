@@ -438,7 +438,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
             <Button
               variant="outlined"
               onClick={() => {
-                sendSpacePostRequest(`knowledge/${spaceName}/argument/save`, {
+                sendSpacePostRequest(`/knowledge/${spaceName}/argument/save`, {
                   argument: JSON.stringify(newSpaceArguments)
                 }).then((res: any) => {
                   if (res.success) {
