@@ -4,16 +4,9 @@ import { sendSpacePostRequest } from '@/utils/request'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices'
 import { Popover, message } from 'antd'
-import {
-  Button,
-  Sheet,
-  Modal,
-  Box,
-  Stack,
-  Input,
-  Textarea,
-} from '@/lib/mui'
+import { Button, Sheet, Modal, Box, Stack, Input, Textarea } from '@/lib/mui'
 
 const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
   const [isParameterModalShow, setIsParameterModalShow] =
@@ -33,6 +26,9 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
   return (
     <>
       <Button variant="outlined" onClick={() => setIsParameterModalShow(true)}>
+        <MiscellaneousServicesIcon
+          sx={{ marginRight: '6px', fontSize: '18px' }}
+        />
         Arguments
       </Button>
       <Modal
@@ -154,13 +150,15 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                     <Box>
                       <Input
                         defaultValue={
-                          spaceArguments?.data?.embedding?.recall_score || ''
+                          '' + spaceArguments?.data?.embedding?.recall_score ||
+                          ''
                         }
                         onChange={(e: any) => {
                           newSpaceArguments.embedding.recall_score =
                             e.target.value
                           setNewSpaceArguments({ ...newSpaceArguments })
                         }}
+                        disabled
                       ></Input>
                     </Box>
                   </Box>
@@ -205,6 +203,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                             e.target.value
                           setNewSpaceArguments({ ...newSpaceArguments })
                         }}
+                        disabled
                       ></Input>
                     </Box>
                   </Box>
@@ -238,6 +237,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                           newSpaceArguments.embedding.model = e.target.value
                           setNewSpaceArguments({ ...newSpaceArguments })
                         }}
+                        disabled
                       ></Input>
                     </Box>
                   </Box>
