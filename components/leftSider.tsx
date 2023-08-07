@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Modal } from 'antd';
@@ -19,6 +19,7 @@ const LeftSider =  () => {
   const searchParams = useSearchParams();
 	const id = searchParams.get('id');
 	const router = useRouter();
+	const [logoPath, setLogoPath] = useState('/LOGO_1.png');
 	const { dialogueList, queryDialogueList, refreshDialogList } = useDialogueContext();
 	const { mode, setMode } = useColorScheme();
 
@@ -38,6 +39,14 @@ const LeftSider =  () => {
 			setMode('light');
 		}
 	};
+
+	useEffect(() => {
+		if (mode === 'light') {
+			setLogoPath('/LOGO_1.png');
+		} else {
+			setLogoPath('/WHITE_LOGO.png');
+		}
+	}, [mode]);
 
 	useEffect(() => {
 		(async () => {
@@ -82,7 +91,7 @@ const LeftSider =  () => {
 					>
 						<div className='flex items-center gap-3'>
 							<Image
-								src="/LOGO_1.png"
+								src={logoPath}
 								alt="DB-GPT"
 								width={633}
 								height={157}
