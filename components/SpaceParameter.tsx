@@ -3,8 +3,11 @@ import { useRequest } from 'ahooks'
 import { sendSpacePostRequest } from '@/utils/request'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices'
+import ManageSearchIcon from '@mui/icons-material/ManageSearch'
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates'
 import { Popover, Tabs, message } from 'antd'
 import { Button, Sheet, Modal, Box, Stack, Input, Textarea } from '@/lib/mui'
+import Image from 'next/image'
 
 const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
   const [isParameterModalShow, setIsParameterModalShow] =
@@ -21,18 +24,15 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
   )
   const items = [
     {
-      key: 'embedding',
-      label: `embedding`,
+      key: 'Embedding',
+      label: (
+        <Box>
+          <ManageSearchIcon sx={{ marginRight: '5px' }} />
+          Embedding
+        </Box>
+      ),
       children: (
-        <Box
-          sx={{
-            height: '600px',
-            overflow: 'auto',
-            '&::-webkit-scrollbar': {
-              display: 'none'
-            }
-          }}
-        >
+        <Box>
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -44,8 +44,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
             <Box
               sx={{
                 marginBottom: '20px',
-                flexGrow: '1',
-                flexShrink: '1',
+                flex: '1 1 0',
                 marginRight: '30px'
               }}
             >
@@ -76,8 +75,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
             <Box
               sx={{
                 marginBottom: '20px',
-                flexGrow: '1',
-                flexShrink: '1'
+                flex: '1 1 0'
               }}
             >
               <Box
@@ -119,8 +117,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
             <Box
               sx={{
                 marginBottom: '20px',
-                flexGrow: '1',
-                flexShrink: '1',
+                flex: '1 1 0',
                 marginRight: '30px'
               }}
             >
@@ -154,8 +151,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
             <Box
               sx={{
                 marginBottom: '20px',
-                flexGrow: '1',
-                flexShrink: '1'
+                flex: '1 1 0'
               }}
             >
               <Box
@@ -180,6 +176,14 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                     setNewSpaceArguments({ ...newSpaceArguments })
                   }}
                   disabled
+                  startDecorator={
+                    <Image
+                      src="/huggingface_logo.svg"
+                      alt="huggingface logo"
+                      width={20}
+                      height={20}
+                    ></Image>
+                  }
                 ></Input>
               </Box>
             </Box>
@@ -195,8 +199,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
             <Box
               sx={{
                 marginBottom: '20px',
-                flexGrow: '1',
-                flexShrink: '1',
+                flex: '1 1 0',
                 marginRight: '30px'
               }}
             >
@@ -229,8 +232,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
             <Box
               sx={{
                 marginBottom: '20px',
-                flexGrow: '1',
-                flexShrink: '1'
+                flex: '1 1 0'
               }}
             >
               <Box
@@ -264,12 +266,17 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
       )
     },
     {
-      key: 'prompt',
-      label: `prompt`,
+      key: 'Prompt',
+      label: (
+        <Box>
+          <TipsAndUpdatesIcon sx={{ marginRight: '5px' }} />
+          Prompt
+        </Box>
+      ),
       children: (
         <Box
           sx={{
-            height: '600px',
+            maxHeight: '600px',
             overflow: 'auto',
             '&::-webkit-scrollbar': {
               display: 'none'
@@ -382,7 +389,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
             boxShadow: 'lg'
           }}
         >
-          <Tabs defaultActiveKey="1" items={items} />
+          <Tabs defaultActiveKey="Embedding" items={items} />
           <Stack
             direction="row"
             justifyContent="flex-start"
