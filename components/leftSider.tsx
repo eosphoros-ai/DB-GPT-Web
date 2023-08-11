@@ -3,13 +3,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Modal } from 'antd';
-import { Box, List, ListItem, ListItemButton, ListItemDecorator, ListItemContent, Typography, Button, useColorScheme, IconButton } from '@/lib/mui';
+import { Box, List, ListItem, ListItemButton, ListItemDecorator, ListItemContent, Typography, Button, useColorScheme, IconButton, ListSubheader } from '@/lib/mui';
 import Article from '@mui/icons-material/Article';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
-import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';import { useDialogueContext } from '@/app/context/dialogue';
+import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';
+import { useDialogueContext } from '@/app/context/dialogue';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { sendPostRequest } from '@/utils/request';
 import Image from 'next/image'
@@ -20,7 +21,7 @@ const LeftSider =  () => {
 	const id = searchParams.get('id');
 	const router = useRouter();
 	const [logoPath, setLogoPath] = useState('/LOGO_1.png');
-	const { dialogueList, queryDialogueList, refreshDialogList } = useDialogueContext();
+	const { dialogueList, queryDialogueList, refreshDialogList, isContract } = useDialogueContext();
 	const { mode, setMode } = useColorScheme();
 
 	const menus = useMemo(() => {
@@ -54,7 +55,121 @@ const LeftSider =  () => {
 		})();
 	}, []);
 
-	return (
+	return isContract ? (
+		<List className="flex flex-col h-full">
+			<ListItem nested className="h-full flex-1 overflow-auto">
+				<ListSubheader>Dialogue</ListSubheader>
+				<List>
+					{dialogueList?.data?.map((each) => {
+						const isSelect = (pathname === `/chat` || pathname === '/chat/') && id === each.conv_uid;
+						return (
+							<ListItem key={each.conv_uid}>
+								<ListItemButton
+									selected={isSelect}
+									variant={isSelect ? 'soft' : 'plain'}
+									sx={{
+										'&:hover .del-btn': {
+											visibility: 'visible'
+										}
+									}}
+								>
+									<ListItemContent>
+										<Link href={`/chat?id=${each.conv_uid}&scene=${each?.chat_mode}`} className="flex items-center justify-between">
+											<Typography fontSize={14} noWrap={true}>
+												<SmsOutlinedIcon style={{ marginRight: '0.5rem' }} />
+												{each?.user_name || each?.user_input || 'undefined'}
+											</Typography>
+											<IconButton
+												color="neutral"
+												variant="plain"
+												size="sm"
+												onClick={(e) => {
+													e.preventDefault();
+													e.stopPropagation();
+													Modal.confirm({
+														title: 'Delete Chat',
+														content: 'Are you sure delete this chat?',
+														width: '276px',
+														zIndex: 1002,
+														centered: true,
+														async onOk() {
+															await sendPostRequest(`/v1/chat/dialogue/delete?con_uid=${each.conv_uid}`);
+															await refreshDialogList();
+															if (pathname === `/chat` && searchParams.get('id') === each.conv_uid) {
+																router.push('/');
+															}
+														}
+													})
+												}}
+												className='del-btn invisible'
+											>
+												<DeleteOutlineOutlinedIcon />
+											</IconButton>
+										</Link>
+									</ListItemContent>
+								</ListItemButton>
+							</ListItem>
+						)
+					})}
+				</List>
+			</ListItem>
+			<ListItem
+				nested 
+				className="h-32"
+				sx={{
+					borderTop: '1px solid',
+					borderColor: 'divider',
+				}}
+			>
+				<ListSubheader>Others</ListSubheader>
+				<List>
+					{menus.map((each) => (
+						<Link key={each.route} href={each.route}>
+							<ListItem>
+								<ListItemButton
+									color="neutral"
+									sx={{ height: '2.5rem', fontSize: '14px' }}
+									selected={each.active}
+									variant={each.active ? 'soft' : 'plain'}
+								>
+									<ListItemDecorator
+										sx={{ 
+											color: each.active ? 'inherit' : 'neutral.500',
+											minInlineSize: 'unset',
+											marginRight: '0.5rem'
+										}}
+									>
+										{each.icon}
+									</ListItemDecorator>
+									<ListItemContent>{each.label}</ListItemContent>
+								</ListItemButton>
+							</ListItem>
+						</Link>
+					))}
+					<ListItem>
+						<ListItemButton
+							onClick={handleChangeTheme}
+							sx={{ fontSize: '14px' }}
+						>
+							<ListItemDecorator
+								sx={{ 
+									minInlineSize: 'unset',
+									marginRight: '0.5rem'
+								}}
+							>
+								{mode === 'dark' ? (
+									<DarkModeIcon fontSize="small"/>
+								) : (
+									<WbSunnyIcon fontSize="small"/>
+								)}
+							</ListItemDecorator>
+							<ListItemContent>Theme</ListItemContent>
+						</ListItemButton>
+					</ListItem>
+				</List>
+			</ListItem>
+		</List>
+	) : (
 		<>
 			<nav className='flex h-12 items-center justify-between border-b px-4 dark:border-gray-800 dark:bg-gray-800/70 md:hidden'>
 				<div>
