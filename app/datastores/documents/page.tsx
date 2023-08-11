@@ -88,15 +88,15 @@ const Documents = () => {
   const props: UploadProps = {
     name: 'file',
     multiple: false,
+    beforeUpload: () => false,
     onChange(info) {
-      console.log(info)
       if (info.fileList.length === 0) {
         setOriginFileObj(null)
         setDocumentName('')
         return
       }
-      setOriginFileObj(info.file.originFileObj)
-      setDocumentName(info.file.originFileObj?.name)
+      setOriginFileObj(info.file)
+      setDocumentName(info.file.name)
     }
   }
   useEffect(() => {
