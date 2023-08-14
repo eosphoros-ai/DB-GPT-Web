@@ -68,6 +68,7 @@ const useAgentChat = ({
         },
         body: JSON.stringify(parmas),
         signal: ctrl.signal,
+        openWhenHidden: true,
         async onopen(response) {
           if (history.length <= 1) {
             refreshDialogList();
