@@ -31,6 +31,7 @@ import {
   sendSpacePostRequest,
   sendSpaceUploadPostRequest
 } from '@/utils/request'
+import SpaceParameter from '@/components/SpaceParameter'
 
 const { Dragger } = Upload
 const Item = styled(Sheet)(({ theme }) => ({
@@ -87,15 +88,15 @@ const Documents = () => {
   const props: UploadProps = {
     name: 'file',
     multiple: false,
+    beforeUpload: () => false,
     onChange(info) {
-      console.log(info)
       if (info.fileList.length === 0) {
         setOriginFileObj(null)
         setDocumentName('')
         return
       }
-      setOriginFileObj(info.file.originFileObj)
-      setDocumentName(info.file.originFileObj?.name)
+      setOriginFileObj(info.file)
+      setDocumentName(info.file.name)
     }
   }
   useEffect(() => {
@@ -158,9 +159,11 @@ const Documents = () => {
           <Button
             variant="outlined"
             onClick={() => setIsAddDocumentModalShow(true)}
+            sx={{ marginRight: '20px' }}
           >
             + Add Datasource
           </Button>
+          <SpaceParameter spaceName={spaceName} />
         </Stack>
       </Stack>
       {documents.length ? (

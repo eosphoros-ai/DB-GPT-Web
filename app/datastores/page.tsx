@@ -88,14 +88,15 @@ const Index = () => {
   const props: UploadProps = {
     name: 'file',
     multiple: false,
+    beforeUpload: () => false,
     onChange(info) {
       if (info.fileList.length === 0) {
         setOriginFileObj(null)
         setDocumentName('')
         return
       }
-      setOriginFileObj(info.file.originFileObj)
-      setDocumentName(info.file.originFileObj?.name)
+      setOriginFileObj(info.file)
+      setDocumentName(info.file.name)
     }
   }
   useEffect(() => {
@@ -385,8 +386,8 @@ const Index = () => {
                     message.error('please input the name')
                     return
                   }
-                  if (/[^0-9a-zA-Z_-]/.test(knowledgeSpaceName)) {
-                    message.error('the name can only contain numbers, letters, "-" and "_"');
+                  if (/[^\u4e00-\u9fa50-9a-zA-Z_-]/.test(knowledgeSpaceName)) {
+                    message.error('the name can only contain numbers, letters, Chinese characters, "-" and "_"');
                     return
                   }
                   if (owner === '') {
