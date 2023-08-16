@@ -6,6 +6,8 @@ import useStateReducer from './useStateReducer';
 import { Message } from '@/types';
 import { useEffect } from 'react';
 import { useDialogueContext } from '@/app/context/dialogue';
+import { useSearchParams } from 'next/navigation';
+import { message } from 'antd';
 
 type Props = {
   queryAgentURL: string;
@@ -25,7 +27,8 @@ const useAgentChat = ({
   const [state, setState] = useStateReducer({
     history: (initHistory || []) as { role: 'human' | 'view'; context: string; id?: string }[],
   });
-
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const { refreshDialogList } = useDialogueContext();
   const ctrl = new AbortController();
 
@@ -46,20 +49,26 @@ const useAgentChat = ({
     });
 
     let answer = '';
-
+    const parmas = {
+      conv_uid: id,
+      ...otherQueryBody,
+      ...queryBody,
+      user_input: context,
+      channel,
+    };
+    if (!parmas?.conv_uid) {
+      message.error('conv_uid 不存在，请刷新后重试');
+      return;
+    }
     try {
       await fetchEventSource(`${process.env.API_BASE_URL ? process.env.API_BASE_URL : ''}${"/api" + queryAgentURL}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...otherQueryBody,
-          ...queryBody,
-          user_input: context,
-          channel,
-        }),
+        body: JSON.stringify(parmas),
         signal: ctrl.signal,
+        openWhenHidden: true,
         async onopen(response) {
           if (history.length <= 1) {
             refreshDialogList();
