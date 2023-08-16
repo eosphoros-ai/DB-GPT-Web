@@ -1,6 +1,6 @@
 import React from "react";
 import { useRequest } from 'ahooks';
-import { Select, Option, Button, Table, Box } from "@/lib/mui";
+import { Select, Option, Button, Table, Box, Typography, Tooltip } from "@/lib/mui";
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import { Input, Tree, Empty, Tabs } from 'antd';
 import type { DataNode } from 'antd/es/tree';
@@ -264,13 +264,29 @@ function DbEditor() {
         const afterStr = strTitle.slice(index + searchValue.length);
         const showTitle =
           index > -1 ? (
-            <span>
-              {beforeStr}
-              <span className="text-[#1677ff]">{searchValue}</span>
-              {afterStr}
-            </span>
+            <Tooltip title={(item?.comment || item?.title) + (item?.can_null === 'YES' ? '(can null)' : `(can't null)`)}>
+							<span>
+								{beforeStr}
+								<span className="text-[#1677ff]">{searchValue}</span>
+								{afterStr}
+								{item?.type && (
+									<Typography gutterBottom level="body3" className="inline pl-0.5">
+									{`[${item?.type}]`}
+									</Typography>
+								)}
+							</span>
+            </Tooltip>
           ) : (
-            <span>{strTitle}</span>
+            <Tooltip title={(item?.comment || item?.title) + (item?.can_null === 'YES' ? '(can null)' : `(can't null)`)}>
+							<span>
+								{strTitle}
+								{item?.type && (
+									<Typography gutterBottom level="body3" className="inline pl-0.5">
+									{`[${item?.type}]`}
+									</Typography>
+								)}
+							</span>
+						</Tooltip>
           );
         if (item.children) {
 					const itemKey = parentKey ? (String(parentKey) + '_' + item.key) : item.key;

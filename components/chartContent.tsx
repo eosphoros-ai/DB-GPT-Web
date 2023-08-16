@@ -19,7 +19,6 @@ function ChartContent({
 }: IProps) {
 
 	const chartContent = React.useMemo(() => {
-		if (type === 'IndicatorValue') return;
 		if (!(values?.length > 0)) {
 			return (
 				<div className='h-full'>
@@ -27,6 +26,7 @@ function ChartContent({
 				</div>
 			)
 		}
+		if (type === 'IndicatorValue') return;
 		
 		if (type === 'Table') {
 			const data = lodash.groupBy(values, 'type');
@@ -100,7 +100,7 @@ function ChartContent({
 		)
 	}, [values, type]);
 
-	if (type === 'IndicatorValue') {
+	if (type === 'IndicatorValue' && values?.length > 0) {
 		return (
 			<div
 				className="flex flex-row gap-3"
