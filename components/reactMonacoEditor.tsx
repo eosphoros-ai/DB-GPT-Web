@@ -15,12 +15,15 @@ function MonacoEditor({
   editorWillMount,
   editorDidMount,
   editorWillUnmount,
-  onChange,
   className,
+  description,
   uri,
   editorInstanceRef,
+  handleChange
 }: MonacoEditorProps & {
   editorInstanceRef?: (ref: React.MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>) => void;
+  description?: string;
+  handleChange: (value: string, description?: string) => void;
 }) {
   const myMonaco = React.useMemo(() => {
     if (typeof window !== 'undefined' && typeof window?.fetch === 'function') {
@@ -62,7 +65,27 @@ function MonacoEditor({
     if (_subscription) {
 			_subscription.current = editor?.current?.onDidChangeModelContent?.((event) => {
 					if (!__prevent_trigger_change_event.current) {
-						onChange?.((editor?.current?.getValue?.() as string), event);
+            const model = editor?.current?.getModel();
+            const ranges = editor?.current?.getVisibleRanges();
+            const decorations = model?.getDecorationsInRange(ranges?.[0]);
+            if (decorations) {
+              let currentDescration;
+              for (let i = 0; i < decorations?.length; i++) {
+                const decoration = decorations[i];
+                const options = decoration.options;
+                if (options && options.className === 'my-description') {
+                  currentDescration = decoration;
+                }
+              }
+              if (currentDescration) {
+                const description = model?.getValueInRange(new myMonaco.Range(currentDescration.range.startLineNumber, 1, currentDescration.range.endLineNumber + 1, 1));
+                const lines = model?.getLinesContent();
+                const sqlV = lines?.slice(currentDescration.range.endLineNumber);
+                handleChange((sqlV?.join('\n') as string), description);
+                return;
+              }
+            }
+            handleChange?.((editor?.current?.getValue?.() as string), undefined);
 					}
 				});
     }
@@ -98,6 +121,7 @@ function MonacoEditor({
           ...(className ? { extraEditorClassName: className } : {}),
           ...finalOptions,
           ...(theme ? { theme } : {}),
+          automaticLayout: true
         },
         overrideServices,
       );
@@ -111,28 +135,46 @@ function MonacoEditor({
 
   useEffect(() => {
     if (editor.current) {
-      if (value === editor.current.getValue()) {
-        return;
-      }
 
       const model = editor.current.getModel();
       __prevent_trigger_change_event.current = true;
       editor.current.pushUndoStop();
+      // After initializing monaco editor
       // pushEditOperations says it expects a cursorComputer, but doesn't seem to need one.
       model?.pushEditOperations(
         [],
         [
           {
             range: model?.getFullModelRange(),
-            text: (value as string  | null),
+            text: (`\n${description ? '-- ' + description : ''}\n\n` + value as string  | null),
           },
         ],
         undefined
       );
+      const ranges = editor?.current?.getVisibleRanges();
+      const decorations = model?.getDecorationsInRange(ranges?.[0]);
+      let currentDeIds: string[] = [];
+      decorations?.forEach(decoration => {
+        if (decoration?.options?.className === 'my-description') {
+          currentDeIds.push(decoration.id);
+        }
+      });
+      model?.deltaDecorations(currentDeIds, [{
+        range: new myMonaco.Range(1, 1, 3, 1),
+        options: {
+          before: {
+            content: `-- 注释开始`,
+          },
+          after: {
+            content: `-- 注释结束`,
+          },
+          className: 'my-description'
+        }
+      }]);
       editor.current.pushUndoStop();
       __prevent_trigger_change_event.current = false;
     }
-  }, [value]);
+  }, [value, description]);
 
   useEffect(() => {
     if (editor.current) {
@@ -149,15 +191,10 @@ function MonacoEditor({
       editor.current.updateOptions({
         ...(className ? { extraEditorClassName: className } : {}),
         ...optionsWithoutModel,
+        wordWrap: "on",
       });
     }
   }, [className, options]);
-
-  // useEffect(() => {
-  //   if (editor.current) {
-  //     editor.current.layout();
-  //   }
-  // }, [width, height]);
 
   useEffect(() => {
     myMonaco.editor.setTheme(theme);
