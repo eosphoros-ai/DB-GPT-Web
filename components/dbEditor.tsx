@@ -270,7 +270,7 @@ function DbEditor() {
 								<span className="text-[#1677ff]">{searchValue}</span>
 								{afterStr}
 								{item?.type && (
-									<Typography gutterBottom level="body3" className="inline pl-0.5">
+									<Typography gutterBottom level="body3" className="pl-0.5"  style={{ display: 'inline' }}>
 									{`[${item?.type}]`}
 									</Typography>
 								)}
@@ -281,7 +281,7 @@ function DbEditor() {
 							<span>
 								{strTitle}
 								{item?.type && (
-									<Typography gutterBottom level="body3" className="inline pl-0.5">
+									<Typography gutterBottom level="body3" className="pl-0.5" style={{ display: 'inline' }}>
 									{`[${item?.type}]`}
 									</Typography>
 								)}
