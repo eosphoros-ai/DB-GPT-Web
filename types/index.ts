@@ -14,3 +14,17 @@ export interface DialogueItem {
   user_input?: string;
   user_name?: string;
 }
+
+export interface IDatabaseItem {
+  comment: string;
+  db_host: string;
+  db_name: string;
+  db_path: string;
+  db_port: number;
+  db_pwd: string;
+  db_type: string;
+  db_user: string;
+}
+
+export type SQLType = 'Mysql' | 'Oracle' | 'SqlServer' | 'SQLite' | 'INFORMIX' | 'Redis' | 'MongoDB' | 'HBase' | 'Neo4J' | 'CouchDB' | 'DuckDB';
+export type SQLItem = { name: SQLType; enable: boolean };
