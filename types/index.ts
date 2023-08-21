@@ -22,9 +22,6 @@ export interface IDatabaseItem {
   db_path: string;
   db_port: number;
   db_pwd: string;
-  db_type: string;
+  db_type: 'mysql' | 'mssql' | 'duckdb';
   db_user: string;
 }
-
-export type SQLType = 'Mysql' | 'Oracle' | 'SqlServer' | 'SQLite' | 'INFORMIX' | 'Redis' | 'MongoDB' | 'HBase' | 'Neo4J' | 'CouchDB' | 'DuckDB';
-export type SQLItem = { name: SQLType; enable: boolean };

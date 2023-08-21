@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Modal } from 'antd';
 import { Box, List, ListItem, ListItemButton, ListItemDecorator, ListItemContent, Typography, Button, useColorScheme, IconButton } from '@/lib/mui';
 import Article from '@mui/icons-material/Article';
-import Setting from '@mui/icons-material/Settings';
+import DataSaverOffIcon from '@mui/icons-material/DataSaverOff';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -28,10 +28,10 @@ const LeftSider = () => {
   const menus = useMemo(() => {
     return [
       {
-        label: 'Database Connenct Setting',
-        route: '/dataConnectSetting',
-        icon: <Setting fontSize="small" />,
-        active: pathname === '/dataConnectSetting',
+        label: 'Database',
+        route: '/database',
+        icon: <DataSaverOffIcon />,
+        active: pathname === '/database',
       },
       {
         label: 'Knowledge Space',
