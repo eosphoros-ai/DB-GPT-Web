@@ -1,21 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import {
-  Card,
-  CircularProgress,
-  IconButton,
-  Input,
-  Stack,
-  Select,
-  Option,
-  Box,
-  Modal,
-  ModalDialog,
-  ModalClose,
-  Button,
-  Link,
-} from '@/lib/mui';
-import { useState, useRef, useMemo, useEffect, Fragment } from 'react';
+import { Card, CircularProgress, IconButton, Input, Stack, Select, Option, Box, Modal, ModalDialog, ModalClose, Button, Link } from '@/lib/mui';
+import { useState, useRef, useEffect, Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Message } from '@/types';
@@ -82,7 +68,7 @@ const ChatBoxComp = ({ messages, onSubmit, readOnly, paramsList, clearIntialMess
       const searchParamsTemp = new URLSearchParams(window.location.search);
       const initMessage = searchParamsTemp.get('initMessage');
       searchParamsTemp.delete('initMessage');
-      window.history?.replaceState(null, '', `?${searchParamsTemp.toString()}`);
+      window.history?.replaceState(null, null, `?${searchParamsTemp.toString()}`);
       await submit({ query: initMessage as string });
     } catch (err) {
       console.log(err);
@@ -190,10 +176,7 @@ const ChatBoxComp = ({ messages, onSubmit, readOnly, paramsList, clearIntialMess
                   variant={'outlined'}
                   color={each.role === 'view' ? 'primary' : 'neutral'}
                   sx={(theme) => ({
-                    background:
-                      each.role === 'view'
-                        ? 'var(--joy-palette-primary-softBg, var(--joy-palette-primary-100, #DDF1FF))'
-                        : 'unset',
+                    background: each.role === 'view' ? 'var(--joy-palette-primary-softBg, var(--joy-palette-primary-100, #DDF1FF))' : 'unset',
                     border: 'unset',
                     borderRadius: 'unset',
                     padding: '24px 0 26px 0',
@@ -201,9 +184,7 @@ const ChatBoxComp = ({ messages, onSubmit, readOnly, paramsList, clearIntialMess
                   })}
                 >
                   <Box sx={{ width: '76%', margin: '0 auto' }} className="flex flex-row">
-                    <div className="mr-3 inline">
-                      {each.role === 'view' ? <SmartToyOutlinedIcon /> : <FaceRetouchingNaturalOutlinedIcon />}
-                    </div>
+                    <div className="mr-3 inline">{each.role === 'view' ? <SmartToyOutlinedIcon /> : <FaceRetouchingNaturalOutlinedIcon />}</div>
                     <div className="inline align-middle mt-0.5 max-w-full flex-1 overflow-auto">
                       {isChartChat && each.role === 'view' && typeof each?.context === 'object' ? (
                         <>
@@ -223,11 +204,7 @@ const ChatBoxComp = ({ messages, onSubmit, readOnly, paramsList, clearIntialMess
                           </Link>
                         </>
                       ) : (
-                        <>
-                          {typeof each.context === 'string' && (
-                            <Markdown options={options}>{each.context?.replaceAll?.('\\n', '\n')}</Markdown>
-                          )}
-                        </>
+                        <>{typeof each.context === 'string' && <Markdown options={options}>{each.context?.replaceAll?.('\\n', '\n')}</Markdown>}</>
                       )}
                     </div>
                   </Box>
