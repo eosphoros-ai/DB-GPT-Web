@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { IDatabaseItem } from '@/types';
-import { Add, EditNote } from '@mui/icons-material';
+import { Add, EditNote, DeleteOutline, Error } from '@mui/icons-material';
 import { useRequest } from 'ahooks';
 import { sendGetRequest, sendSpacePostRequest } from '@/utils/request';
-import { Button, Card, IconButton, CardContent, Tooltip } from '@/lib/mui';
+import { Button, Card, CardContent, Tooltip } from '@/lib/mui';
 import MuiLoading from '@/components/MuiLoading';
 import Image from 'next/image';
 import { Form, Input, InputNumber, Modal, Select, Button as AntButton, message } from 'antd';
@@ -87,6 +87,17 @@ function Database() {
     }
   };
 
+  const onDelete = (item: IDatabaseItem) => {
+    Modal.confirm({
+      title: 'Tips',
+      content: `Do you Want to delete the ${item.db_name}?`,
+      onOk: async () => {
+        await sendSpacePostRequest(`/api/v1/chat/db/delete?db_name=${item.db_name}`);
+        runDbList();
+      },
+    });
+  };
+
   return (
     <div className="relative p-4 bg-slate-50 dark:bg-transparent min-h-full overflow-y-auto">
       <MuiLoading visible={loading} />
@@ -134,17 +145,25 @@ function Database() {
                       </div>
                     </Tooltip>
                   </div>
-                  <IconButton
-                    aria-label="bookmark Bahamas Islands"
-                    variant="plain"
-                    color="neutral"
-                    size="sm"
-                    onClick={() => {
-                      onModify(item);
-                    }}
-                  >
-                    <EditNote color="primary" />
-                  </IconButton>
+                  {/* operation */}
+                  <div className="flex items-center justify-center">
+                    <div
+                      className="mr-1 cursor-pointer"
+                      onClick={() => {
+                        onModify(item);
+                      }}
+                    >
+                      <EditNote color="primary" />
+                    </div>
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => {
+                        onDelete(item);
+                      }}
+                    >
+                      <DeleteOutline className="text-red-500" />
+                    </div>
+                  </div>
                 </div>
                 <CardContent>
                   <div className="flex items-center justify-start text-sm text-gray-500">
