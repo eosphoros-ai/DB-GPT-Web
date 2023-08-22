@@ -15,6 +15,13 @@ export interface DialogueItem {
   user_name?: string;
 }
 
+export interface IResponseModal<T = any> {
+  data: T;
+  err_code: string | null;
+  err_msg: string | null;
+  success: boolean;
+}
+
 export interface IDatabaseItem {
   comment: string;
   db_host: string;
