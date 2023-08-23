@@ -1,10 +1,24 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { Card, CircularProgress, IconButton, Input, Stack, Select, Option, Box, Modal, ModalDialog, ModalClose, Button, Link } from '@/lib/mui';
+import {
+  Card,
+  CircularProgress,
+  IconButton,
+  Input,
+  Stack,
+  Select,
+  Option,
+  Box,
+  Modal,
+  ModalDialog,
+  ModalClose,
+  Button,
+  Link,
+} from '@/lib/mui';
 import { useState, useRef, useEffect, Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Message } from '@/types';
+import { DialogueItem, Message } from '@/types';
 import FaceRetouchingNaturalOutlinedIcon from '@mui/icons-material/FaceRetouchingNaturalOutlined';
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
 import Markdown from 'markdown-to-jsx';
@@ -13,10 +27,12 @@ import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
 import { message } from 'antd';
-import ExcelUpload from './Chat/ExcelUpload';
+import ExcelUpload from './ChatPage/ExcelUpload';
 
 type Props = {
   messages: Message[];
+  dialogue: DialogueItem | null;
+  onRefreshHistory?: () => void;
   onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
   readOnly?: boolean;
   paramsList?: { [key: string]: string };
@@ -30,7 +46,16 @@ type Props = {
 
 const Schema = z.object({ query: z.string().min(1) });
 
-const ChatBoxComp = ({ messages, onSubmit, readOnly, paramsList, clearIntialMessage, setChartsData }: Props) => {
+const ChatBoxComp = ({
+  messages,
+  dialogue,
+  onSubmit,
+  readOnly,
+  paramsList,
+  onRefreshHistory,
+  clearIntialMessage,
+  setChartsData,
+}: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams.get('initMessage');
   const spaceNameOriginal = searchParams.get('spaceNameOriginal');
@@ -55,7 +80,7 @@ const ChatBoxComp = ({ messages, onSubmit, readOnly, paramsList, clearIntialMess
       setIsLoading(true);
       methods.reset();
       await onSubmit(query, {
-        select_param: paramsList?.[currentParam],
+        select_param: scene === 'chat_excel' ? dialogue?.select_param : paramsList?.[currentParam],
       });
     } catch (err) {
     } finally {
@@ -176,7 +201,10 @@ const ChatBoxComp = ({ messages, onSubmit, readOnly, paramsList, clearIntialMess
                   variant={'outlined'}
                   color={each.role === 'view' ? 'primary' : 'neutral'}
                   sx={(theme) => ({
-                    background: each.role === 'view' ? 'var(--joy-palette-primary-softBg, var(--joy-palette-primary-100, #DDF1FF))' : 'unset',
+                    background:
+                      each.role === 'view'
+                        ? 'var(--joy-palette-primary-softBg, var(--joy-palette-primary-100, #DDF1FF))'
+                        : 'unset',
                     border: 'unset',
                     borderRadius: 'unset',
                     padding: '24px 0 26px 0',
@@ -184,7 +212,9 @@ const ChatBoxComp = ({ messages, onSubmit, readOnly, paramsList, clearIntialMess
                   })}
                 >
                   <Box sx={{ width: '76%', margin: '0 auto' }} className="flex flex-row">
-                    <div className="mr-3 inline">{each.role === 'view' ? <SmartToyOutlinedIcon /> : <FaceRetouchingNaturalOutlinedIcon />}</div>
+                    <div className="mr-3 inline">
+                      {each.role === 'view' ? <SmartToyOutlinedIcon /> : <FaceRetouchingNaturalOutlinedIcon />}
+                    </div>
                     <div className="inline align-middle mt-0.5 max-w-full flex-1 overflow-auto">
                       {isChartChat && each.role === 'view' && typeof each?.context === 'object' ? (
                         <>
@@ -204,7 +234,11 @@ const ChatBoxComp = ({ messages, onSubmit, readOnly, paramsList, clearIntialMess
                           </Link>
                         </>
                       ) : (
-                        <>{typeof each.context === 'string' && <Markdown options={options}>{each.context?.replaceAll?.('\\n', '\n')}</Markdown>}</>
+                        <>
+                          {typeof each.context === 'string' && (
+                            <Markdown options={options}>{each.context?.replaceAll?.('\\n', '\n')}</Markdown>
+                          )}
+                        </>
                       )}
                     </div>
                   </Box>
@@ -274,9 +308,23 @@ const ChatBoxComp = ({ messages, onSubmit, readOnly, paramsList, clearIntialMess
                   </div>
                 )}
                 {/* Chat Excel: Upload File */}
-                {scene === 'chat_excel' && <ExcelUpload convUid={id!} chatMode={scene} onComplete={() => {}} />}
+                {scene === 'chat_excel' && (
+                  <>
+                    <ExcelUpload
+                      convUid={id!}
+                      chatMode={scene}
+                      fileName={dialogue?.select_param}
+                      onComplete={() => {
+                        /** refresh dialogue list */
+                        clearIntialMessage?.();
+                        onRefreshHistory?.();
+                      }}
+                    />
+                  </>
+                )}
               </div>
               <Input
+                disabled={scene === 'chat_excel' && !dialogue?.select_param}
                 className="w-full h-12"
                 variant="outlined"
                 endDecorator={
