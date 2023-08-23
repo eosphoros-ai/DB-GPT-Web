@@ -13,6 +13,7 @@ import {
 } from '@/lib/mui'
 import { Popover, Pagination } from 'antd'
 import { sendSpacePostRequest } from '@/utils/request'
+import { useTranslation } from 'react-i18next'
 const page_size = 20
 
 const ChunkList = () => {
@@ -23,6 +24,7 @@ const ChunkList = () => {
   const [total, setTotal] = useState<number>(0)
   const [current, setCurrent] = useState<number>(0)
   const [chunkList, setChunkList] = useState<any>([])
+  const { t } = useTranslation()
   useEffect(() => {
     async function fetchChunks() {
       const data = await sendSpacePostRequest(
@@ -66,7 +68,7 @@ const ChunkList = () => {
             color="neutral"
             fontSize="inherit"
           >
-            Knowledge Space
+            {t('Knowledge Space')}
           </Link>
           <Link
             onClick={() => {
@@ -77,9 +79,9 @@ const ChunkList = () => {
             color="neutral"
             fontSize="inherit"
           >
-            Documents
+            {t('Documents')}
           </Link>
-          <Typography fontSize="inherit">Chunks</Typography>
+          <Typography fontSize="inherit">{t('Chunks')}</Typography>
         </Breadcrumbs>
       </Stack>
       <Box
@@ -112,9 +114,9 @@ const ChunkList = () => {
             >
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Content</th>
-                  <th>Meta Data</th>
+                  <th>{t('Name')}</th>
+                  <th>{t('Content')}</th>
+                  <th>{t('Meta Data')}</th>
                 </tr>
               </thead>
               <tbody>

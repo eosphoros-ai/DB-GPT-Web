@@ -1,7 +1,8 @@
 "use client"
 import './globals.css'
 import '@/nprogress.css';
-import React from 'react';
+import './i18n';
+import React, { useLayoutEffect } from 'react';
 import LeftSider from '@/components/leftSider';
 import { CssVarsProvider, ThemeProvider } from '@mui/joy/styles';
 import { useColorScheme } from '@/lib/mui';
@@ -9,12 +10,14 @@ import { joyTheme } from '@/defaultTheme';
 import TopProgressBar from '@/components/topProgressBar';
 import DialogueContext from './context/dialogue';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 function CssWrapper({
   children
 }: {
   children: React.ReactNode
 }) {
+  const { i18n } = useTranslation();
   const { mode } = useColorScheme();
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -28,6 +31,9 @@ function CssWrapper({
       }
     }
   }, [ref, mode]);
+  useLayoutEffect(() => {
+    i18n.changeLanguage(window.localStorage.getItem('lng') || 'en')
+  }, [])
 
   return (
     <div ref={ref} className='h-full'>

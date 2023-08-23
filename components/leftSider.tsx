@@ -13,10 +13,12 @@ import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';import { useDialog
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { sendPostRequest } from '@/utils/request';
 import Image from 'next/image'
+import { useTranslation } from 'react-i18next';
 
 const LeftSider =  () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t, i18n } = useTranslation();
 	const id = searchParams.get('id');
 	const router = useRouter();
 	const [logoPath, setLogoPath] = useState('/LOGO_1.png');
@@ -25,12 +27,12 @@ const LeftSider =  () => {
 
 	const menus = useMemo(() => {
 		return [{
-			label: 'Knowledge Space',
+			label: t('Knowledge Space'),
 			route: '/datastores',
 			icon: <Article fontSize="small" />,
 			active: pathname === '/datastores'
 		}];
-	}, [pathname]);
+	}, [pathname, i18n.language]);
 
 	const handleChangeTheme = () => {
 		if (mode === 'light') {

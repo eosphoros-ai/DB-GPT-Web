@@ -8,11 +8,13 @@ import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates'
 import { Popover, Tabs, message } from 'antd'
 import { Button, Sheet, Modal, Box, Stack, Input, Textarea } from '@/lib/mui'
 import Image from 'next/image'
+import { useTranslation } from 'react-i18next'
 
 const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
   const [isParameterModalShow, setIsParameterModalShow] =
     useState<boolean>(false)
   const [newSpaceArguments, setNewSpaceArguments] = useState<any>({})
+  const { t } = useTranslation()
 
   const { data: spaceArguments } = useRequest(
     () => sendSpacePostRequest(`/knowledge/${spaceName}/arguments`),
@@ -28,7 +30,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
       label: (
         <Box>
           <ManageSearchIcon sx={{ marginRight: '5px' }} />
-          Embedding
+          {t('Embedding')}
         </Box>
       ),
       children: (
@@ -53,9 +55,9 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                   marginBottom: '10px'
                 }}
               >
-                topk
+                {t('topk')}
                 <Popover
-                  content={`the top k vectors based on similarity score`}
+                  content={t(`the top k vectors based on similarity score`)}
                   trigger="hover"
                   style={{ marginLeft: '20px' }}
                 >
@@ -83,9 +85,11 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                   marginBottom: '10px'
                 }}
               >
-                recall_score
+                {t('recall_score')}
                 <Popover
-                  content={`Set a threshold score for the retrieval of similar vectors`}
+                  content={t(
+                    `Set a threshold score for the retrieval of similar vectors`
+                  )}
                   trigger="hover"
                   style={{ marginLeft: '20px' }}
                 >
@@ -126,9 +130,9 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                   marginBottom: '10px'
                 }}
               >
-                recall_type
+                {t('recall_type')}
                 <Popover
-                  content={`recall type`}
+                  content={t(`recall type`)}
                   trigger="hover"
                   style={{ marginLeft: '20px' }}
                 >
@@ -159,9 +163,11 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                   marginBottom: '10px'
                 }}
               >
-                model
+                {t('model')}
                 <Popover
-                  content={`A model used to create vector representations of text or other data`}
+                  content={t(
+                    `A model used to create vector representations of text or other data`
+                  )}
                   trigger="hover"
                   style={{ marginLeft: '20px' }}
                 >
@@ -208,9 +214,9 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                   marginBottom: '10px'
                 }}
               >
-                chunk_size
+                {t('chunk_size')}
                 <Popover
-                  content={`The size of the data chunks used in processing`}
+                  content={t(`The size of the data chunks used in processing`)}
                   trigger="hover"
                   style={{ marginLeft: '20px' }}
                 >
@@ -240,9 +246,11 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                   marginBottom: '10px'
                 }}
               >
-                chunk_overlap
+                {t('chunk_overlap')}
                 <Popover
-                  content={`The amount of overlap between adjacent data chunks`}
+                  content={t(
+                    `The amount of overlap between adjacent data chunks`
+                  )}
                   trigger="hover"
                   style={{ marginLeft: '20px' }}
                 >
@@ -270,7 +278,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
       label: (
         <Box>
           <TipsAndUpdatesIcon sx={{ marginRight: '5px' }} />
-          Prompt
+          {t('Prompt')}
         </Box>
       ),
       children: (
@@ -289,9 +297,11 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                 marginBottom: '10px'
               }}
             >
-              scene
+              {t('scene')}
               <Popover
-                content={`A contextual parameter used to define the setting or environment in which the prompt is being used`}
+                content={t(
+                  `A contextual parameter used to define the setting or environment in which the prompt is being used`
+                )}
                 trigger="hover"
                 style={{ marginLeft: '20px' }}
               >
@@ -314,9 +324,11 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                 marginBottom: '10px'
               }}
             >
-              template
+              {t('template')}
               <Popover
-                content={`A pre-defined structure or format for the prompt, which can help ensure that the AI system generates responses that are consistent with the desired style or tone.`}
+                content={t(
+                  `A pre-defined structure or format for the prompt, which can help ensure that the AI system generates responses that are consistent with the desired style or tone.`
+                )}
                 trigger="hover"
                 style={{ marginLeft: '20px' }}
               >
@@ -339,9 +351,11 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                 marginBottom: '10px'
               }}
             >
-              max_token
+              {t('max_token')}
               <Popover
-                content={`The maximum number of tokens or words allowed in a prompt`}
+                content={t(
+                  `The maximum number of tokens or words allowed in a prompt`
+                )}
                 trigger="hover"
                 style={{ marginLeft: '20px' }}
               >
@@ -368,7 +382,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
         <MiscellaneousServicesIcon
           sx={{ marginRight: '6px', fontSize: '18px' }}
         />
-        Arguments
+        {t('Arguments')}
       </Button>
       <Modal
         sx={{
@@ -413,7 +427,7 @@ const SpaceParameter = ({ spaceName }: { spaceName: string }) => {
                 })
               }}
             >
-              Submit
+              {t('Submit')}
             </Button>
           </Stack>
         </Sheet>

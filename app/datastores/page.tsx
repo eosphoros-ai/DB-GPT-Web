@@ -9,8 +9,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
 import type { UploadProps } from 'antd'
 import { message, Upload } from 'antd'
+import { useTranslation } from 'react-i18next'
 import {
-  useColorScheme,
   Modal,
   Button,
   Sheet,
@@ -42,32 +42,9 @@ const Item = styled(Sheet)(({ theme }) => ({
   color: theme.vars.palette.text.secondary
 }))
 
-const stepsOfAddingSpace = [
-  'Knowledge Space Config',
-  'Choose a Datasource type',
-  'Setup the Datasource'
-]
-const documentTypeList = [
-  {
-    type: 'text',
-    title: 'Text',
-    subTitle: 'Fill your raw text'
-  },
-  {
-    type: 'webPage',
-    title: 'URL',
-    subTitle: 'Fetch the content of a URL'
-  },
-  {
-    type: 'file',
-    title: 'Document',
-    subTitle:
-      'Upload a document, document type can be PDF, CSV, Text, PowerPoint, Word, Markdown'
-  }
-]
-
 const Index = () => {
   const router = useRouter()
+  const { t } = useTranslation()
   const [activeStep, setActiveStep] = useState<number>(0)
   const [documentType, setDocumentType] = useState<string>('')
   const [knowledgeSpaceList, setKnowledgeSpaceList] = useState<any>([])
@@ -85,6 +62,30 @@ const Index = () => {
   const [isDeleteKnowledgeSpaceModalShow, setIsDeleteKnowledgeSpaceModalShow] =
     useState<boolean>(false)
   const [knowledgeSpaceToDelete, setKnowledgeSpaceToDelete] = useState<any>({})
+  const stepsOfAddingSpace = [
+    t('Knowledge Space Config'),
+    t('Choose a Datasource type'),
+    t('Setup the Datasource')
+  ]
+  const documentTypeList = [
+    {
+      type: 'text',
+      title: t('Text'),
+      subTitle: t('Fill your raw text')
+    },
+    {
+      type: 'webPage',
+      title: t('URL'),
+      subTitle: t('Fetch the content of a URL')
+    },
+    {
+      type: 'file',
+      title: t('Document'),
+      subTitle: t(
+        'Upload a document, document type can be PDF, CSV, Text, PowerPoint, Word, Markdown'
+      )
+    }
+  ]
   const props: UploadProps = {
     name: 'file',
     multiple: false,
@@ -185,7 +186,7 @@ const Index = () => {
                 fontSize: '16px'
               }}
             >
-              space
+              {t('space')}
             </Box>
           </Box>
           {knowledgeSpaceList.map((item: any, index: number) => (
@@ -244,7 +245,9 @@ const Index = () => {
                   >
                     {item.vector_type}
                   </Box>
-                  <Box sx={{ fontSize: '12px', color: 'black' }}>Vector</Box>
+                  <Box sx={{ fontSize: '12px', color: 'black' }}>
+                    {t('Vector')}
+                  </Box>
                 </Box>
                 <Box
                   sx={{
@@ -260,7 +263,9 @@ const Index = () => {
                   >
                     {item.owner}
                   </Box>
-                  <Box sx={{ fontSize: '12px', color: 'black' }}>Owner</Box>
+                  <Box sx={{ fontSize: '12px', color: 'black' }}>
+                    {t('Owner')}
+                  </Box>
                 </Box>
                 <Box
                   sx={{
@@ -276,7 +281,9 @@ const Index = () => {
                   >
                     {item.docs || 0}
                   </Box>
-                  <Box sx={{ fontSize: '12px', color: 'black' }}>Docs</Box>
+                  <Box sx={{ fontSize: '12px', color: 'black' }}>
+                    {t('Docs')}
+                  </Box>
                 </Box>
               </Box>
               <Box
@@ -360,21 +367,21 @@ const Index = () => {
           {activeStep === 0 ? (
             <>
               <Box sx={{ margin: '30px auto' }}>
-                Knowledge Space Name:
+                {t('Knowledge Space Name')}:
                 <Input
-                  placeholder="Please input the name"
+                  placeholder={t('Please input the name')}
                   onChange={(e: any) => setKnowledgeSpaceName(e.target.value)}
                   sx={{ marginBottom: '20px' }}
                 />
-                Owner:
+                {t('Owner')}:
                 <Input
-                  placeholder="Please input the owner"
+                  placeholder={t('Please input the owner')}
                   onChange={(e: any) => setOwner(e.target.value)}
                   sx={{ marginBottom: '20px' }}
                 />
-                Description:
+                {t('Description')}:
                 <Input
-                  placeholder="Please input the description"
+                  placeholder={t('Please input the description')}
                   onChange={(e: any) => setDescription(e.target.value)}
                   sx={{ marginBottom: '20px' }}
                 />
@@ -383,19 +390,23 @@ const Index = () => {
                 variant="outlined"
                 onClick={async () => {
                   if (knowledgeSpaceName === '') {
-                    message.error('please input the name')
+                    message.error(t('Please input the name'))
                     return
                   }
                   if (/[^\u4e00-\u9fa50-9a-zA-Z_-]/.test(knowledgeSpaceName)) {
-                    message.error('the name can only contain numbers, letters, Chinese characters, "-" and "_"');
+                    message.error(
+                      t(
+                        'the name can only contain numbers, letters, Chinese characters, "-" and "_"'
+                      )
+                    )
                     return
                   }
                   if (owner === '') {
-                    message.error('please input the owner')
+                    message.error(t('Please input the owner'))
                     return
                   }
                   if (description === '') {
-                    message.error('please input the description')
+                    message.error(t('Please input the description'))
                     return
                   }
                   const data = await sendSpacePostRequest(
@@ -422,7 +433,7 @@ const Index = () => {
                   }
                 }}
               >
-                Next
+                {t('Next')}
               </Button>
             </>
           ) : activeStep === 1 ? (
@@ -459,17 +470,17 @@ const Index = () => {
           ) : (
             <>
               <Box sx={{ margin: '30px auto' }}>
-                Name:
+                {t('Name')}:
                 <Input
-                  placeholder="Please input the name"
+                  placeholder={t('Please input the name')}
                   onChange={(e: any) => setDocumentName(e.target.value)}
                   sx={{ marginBottom: '20px' }}
                 />
                 {documentType === 'webPage' ? (
                   <>
-                    Web Page URL:
+                    {t('Web Page URL')}:
                     <Input
-                      placeholder="Please input the Web Page URL"
+                      placeholder={t('Please input the Web Page URL')}
                       onChange={(e: any) => setWebPageUrl(e.target.value)}
                     />
                   </>
@@ -482,7 +493,7 @@ const Index = () => {
                       <p
                         style={{ color: 'rgb(22, 108, 255)', fontSize: '20px' }}
                       >
-                        Select or Drop file
+                        {t('Select or Drop file')}
                       </p>
                       <p
                         className="ant-upload-hint"
@@ -494,13 +505,13 @@ const Index = () => {
                   </>
                 ) : (
                   <>
-                    Text Source(Optional):
+                    {t('Text Source(Optional)')}:
                     <Input
-                      placeholder="Please input the text source"
+                      placeholder={t('Please input the text source')}
                       onChange={(e: any) => setTextSource(e.target.value)}
                       sx={{ marginBottom: '20px' }}
                     />
-                    Text:
+                    {t('Text')}:
                     <Textarea
                       onChange={(e: any) => setText(e.target.value)}
                       minRows={4}
@@ -522,7 +533,7 @@ const Index = () => {
                     />
                   }
                 >
-                  Synch:
+                  {t('Synch')}:
                 </Typography>
               </Box>
               <Stack
@@ -536,18 +547,18 @@ const Index = () => {
                   sx={{ marginRight: '20px' }}
                   onClick={() => setActiveStep(1)}
                 >
-                  {'< Back'}
+                  {`< ${t('Back')}`}
                 </Button>
                 <Button
                   variant="outlined"
                   onClick={async () => {
                     if (documentName === '') {
-                      message.error('Please input the name')
+                      message.error(t('Please input the name'))
                       return
                     }
                     if (documentType === 'webPage') {
                       if (webPageUrl === '') {
-                        message.error('Please input the Web Page URL')
+                        message.error(t('Please input the text source'))
                         return
                       }
                       const data = await sendSpacePostRequest(
@@ -573,7 +584,7 @@ const Index = () => {
                       }
                     } else if (documentType === 'file') {
                       if (!originFileObj) {
-                        message.error('Please select a file')
+                        message.error(t('Please select a file'))
                         return
                       }
                       const formData = new FormData()
@@ -600,7 +611,7 @@ const Index = () => {
                       }
                     } else {
                       if (text === '') {
-                        message.error('Please input the text')
+                        message.error(t('Please input the text'))
                         return
                       }
                       const data = await sendSpacePostRequest(
@@ -628,7 +639,7 @@ const Index = () => {
                     }
                   }}
                 >
-                  Finish
+                  {t('Finish')}
                 </Button>
               </Stack>
             </>
@@ -648,7 +659,9 @@ const Index = () => {
           <Typography
             id="alert-dialog-modal-title"
             component="h2"
-            startDecorator={<WarningRoundedIcon style={{ color: 'rgb(205, 32, 41)' }} />}
+            startDecorator={
+              <WarningRoundedIcon style={{ color: 'rgb(205, 32, 41)' }} />
+            }
             sx={{ color: 'black' }}
           >
             Confirmation

@@ -24,7 +24,7 @@ import { InboxOutlined } from '@ant-design/icons'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
 import CachedIcon from '@mui/icons-material/Cached'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import ChatIcon from '@mui/icons-material/Chat';
+import ChatIcon from '@mui/icons-material/Chat'
 import type { UploadProps } from 'antd'
 import { Upload, Pagination, Popover, message } from 'antd'
 import {
@@ -32,6 +32,7 @@ import {
   sendSpaceUploadPostRequest
 } from '@/utils/request'
 import SpaceParameter from '@/components/SpaceParameter'
+import { useTranslation } from 'react-i18next'
 
 const { Dragger } = Upload
 const Item = styled(Sheet)(({ theme }) => ({
@@ -44,28 +45,6 @@ const Item = styled(Sheet)(({ theme }) => ({
   borderRadius: 4,
   color: theme.vars.palette.text.secondary
 }))
-const stepsOfAddingDocument = [
-  'Choose a Datasource type',
-  'Setup the Datasource'
-]
-const documentTypeList = [
-  {
-    type: 'text',
-    title: 'Text',
-    subTitle: 'Fill your raw text'
-  },
-  {
-    type: 'webPage',
-    title: 'URL',
-    subTitle: 'Fetch the content of a URL'
-  },
-  {
-    type: 'file',
-    title: 'Document',
-    subTitle:
-      'Upload a document, document type can be PDF, CSV, Text, PowerPoint, Word, Markdown'
-  }
-]
 const page_size = 20
 
 const Documents = () => {
@@ -85,6 +64,30 @@ const Documents = () => {
   const [total, setTotal] = useState<number>(0)
   const [current, setCurrent] = useState<number>(0)
   const [synchChecked, setSynchChecked] = useState<boolean>(true)
+  const { t } = useTranslation()
+  const stepsOfAddingDocument = [
+    t('Choose a Datasource type'),
+    t('Setup the Datasource')
+  ]
+  const documentTypeList = [
+    {
+      type: 'text',
+      title: t('Text'),
+      subTitle: t('Fill your raw text')
+    },
+    {
+      type: 'webPage',
+      title: t('URL'),
+      subTitle: t('Fetch the content of a URL')
+    },
+    {
+      type: 'file',
+      title: t('Document'),
+      subTitle: t(
+        'Upload a document, document type can be PDF, CSV, Text, PowerPoint, Word, Markdown'
+      )
+    }
+  ]
   const props: UploadProps = {
     name: 'file',
     multiple: false,
@@ -134,34 +137,42 @@ const Documents = () => {
             color="neutral"
             fontSize="inherit"
           >
-            Knowledge Space
+            {t('Knowledge Space')}
           </Link>
-          <Typography fontSize="inherit">Documents</Typography>
+          <Typography fontSize="inherit">{t('Documents')}</Typography>
         </Breadcrumbs>
         <Stack direction="row" alignItems="center">
           <Button
             variant="outlined"
             onClick={async () => {
-              const res = await sendSpacePostRequest('/api/v1/chat/dialogue/new', {
-                chat_mode: 'chat_knowledge'
-              })
+              const res = await sendSpacePostRequest(
+                '/api/v1/chat/dialogue/new',
+                {
+                  chat_mode: 'chat_knowledge'
+                }
+              )
               if (res?.success && res?.data?.conv_uid) {
                 router.push(
                   `/chat?id=${res?.data?.conv_uid}&scene=chat_knowledge&spaceNameOriginal=${spaceName}`
                 )
               }
             }}
-            sx={{ marginRight: '20px', backgroundColor: 'rgb(39, 155, 255) !important', color: 'white', border: 'none' }}
+            sx={{
+              marginRight: '20px',
+              backgroundColor: 'rgb(39, 155, 255) !important',
+              color: 'white',
+              border: 'none'
+            }}
           >
-            <ChatIcon sx={{ marginRight: '6px', fontSize: '18px' }}/>
-            Chat
+            <ChatIcon sx={{ marginRight: '6px', fontSize: '18px' }} />
+            {t('Chat')}
           </Button>
           <Button
             variant="outlined"
             onClick={() => setIsAddDocumentModalShow(true)}
             sx={{ marginRight: '20px' }}
           >
-            + Add Datasource
+            + {t('Add Datasource')}
           </Button>
           <SpaceParameter spaceName={spaceName} />
         </Stack>
@@ -185,13 +196,13 @@ const Documents = () => {
           >
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Size</th>
-                <th>Last Synch</th>
-                <th>Status</th>
-                <th>Result</th>
-                <th style={{ width: '30%' }}>Operation</th>
+                <th>{t('Name')}</th>
+                <th>{t('Type')}</th>
+                <th>{t('Size')}</th>
+                <th>{t('Last Synch')}</th>
+                <th>{t('Status')}</th>
+                <th>{t('Result')}</th>
+                <th style={{ width: '30%' }}>{t('Operation')}</th>
               </tr>
             </thead>
             <tbody>
@@ -287,7 +298,7 @@ const Documents = () => {
                             }
                           }}
                         >
-                          Synch
+                          {t('Synch')}
                           <CachedIcon />
                         </Button>
                         <Button
@@ -302,7 +313,7 @@ const Documents = () => {
                             )
                           }}
                         >
-                          Details
+                          {t('Details')}
                         </Button>
                         <Button
                           variant="outlined"
@@ -334,7 +345,7 @@ const Documents = () => {
                             }
                           }}
                         >
-                          Delete
+                          {t('Delete')}
                           <DeleteOutlineIcon />
                         </Button>
                       </>
@@ -450,17 +461,17 @@ const Documents = () => {
           ) : (
             <>
               <Box sx={{ margin: '30px auto' }}>
-                Name:
+                {t('Name')}:
                 <Input
-                  placeholder="Please input the name"
+                  placeholder={t('Please input the name')}
                   onChange={(e: any) => setDocumentName(e.target.value)}
                   sx={{ marginBottom: '20px' }}
                 />
                 {documentType === 'webPage' ? (
                   <>
-                    Web Page URL:
+                    {t('Web Page URL')}:
                     <Input
-                      placeholder="Please input the Web Page URL"
+                      placeholder={t('Please input the Web Page URL')}
                       onChange={(e: any) => setWebPageUrl(e.target.value)}
                     />
                   </>
@@ -473,7 +484,7 @@ const Documents = () => {
                       <p
                         style={{ color: 'rgb(22, 108, 255)', fontSize: '20px' }}
                       >
-                        Select or Drop file
+                        {t('Select or Drop file')}
                       </p>
                       <p
                         className="ant-upload-hint"
@@ -485,13 +496,13 @@ const Documents = () => {
                   </>
                 ) : (
                   <>
-                    Text Source(Optional):
+                    {t('Text Source(Optional)')}:
                     <Input
-                      placeholder="Please input the text source"
+                      placeholder={t('Please input the text source')}
                       onChange={(e: any) => setTextSource(e.target.value)}
                       sx={{ marginBottom: '20px' }}
                     />
-                    Text:
+                    {t('Text')}:
                     <Textarea
                       onChange={(e: any) => setText(e.target.value)}
                       minRows={4}
@@ -513,7 +524,7 @@ const Documents = () => {
                     />
                   }
                 >
-                  Synch:
+                  {t('Synch')}:
                 </Typography>
               </Box>
               <Stack
@@ -527,18 +538,18 @@ const Documents = () => {
                   sx={{ marginRight: '20px' }}
                   onClick={() => setActiveStep(0)}
                 >
-                  {'< Back'}
+                  {`< ${t('Back')}`}
                 </Button>
                 <Button
                   variant="outlined"
                   onClick={async () => {
                     if (documentName === '') {
-                      message.error('Please input the name')
+                      message.error(t('Please input the name'))
                       return
                     }
                     if (documentType === 'webPage') {
                       if (webPageUrl === '') {
-                        message.error('Please input the Web Page URL')
+                        message.error(t('Please input the Web Page URL'))
                         return
                       }
                       const data = await sendSpacePostRequest(
@@ -577,7 +588,7 @@ const Documents = () => {
                       }
                     } else if (documentType === 'file') {
                       if (!originFileObj) {
-                        message.error('Please select a file')
+                        message.error(t('Please select a file'))
                         return
                       }
                       const formData = new FormData()
@@ -616,7 +627,7 @@ const Documents = () => {
                       }
                     } else {
                       if (text === '') {
-                        message.error('Please input the text')
+                        message.error(t('Please input the text'))
                         return
                       }
                       const data = await sendSpacePostRequest(
@@ -657,7 +668,7 @@ const Documents = () => {
                     }
                   }}
                 >
-                  Finish
+                  {t('Finish')}
                 </Button>
               </Stack>
             </>
