@@ -53,7 +53,9 @@ function Database() {
       onOk() {
         return new Promise<void>(async (resolve, reject) => {
           try {
-            const { success, err_msg } = await axios.post<null, IResponseModal<null>>(`/api/v1/chat/db/delete?db_name=${item.db_name}`);
+            const { success, err_msg } = await axios.post<null, IResponseModal<null>>(
+              `/api/v1/chat/db/delete?db_name=${item.db_name}`,
+            );
             if (!success) {
               message.error(err_msg);
               reject();
@@ -104,7 +106,7 @@ function Database() {
                     <div className="flex items-center flex-wrap">
                       <Image
                         className="rounded-full border border-gray-200 mr-3"
-                        src={iconMap[item.db_type]}
+                        src={iconMap[item.db_type] ?? '/icons/sql.png'}
                         alt={item.db_type}
                         width={44}
                         height={44}
