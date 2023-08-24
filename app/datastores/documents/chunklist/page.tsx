@@ -8,7 +8,8 @@ import {
   Stack,
   Typography,
   Breadcrumbs,
-  Link
+  Link,
+  Box
 } from '@/lib/mui'
 import { Popover, Pagination } from 'antd'
 import { sendSpacePostRequest } from '@/utils/request'
@@ -41,7 +42,14 @@ const ChunkList = () => {
     fetchChunks()
   }, [])
   return (
-    <div className="p-4">
+    <Box
+      className="p-4"
+      sx={{
+        '&': {
+          height: '90%'
+        }
+      }}
+    >
       <Stack
         direction="row"
         justifyContent="flex-start"
@@ -74,7 +82,18 @@ const ChunkList = () => {
           <Typography fontSize="inherit">Chunks</Typography>
         </Breadcrumbs>
       </Stack>
-      <div className="p-4">
+      <Box
+        className="p-4"
+        sx={{
+          '&': {
+            height: '90%',
+            overflow: 'auto'
+          },
+          '&::-webkit-scrollbar': {
+            display: 'none'
+          }
+        }}
+      >
         {chunkList.length ? (
           <>
             <Table
@@ -131,42 +150,42 @@ const ChunkList = () => {
                 ))}
               </tbody>
             </Table>
-            <Stack
-              direction="row"
-              justifyContent="flex-end"
-              sx={{
-                marginTop: '20px'
-              }}
-            >
-              <Pagination
-                defaultPageSize={20}
-                showSizeChanger={false}
-                current={current}
-                total={total}
-                onChange={async (page) => {
-                  const data = await sendSpacePostRequest(
-                    `/knowledge/${spaceName}/chunk/list`,
-                    {
-                      document_id: documentId,
-                      page,
-                      page_size
-                    }
-                  )
-                  if (data.success) {
-                    setChunkList(data.data.data)
-                    setTotal(data.data.total)
-                    setCurrent(data.data.page)
-                  }
-                }}
-                hideOnSinglePage
-              />
-            </Stack>
           </>
         ) : (
           <></>
         )}
-      </div>
-    </div>
+      </Box>
+      <Stack
+        direction="row"
+        justifyContent="flex-end"
+        sx={{
+          marginTop: '20px'
+        }}
+      >
+        <Pagination
+          defaultPageSize={20}
+          showSizeChanger={false}
+          current={current}
+          total={total}
+          onChange={async (page) => {
+            const data = await sendSpacePostRequest(
+              `/knowledge/${spaceName}/chunk/list`,
+              {
+                document_id: documentId,
+                page,
+                page_size
+              }
+            )
+            if (data.success) {
+              setChunkList(data.data.data)
+              setTotal(data.data.total)
+              setCurrent(data.data.page)
+            }
+          }}
+          hideOnSinglePage
+        />
+      </Stack>
+    </Box>
   )
 }
 
