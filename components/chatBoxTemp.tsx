@@ -31,6 +31,7 @@ import lodash from 'lodash';
 import { message, Tooltip } from 'antd';
 import { sendSpacePostRequest } from '@/utils/request';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   messages: Message[];
@@ -60,6 +61,7 @@ const ChatBoxComp = ({
   setChartsData
 }: Props) => {
   const searchParams = useSearchParams();
+  const { t } = useTranslation()
   const initMessage = searchParams.get('initMessage');
   const spaceNameOriginal = searchParams.get('spaceNameOriginal');
   const scene = searchParams.get('scene');
@@ -449,19 +451,19 @@ const ChatBoxComp = ({
           <ModalClose />
           <Table>
             <caption>
-              <h3 style={{ fontWeight: 'bold' }}>数据库列表</h3>
+              <h3 style={{ fontWeight: 'bold' }}>{t('database list')}</h3>
             </caption>
             <thead>
               <tr>
-                <th style={{ width: '140px' }}>数据库类型</th>
-                <th style={{ width: '130px' }}>数据库名</th>
-                <th style={{ width: '150px' }}>链接地址/域名</th>
-                <th style={{ width: '100px' }}>端口</th>
-                <th style={{ width: '140px' }}>用户名</th>
-                <th style={{ width: '140px' }}>密码</th>
-                <th style={{ width: '140px' }}>备注</th>
+                <th style={{ width: '140px' }}>{t('Type')}</th>
+                <th style={{ width: '130px' }}>{t('Name')}</th>
+                <th style={{ width: '150px' }}>{t('Link address/domain name')}</th>
+                <th style={{ width: '100px' }}>{t('Port')}</th>
+                <th style={{ width: '140px' }}>{t('Username')}</th>
+                <th style={{ width: '140px' }}>{t('Password')}</th>
+                <th style={{ width: '140px' }}>{t('Remark')}</th>
                 <th style={{ width: '140px' }}>
-                  操作
+                  {t('Operation')}
                 </th>
               </tr>
             </thead>
@@ -645,7 +647,7 @@ const ChatBoxComp = ({
                             setRows(temp);
                           }}
                         >
-                          编辑
+                          {t('Edit')}
                         </Button>
                       )}
                       <Button
@@ -659,7 +661,7 @@ const ChatBoxComp = ({
                           }
                         }}
                       >
-                        删除
+                        {t('Delete')}
                       </Button>
                     </Box>
                   </td>
@@ -675,7 +677,7 @@ const ChatBoxComp = ({
                       temp?.push({ isEdit: true, isNew: true, db_name: '' });
                       setRows(temp);
                     }}
-                  >+ 新增一行</Button>
+                  >+ {t('Add a new line')}</Button>
                 </td>
               </tr>
             </tbody>

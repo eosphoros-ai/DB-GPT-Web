@@ -257,7 +257,7 @@ const LeftSider =  () => {
 												<WbSunnyIcon fontSize="small"/>
 											)}
 										</ListItemDecorator>
-										<ListItemContent>Theme</ListItemContent>
+										<ListItemContent>{t('Theme')}</ListItemContent>
 									</ListItemButton>
 								</ListItem>
 							</List>

@@ -28,7 +28,7 @@ const resources = {
       Document: 'Document',
       'Upload a document, document type can be PDF, CSV, Text, PowerPoint, Word, Markdown':
         'Upload a document, document type can be PDF, CSV, Text, PowerPoint, Word, Markdown',
-      Name: 'Document',
+      Name: 'Name',
       'Text Source(Optional)': 'Text Source(Optional)',
       'Please input the text source': 'Please input the text source',
       Synch: 'Synch',
@@ -82,7 +82,16 @@ const resources = {
         'A pre-defined structure or format for the prompt, which can help ensure that the AI system generates responses that are consistent with the desired style or tone.',
       max_token: 'max_token',
       'The maximum number of tokens or words allowed in a prompt':
-        'The maximum number of tokens or words allowed in a prompt'
+        'The maximum number of tokens or words allowed in a prompt',
+      Theme: 'Theme',
+      'database list': 'database list',
+      'Link address/domain name': 'Address',
+      Port: 'Port',
+      Username: 'Username',
+      Password: 'Password',
+      Remark: 'Remark',
+      'Add a new line': 'Add a new line',
+      Edit: 'Edit'
     }
   },
   zh: {
@@ -164,7 +173,16 @@ const resources = {
         '预定义的提示结构或格式，有助于确保人工智能系统生成与所需风格或语气一致的响应。',
       max_token: '最大令牌',
       'The maximum number of tokens or words allowed in a prompt':
-        '提示中允许的最大标记或单词数'
+        '提示中允许的最大标记或单词数',
+      Theme: '主题',
+      'database list': '数据库列表',
+      'Link address/domain name': '链接地址/域名',
+      Port: '端口',
+      Username: '用户名',
+      Password: '密码',
+      Remark: '备注',
+      'Add a new line': '新增一行',
+      Edit: '编辑'
     }
   }
 }
