@@ -1,10 +1,11 @@
-"use client";
+'use client';
 import React, { useState, useEffect, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Modal } from 'antd';
 import { Box, List, ListItem, ListItemButton, ListItemDecorator, ListItemContent, Typography, Button, useColorScheme, IconButton, ListSubheader } from '@/lib/mui';
 import Article from '@mui/icons-material/Article';
+import DataSaverOffIcon from '@mui/icons-material/DataSaverOff';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -13,9 +14,9 @@ import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';
 import { useDialogueContext } from '@/app/context/dialogue';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { sendPostRequest } from '@/utils/request';
-import Image from 'next/image'
+import Image from 'next/image';
 
-const LeftSider =  () => {
+const LeftSider = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 	const id = searchParams.get('id');
@@ -24,36 +25,44 @@ const LeftSider =  () => {
 	const { dialogueList, queryDialogueList, refreshDialogList, isContract } = useDialogueContext();
 	const { mode, setMode } = useColorScheme();
 
-	const menus = useMemo(() => {
-		return [{
-			label: 'Knowledge Space',
-			route: '/datastores',
-			icon: <Article fontSize="small" />,
-			active: pathname === '/datastores'
-		}];
-	}, [pathname]);
+  const menus = useMemo(() => {
+    return [
+      {
+        label: 'Database',
+        route: '/database',
+        icon: <DataSaverOffIcon />,
+        active: pathname === '/database',
+      },
+      {
+        label: 'Knowledge Space',
+        route: '/datastores',
+        icon: <Article fontSize="small" />,
+        active: pathname === '/datastores',
+      },
+    ];
+  }, [pathname]);
 
-	const handleChangeTheme = () => {
-		if (mode === 'light') {
-			setMode('dark');
-		} else {
-			setMode('light');
-		}
-	};
+  const handleChangeTheme = () => {
+    if (mode === 'light') {
+      setMode('dark');
+    } else {
+      setMode('light');
+    }
+  };
 
-	useEffect(() => {
-		if (mode === 'light') {
-			setLogoPath('/LOGO_1.png');
-		} else {
-			setLogoPath('/WHITE_LOGO.png');
-		}
-	}, [mode]);
+  useEffect(() => {
+    if (mode === 'light') {
+      setLogoPath('/LOGO_1.png');
+    } else {
+      setLogoPath('/WHITE_LOGO.png');
+    }
+  }, [mode]);
 
-	useEffect(() => {
-		(async () => {
-			await queryDialogueList();
-		})();
-	}, []);
+  useEffect(() => {
+    (async () => {
+      await queryDialogueList();
+    })();
+  }, []);
 
 	return isContract ? (
 		<List className="flex flex-col h-full">

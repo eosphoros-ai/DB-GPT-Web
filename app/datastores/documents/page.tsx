@@ -23,12 +23,15 @@ import moment from 'moment'
 import { InboxOutlined } from '@ant-design/icons'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
 import CachedIcon from '@mui/icons-material/Cached'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import ChatIcon from '@mui/icons-material/Chat';
 import type { UploadProps } from 'antd'
 import { Upload, Pagination, Popover, message } from 'antd'
 import {
   sendSpacePostRequest,
   sendSpaceUploadPostRequest
 } from '@/utils/request'
+import SpaceParameter from '@/components/SpaceParameter'
 
 const { Dragger } = Upload
 const Item = styled(Sheet)(({ theme }) => ({
@@ -85,15 +88,15 @@ const Documents = () => {
   const props: UploadProps = {
     name: 'file',
     multiple: false,
+    beforeUpload: () => false,
     onChange(info) {
-      console.log(info)
       if (info.fileList.length === 0) {
         setOriginFileObj(null)
         setDocumentName('')
         return
       }
-      setOriginFileObj(info.file.originFileObj)
-      setDocumentName(info.file.originFileObj?.name)
+      setOriginFileObj(info.file)
+      setDocumentName(info.file.name)
     }
   }
   useEffect(() => {
@@ -135,19 +138,40 @@ const Documents = () => {
           </Link>
           <Typography fontSize="inherit">Documents</Typography>
         </Breadcrumbs>
-        <Button
-          variant="outlined"
-          onClick={() => setIsAddDocumentModalShow(true)}
-        >
-          + Add Datasource
-        </Button>
+        <Stack direction="row" alignItems="center">
+          <Button
+            variant="outlined"
+            onClick={async () => {
+              const res = await sendSpacePostRequest('/api/v1/chat/dialogue/new', {
+                chat_mode: 'chat_knowledge'
+              })
+              if (res?.success && res?.data?.conv_uid) {
+                router.push(
+                  `/chat?id=${res?.data?.conv_uid}&scene=chat_knowledge&spaceNameOriginal=${spaceName}`
+                )
+              }
+            }}
+            sx={{ marginRight: '20px', backgroundColor: 'rgb(39, 155, 255) !important', color: 'white', border: 'none' }}
+          >
+            <ChatIcon sx={{ marginRight: '6px', fontSize: '18px' }}/>
+            Chat
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => setIsAddDocumentModalShow(true)}
+            sx={{ marginRight: '20px' }}
+          >
+            + Add Datasource
+          </Button>
+          <SpaceParameter spaceName={spaceName} />
+        </Stack>
       </Stack>
       {documents.length ? (
         <>
           <Table
             color="primary"
             variant="plain"
-            size="lg"
+            size="sm"
             sx={{
               '& tbody tr: hover': {
                 backgroundColor:
@@ -155,7 +179,8 @@ const Documents = () => {
               },
               '& tbody tr: hover a': {
                 textDecoration: 'underline'
-              }
+              },
+              '& tr > *:last-child': { textAlign: 'right' }
             }}
           >
             <thead>
@@ -166,7 +191,7 @@ const Documents = () => {
                 <th>Last Synch</th>
                 <th>Status</th>
                 <th>Result</th>
-                <th>Operation</th>
+                <th style={{ width: '30%' }}>Operation</th>
               </tr>
             </thead>
             <tbody>
@@ -174,7 +199,12 @@ const Documents = () => {
                 <tr key={row.id}>
                   <td>{row.doc_name}</td>
                   <td>
-                    <Chip variant="solid" color="neutral" sx={{ opacity: 0.5 }}>
+                    <Chip
+                      size="sm"
+                      variant="solid"
+                      color="neutral"
+                      sx={{ opacity: 0.5 }}
+                    >
                       {row.doc_type}
                     </Chip>
                   </td>
@@ -182,6 +212,7 @@ const Documents = () => {
                   <td>{moment(row.last_sync).format('YYYY-MM-DD HH:MM:SS')}</td>
                   <td>
                     <Chip
+                      size="sm"
                       sx={{ opacity: 0.5 }}
                       variant="solid"
                       color={(function () {
@@ -208,6 +239,7 @@ const Documents = () => {
                         return (
                           <Popover content={row.result} trigger="hover">
                             <Chip
+                              size="sm"
                               variant="solid"
                               color="success"
                               sx={{ opacity: 0.5 }}
@@ -220,6 +252,7 @@ const Documents = () => {
                         return (
                           <Popover content={row.result} trigger="hover">
                             <Chip
+                              size="sm"
                               variant="solid"
                               color="danger"
                               sx={{ opacity: 0.5 }}
@@ -238,7 +271,7 @@ const Documents = () => {
                           variant="outlined"
                           size="sm"
                           sx={{
-                            marginRight: '20px'
+                            marginRight: '2px'
                           }}
                           onClick={async () => {
                             const data = await sendSpacePostRequest(
@@ -260,6 +293,9 @@ const Documents = () => {
                         <Button
                           variant="outlined"
                           size="sm"
+                          sx={{
+                            marginRight: '2px'
+                          }}
                           onClick={() => {
                             router.push(
                               `/datastores/documents/chunklist?spacename=${spaceName}&documentid=${row.id}`
@@ -267,6 +303,39 @@ const Documents = () => {
                           }}
                         >
                           Details
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size="sm"
+                          color="danger"
+                          onClick={async () => {
+                            const res = await sendSpacePostRequest(
+                              `/knowledge/${spaceName}/document/delete`,
+                              {
+                                doc_name: row.doc_name
+                              }
+                            )
+                            if (res.success) {
+                              message.success('success')
+                              const data = await sendSpacePostRequest(
+                                `/knowledge/${spaceName}/document/list`,
+                                {
+                                  page: current,
+                                  page_size
+                                }
+                              )
+                              if (data.success) {
+                                setDocuments(data.data.data)
+                                setTotal(data.data.total)
+                                setCurrent(data.data.page)
+                              }
+                            } else {
+                              message.error(res.err_msg || 'failed')
+                            }
+                          }}
+                        >
+                          Delete
+                          <DeleteOutlineIcon />
                         </Button>
                       </>
                     }
