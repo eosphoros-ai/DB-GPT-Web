@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Modal } from 'antd';
-import { Box, List, ListItem, ListItemButton, ListItemDecorator, ListItemContent, Typography, Button, useColorScheme, IconButton } from '@/lib/mui';
+import { Box, List, ListItem, ListItemButton, ListItemDecorator, ListItemContent, Typography, Button, useColorScheme, IconButton, ListSubheader } from '@/lib/mui';
 import Article from '@mui/icons-material/Article';
 import DataSaverOffIcon from '@mui/icons-material/DataSaverOff';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
@@ -20,12 +20,12 @@ import { useTranslation } from 'react-i18next';
 const LeftSider = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { t, i18n } = useTranslation();
-  const id = searchParams.get('id');
-  const router = useRouter();
-  const [logoPath, setLogoPath] = useState('/LOGO_1.png');
-  const { dialogueList, queryDialogueList, refreshDialogList } = useDialogueContext();
-  const { mode, setMode } = useColorScheme();
+	const id = searchParams.get('id');
+	const { t, i18n } = useTranslation();
+	const router = useRouter();
+	const [logoPath, setLogoPath] = useState('/LOGO_1.png');
+	const { dialogueList, queryDialogueList, refreshDialogList, isContract } = useDialogueContext();
+	const { mode, setMode } = useColorScheme();
 
   const menus = useMemo(() => {
     return [
@@ -66,201 +66,331 @@ const LeftSider = () => {
     })();
   }, []);
 
-  return (
-    <>
-      <nav className="flex h-12 items-center justify-between border-b px-4 dark:border-gray-800 dark:bg-gray-800/70 md:hidden">
-        <div>
-          <MenuIcon />
-        </div>
-        <span className="truncate px-4">New Chat</span>
-        <a href="" className="-mr-3 flex h-9 w-9 shrink-0 items-center justify-center">
-          <AddIcon />
-        </a>
-      </nav>
-      <nav className="grid max-h-screen h-full max-md:hidden">
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            borderRight: '1px solid',
-            borderColor: 'divider',
-            maxHeight: '100vh',
-            position: 'sticky',
-            left: '0px',
-            top: '0px',
-            overflow: 'hidden',
-          }}
-        >
-          <Box
-            sx={{
-              p: 2,
-              gap: 2,
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div className="flex items-center gap-3">
-              <Image src={logoPath} alt="DB-GPT" width={633} height={157} className="w-full max-w-full" unoptimized />
-            </div>
-          </Box>
-          <Box
-            sx={{
-              px: 2,
-            }}
-          >
-            <Link href={`/`}>
-              <Button
-                color="primary"
-                className="w-full bg-gradient-to-r from-[#31afff] to-[#1677ff] dark:bg-gradient-to-r dark:from-[#6a6a6a] dark:to-[#80868f]"
-                style={{
-                  color: '#fff',
-                }}
-              >
-                + New Chat
-              </Button>
-            </Link>
-          </Box>
-          <Box
-            sx={{
-              p: 2,
-              display: {
-                xs: 'none',
-                sm: 'initial',
-              },
-              maxHeight: '100%',
-              overflow: 'auto',
-            }}
-          >
-            <List size="sm" sx={{ '--ListItem-radius': '8px' }}>
-              <ListItem nested>
-                <List
-                  size="sm"
-                  aria-labelledby="nav-list-browse"
-                  sx={{
-                    '& .JoyListItemButton-root': { p: '8px' },
-                    gap: '4px',
-                  }}
-                >
-                  {dialogueList?.data?.map((each) => {
-                    const isSelect = (pathname === `/chat` || pathname === '/chat/') && id === each.conv_uid;
-                    return (
-                      <ListItem key={each.conv_uid}>
-                        <ListItemButton
-                          selected={isSelect}
-                          variant={isSelect ? 'soft' : 'plain'}
-                          sx={{
-                            '&:hover .del-btn': {
-                              visibility: 'visible',
-                            },
-                          }}
-                        >
-                          <ListItemContent>
-                            <Link href={`/chat?id=${each.conv_uid}&scene=${each?.chat_mode}`} className="flex items-center justify-between">
-                              <Typography fontSize={14} noWrap={true}>
-                                <SmsOutlinedIcon style={{ marginRight: '0.5rem' }} />
-                                {each?.user_name || each?.user_input || 'undefined'}
-                              </Typography>
-                              <IconButton
-                                color="neutral"
-                                variant="plain"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  Modal.confirm({
-                                    title: 'Delete Chat',
-                                    content: 'Are you sure delete this chat?',
-                                    width: '276px',
-                                    centered: true,
-                                    async onOk() {
-                                      await sendPostRequest(`/v1/chat/dialogue/delete?con_uid=${each.conv_uid}`);
-                                      await refreshDialogList();
-                                      if (pathname === `/chat` && searchParams.get('id') === each.conv_uid) {
-                                        router.push('/');
-                                      }
-                                    },
-                                  });
-                                }}
-                                className="del-btn invisible"
-                              >
-                                <DeleteOutlineOutlinedIcon />
-                              </IconButton>
-                            </Link>
-                          </ListItemContent>
-                        </ListItemButton>
-                      </ListItem>
-                    );
-                  })}
-                </List>
-              </ListItem>
-            </List>
-          </Box>
-          <div className="flex flex-col justify-between flex-1">
-            <div></div>
-            <Box
-              sx={{
-                p: 2,
-                pt: 3,
-                pb: 6,
-                borderTop: '1px solid',
-                borderColor: 'divider',
-                display: {
-                  xs: 'none',
-                  sm: 'initial',
-                },
-                position: 'sticky',
-                bottom: 0,
-                zIndex: 100,
-                background: 'var(--joy-palette-background-body)',
-              }}
-            >
-              <List size="sm" sx={{ '--ListItem-radius': '8px' }}>
-                <ListItem nested>
-                  <List
-                    size="sm"
-                    aria-labelledby="nav-list-browse"
-                    sx={{
-                      '& .JoyListItemButton-root': { p: '8px' },
-                    }}
-                  >
-                    {menus.map((each) => (
-                      <Link key={each.route} href={each.route}>
-                        <ListItem>
-                          <ListItemButton
-                            color="neutral"
-                            sx={{ marginBottom: 1, height: '2.5rem' }}
-                            selected={each.active}
-                            variant={each.active ? 'soft' : 'plain'}
-                          >
-                            <ListItemDecorator
-                              sx={{
-                                color: each.active ? 'inherit' : 'neutral.500',
-                              }}
-                            >
-                              {each.icon}
-                            </ListItemDecorator>
-                            <ListItemContent>{each.label}</ListItemContent>
-                          </ListItemButton>
-                        </ListItem>
-                      </Link>
-                    ))}
-                  </List>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton sx={{ height: '2.5rem' }} onClick={handleChangeTheme}>
-                    <ListItemDecorator>{mode === 'dark' ? <DarkModeIcon fontSize="small" /> : <WbSunnyIcon fontSize="small" />}</ListItemDecorator>
-                    <ListItemContent>{t('Theme')}</ListItemContent>
-                  </ListItemButton>
-                </ListItem>
-              </List>
-            </Box>
-          </div>
-        </Box>
-      </nav>
-    </>
-  );
+	return isContract ? (
+		<List className="flex flex-col h-full">
+			<ListItem nested className="h-full flex-1 overflow-auto">
+				<ListSubheader>Dialogue</ListSubheader>
+				<List>
+					{dialogueList?.data?.map((each) => {
+						const isSelect = (pathname === `/chat` || pathname === '/chat/') && id === each.conv_uid;
+						return (
+							<ListItem key={each.conv_uid}>
+								<ListItemButton
+									selected={isSelect}
+									variant={isSelect ? 'soft' : 'plain'}
+									sx={{
+										'&:hover .del-btn': {
+											visibility: 'visible'
+										}
+									}}
+								>
+									<ListItemContent>
+										<Link href={`/chat?id=${each.conv_uid}&scene=${each?.chat_mode}`} className="flex items-center justify-between">
+											<Typography fontSize={14} noWrap={true}>
+												<SmsOutlinedIcon style={{ marginRight: '0.5rem' }} />
+												{each?.user_name || each?.user_input || 'undefined'}
+											</Typography>
+											<IconButton
+												color="neutral"
+												variant="plain"
+												size="sm"
+												onClick={(e) => {
+													e.preventDefault();
+													e.stopPropagation();
+													Modal.confirm({
+														title: 'Delete Chat',
+														content: 'Are you sure delete this chat?',
+														width: '276px',
+														zIndex: 1002,
+														centered: true,
+														async onOk() {
+															await sendPostRequest(`/v1/chat/dialogue/delete?con_uid=${each.conv_uid}`);
+															await refreshDialogList();
+															if (pathname === `/chat` && searchParams.get('id') === each.conv_uid) {
+																router.push('/');
+															}
+														}
+													})
+												}}
+												className='del-btn invisible'
+											>
+												<DeleteOutlineOutlinedIcon />
+											</IconButton>
+										</Link>
+									</ListItemContent>
+								</ListItemButton>
+							</ListItem>
+						)
+					})}
+				</List>
+			</ListItem>
+			<ListItem
+				nested 
+				className="h-32"
+				sx={{
+					borderTop: '1px solid',
+					borderColor: 'divider',
+				}}
+			>
+				<ListSubheader>Others</ListSubheader>
+				<List>
+					{menus.map((each) => (
+						<Link key={each.route} href={each.route}>
+							<ListItem>
+								<ListItemButton
+									color="neutral"
+									sx={{ height: '2.5rem', fontSize: '14px' }}
+									selected={each.active}
+									variant={each.active ? 'soft' : 'plain'}
+								>
+									<ListItemDecorator
+										sx={{ 
+											color: each.active ? 'inherit' : 'neutral.500',
+											minInlineSize: 'unset',
+											marginRight: '0.5rem'
+										}}
+									>
+										{each.icon}
+									</ListItemDecorator>
+									<ListItemContent>{each.label}</ListItemContent>
+								</ListItemButton>
+							</ListItem>
+						</Link>
+					))}
+					<ListItem>
+						<ListItemButton
+							onClick={handleChangeTheme}
+							sx={{ fontSize: '14px' }}
+						>
+							<ListItemDecorator
+								sx={{ 
+									minInlineSize: 'unset',
+									marginRight: '0.5rem'
+								}}
+							>
+								{mode === 'dark' ? (
+									<DarkModeIcon fontSize="small"/>
+								) : (
+									<WbSunnyIcon fontSize="small"/>
+								)}
+							</ListItemDecorator>
+							<ListItemContent>{t('Theme')}</ListItemContent>
+						</ListItemButton>
+					</ListItem>
+				</List>
+			</ListItem>
+		</List>
+	) : (
+		<>
+			<nav className='flex h-12 items-center justify-between border-b px-4 dark:border-gray-800 dark:bg-gray-800/70 md:hidden'>
+				<div>
+					<MenuIcon />
+				</div>
+				<span className='truncate px-4'>New Chat</span>
+				<a href='' className='-mr-3 flex h-9 w-9 shrink-0 items-center justify-center'>
+					<AddIcon />
+				</a>
+			</nav>
+			<nav className="grid max-h-screen h-full max-md:hidden">
+				<Box
+					sx={{
+						display: 'flex',
+						flexDirection: 'column',
+						borderRight: '1px solid',
+						borderColor: 'divider',
+						maxHeight: '100vh',
+						position: 'sticky',
+						left: '0px',
+						top: '0px',
+						overflow: 'hidden',
+					}}
+				>
+					<Box
+						sx={{
+							p: 2,
+							gap: 2,
+							display: 'flex',
+							flexDirection: 'row',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+						}}
+					>
+						<div className='flex items-center gap-3'>
+							<Image
+								src={logoPath}
+								alt="DB-GPT"
+								width={633}
+								height={157}
+								className='w-full max-w-full'
+								unoptimized
+							/>
+						</div>
+					</Box>
+					<Box
+						sx={{
+							px: 2
+						}}
+					>
+						<Link href={`/`}>
+							<Button
+								color="primary"
+								className='w-full bg-gradient-to-r from-[#31afff] to-[#1677ff] dark:bg-gradient-to-r dark:from-[#6a6a6a] dark:to-[#80868f]'
+								style={{
+									color: '#fff'
+								}}
+							>
+								+ New Chat
+							</Button>
+						</Link>
+					</Box>
+					<Box
+						sx={{
+							p: 2,
+							display: {
+								xs: 'none',
+								sm: 'initial',
+							},
+							maxHeight: '100%',
+							overflow: 'auto',
+						}}
+					>
+						<List size="sm" sx={{ '--ListItem-radius': '8px' }}>
+							<ListItem nested>
+								<List
+									size="sm"
+									aria-labelledby="nav-list-browse"
+									sx={{
+										'& .JoyListItemButton-root': { p: '8px' },
+										gap: '4px'
+									}}
+								>
+									{dialogueList?.data?.map((each) => {
+										const isSelect = (pathname === `/chat` || pathname === '/chat/') && id === each.conv_uid;
+										return (
+											<ListItem key={each.conv_uid}>
+												<ListItemButton
+													selected={isSelect}
+													variant={isSelect ? 'soft' : 'plain'}
+													sx={{
+														'&:hover .del-btn': {
+															visibility: 'visible'
+														}
+													}}
+												>
+													<ListItemContent>
+														<Link href={`/chat?id=${each.conv_uid}&scene=${each?.chat_mode}`} className="flex items-center justify-between">
+															<Typography fontSize={14} noWrap={true}>
+																<SmsOutlinedIcon style={{ marginRight: '0.5rem' }} />
+																{each?.user_name || each?.user_input || 'undefined'}
+															</Typography>
+															<IconButton
+																color="neutral"
+																variant="plain"
+																size="sm"
+																onClick={(e) => {
+																	e.preventDefault();
+																	e.stopPropagation();
+																	Modal.confirm({
+																		title: 'Delete Chat',
+																		content: 'Are you sure delete this chat?',
+																		width: '276px',
+																		centered: true,
+																		async onOk() {
+																			await sendPostRequest(`/v1/chat/dialogue/delete?con_uid=${each.conv_uid}`);
+																			await refreshDialogList();
+																			if (pathname === `/chat` && searchParams.get('id') === each.conv_uid) {
+																				router.push('/');
+																			}
+																		}
+																	})
+																}}
+																className='del-btn invisible'
+															>
+																<DeleteOutlineOutlinedIcon />
+															</IconButton>
+														</Link>
+													</ListItemContent>
+												</ListItemButton>
+											</ListItem>
+										)
+									})}
+								</List>
+							</ListItem>
+						</List>
+					</Box>
+					<div className='flex flex-col justify-between flex-1'>
+						<div></div>
+						<Box
+							sx={{
+								p: 2,
+								pt: 3,
+								pb: 6,
+								borderTop: '1px solid',
+								borderColor: 'divider',
+								display: {
+									xs: 'none',
+									sm: 'initial',
+								},
+								position: 'sticky',
+								bottom: 0,
+								zIndex: 100,
+								background: 'var(--joy-palette-background-body)'
+							}}
+						>
+							<List size="sm" sx={{ '--ListItem-radius': '8px' }}>
+								<ListItem nested>
+									<List
+										size="sm"
+										aria-labelledby="nav-list-browse"
+										sx={{
+											'& .JoyListItemButton-root': { p: '8px' },
+										}}
+									>
+										{menus.map((each) => (
+											<Link key={each.route} href={each.route}>
+												<ListItem>
+													<ListItemButton
+														color="neutral"
+														sx={{ marginBottom: 1, height: '2.5rem' }}
+														selected={each.active}
+														variant={each.active ? 'soft' : 'plain'}
+													>
+														<ListItemDecorator
+															sx={{ 
+																color: each.active ? 'inherit' : 'neutral.500',
+															}}
+														>
+															{each.icon}
+														</ListItemDecorator>
+														<ListItemContent>{each.label}</ListItemContent>
+													</ListItemButton>
+												</ListItem>
+											</Link>
+										))}
+									</List>
+								</ListItem>
+								<ListItem>
+									<ListItemButton
+										sx={{ height: '2.5rem' }}
+										onClick={handleChangeTheme}
+									>
+										<ListItemDecorator>
+											{mode === 'dark' ? (
+												<DarkModeIcon fontSize="small"/>
+											) : (
+												<WbSunnyIcon fontSize="small"/>
+											)}
+										</ListItemDecorator>
+										<ListItemContent>{t('Theme')}</ListItemContent>
+									</ListItemButton>
+								</ListItem>
+							</List>
+						</Box>
+					</div>
+				</Box>
+			</nav>
+		</>
+	)
 };
 
 export default LeftSider;

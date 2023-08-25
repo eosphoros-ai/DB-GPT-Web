@@ -68,7 +68,6 @@ export const sendPostRequest = (url: string, body?: any) => {
 }
 
 export const sendSpacePostRequest = (url: string, body?: any) => {
-  const reqBody = sanitizeBody(body);
   return axios.post(url, body, {
     headers: DEFAULT_HEADERS
   }).then(res => res).catch(err => {

@@ -1,7 +1,7 @@
 "use client";
 import { useRequest } from 'ahooks';
 import { useState } from 'react';
-import { Button, Input, Box, buttonClasses, Divider, Typography } from '@/lib/mui';
+import { Button, Input, Box, buttonClasses, Divider } from '@/lib/mui';
 import IconButton from '@mui/joy/IconButton';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import { zodResolver } from '@hookform/resolvers/zod';
