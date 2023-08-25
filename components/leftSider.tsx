@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 const LeftSider = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const id = searchParams.get('id');
   const router = useRouter();
   const [logoPath, setLogoPath] = useState('/LOGO_1.png');
@@ -42,7 +42,7 @@ const LeftSider = () => {
         active: pathname === '/datastores',
       },
     ];
-  }, [pathname]);
+  }, [pathname, i18n.language]);
 
   const handleChangeTheme = () => {
     if (mode === 'light') {
