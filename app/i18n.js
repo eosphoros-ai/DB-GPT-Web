@@ -91,7 +91,8 @@ const resources = {
       Password: 'Password',
       Remark: 'Remark',
       'Add a new line': 'Add a new line',
-      Edit: 'Edit'
+      Edit: 'Edit',
+      Database: 'Database'
     }
   },
   zh: {
@@ -182,7 +183,8 @@ const resources = {
       Password: '密码',
       Remark: '备注',
       'Add a new line': '新增一行',
-      Edit: '编辑'
+      Edit: '编辑',
+      Database: '数据库'
     }
   }
 }

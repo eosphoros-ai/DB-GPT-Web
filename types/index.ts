@@ -14,3 +14,21 @@ export interface DialogueItem {
   user_input?: string;
   user_name?: string;
 }
+
+export interface IResponseModal<T = any> {
+  data: T;
+  err_code: string | null;
+  err_msg: string | null;
+  success: boolean;
+}
+
+export interface IDatabaseItem {
+  comment: string;
+  db_host: string;
+  db_name: string;
+  db_path: string;
+  db_port: number;
+  db_pwd: string;
+  db_type: 'mysql' | 'mssql' | 'duckdb';
+  db_user: string;
+}
