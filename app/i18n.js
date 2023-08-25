@@ -134,7 +134,7 @@ const resources = {
       'Add Datasource': '添加数据源',
       Arguments: '参数',
       Type: '类型',
-      Size: '类型',
+      Size: '切片',
       'Last Synch': '上次同步时间',
       Status: '状态',
       Result: '结果',
