@@ -38,7 +38,7 @@ const AgentPage = () => {
   const searchParams = useSearchParams();
   const { dialogueList, refreshDialogList } = useDialogueContext();
   const id = searchParams.get('id');
-  const scene = searchParams.get('scene');
+  const [scene, setScene] = useState<string>(searchParams.get('scene'));
 
   const currentDialogue = useMemo(
     () => ((dialogueList?.data ?? []) as any[]).find((item) => item.conv_uid === id),
@@ -70,6 +70,14 @@ const AgentPage = () => {
       ready: !!scene,
       refreshDeps: [id, scene],
     },
+  );
+
+  const { data: paramsInfoList, run: runParamsInfoList } = useRequest(
+    async () => await sendPostRequest(`/v1/chat/mode/params/info?chat_mode=${scene}`),
+    {
+	  ready: !!scene,
+      refreshDeps: [id, scene]
+    }
   );
 
   const { history, handleChatSubmit } = useAgentChat({
@@ -283,8 +291,10 @@ const AgentPage = () => {
             onSubmit={handleChatSubmit}
             onRefreshHistory={runHistoryList}
             paramsList={paramsList?.data}
+			      paramsInfoList={paramsInfoList?.data}
             runParamsList={runParamsList}
             setChartsData={setChartsData}
+            setScene={setScene}
           />
         </div>
       </Grid>

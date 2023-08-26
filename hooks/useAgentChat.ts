@@ -25,7 +25,7 @@ const useAgentChat = ({
   runHistoryList
 }: Props) => {
   const [state, setState] = useStateReducer({
-    history: (initHistory || []) as { role: 'human' | 'view'; context: string; id?: string }[],
+    history: (initHistory || []) as { role: 'human' | 'view'; context: string; relation?: string[]|null; id?: string }[],
   });
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
@@ -33,7 +33,14 @@ const useAgentChat = ({
   const ctrl = new AbortController();
 
   useEffect(() => {
-    if (initHistory) setState({ history: initHistory });
+    if (initHistory) {
+      initHistory.forEach(item => {
+              let dataArray = item.context.split("\trelations:");
+              item.context = dataArray[0];
+              item.relation = (dataArray.length>1 ? dataArray[1] : null)?.split(",");
+      })
+      setState({history: initHistory});
+    }
   }, [initHistory]);
 
   const handleChatSubmit = async (context: string, otherQueryBody?: any) => {
@@ -41,7 +48,7 @@ const useAgentChat = ({
       return;
     }
 
-    const history = [...state.history, { role: 'human', context }];
+    const history = [...state.history, { role: 'human', context, relation:null }];
     const nextIndex = history.length;
 
     setState({
@@ -122,10 +129,14 @@ const useAgentChat = ({
           } else {
             const h = [...history];
             if (event.data) {
+              let dataArray = event.data.split("\trelations:");
+              let context = dataArray[0];
+              let relations = (dataArray.length>1 ? dataArray[1] : null)?.split(",");
               if (h?.[nextIndex]) {
-                h[nextIndex].context = `${event.data}`;
+                h[nextIndex].context = `${context}`;
+                h[nextIndex].relation = relations;
               } else {
-                h.push({ role: 'view', context: event.data });
+                h.push({ role: 'view', context: context, relation: relations });
               }
               setState({
                 history: h as any,

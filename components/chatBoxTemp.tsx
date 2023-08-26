@@ -4,7 +4,8 @@ import {
   Card,
   CircularProgress,
   IconButton,
-  Input,
+  Textarea,
+  Typography,
   Stack,
   Select,
   Option,
@@ -14,6 +15,7 @@ import {
   ModalClose,
   Button,
   Link,
+  Chip,
 } from '@/lib/mui';
 import { useState, useRef, useEffect, Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -26,7 +28,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
-import { message } from 'antd';
+import { message, Tooltip } from 'antd';
 import ExcelUpload from './ChatPage/ExcelUpload';
 
 type Props = {
@@ -37,14 +39,17 @@ type Props = {
   readOnly?: boolean;
   paramsList?: { [key: string]: string };
   runParamsList: () => void;
+  paramsInfoList?: { [key: string]: string };
+  runParamsInfoList: () => void;
   dbList?: Record<string, string | undefined | null | boolean>[];
   runDbList: () => void;
   supportTypes?: Record<string, string | undefined | null | boolean>[];
   clearIntialMessage?: () => void;
   setChartsData?: (chartsData: any) => void;
+  setScene?: (scene: string) => void;
 };
 
-const Schema = z.object({ query: z.string().min(1) });
+const Schema = z.object({ query: z.string().max(4000) });
 
 const ChatBoxComp = ({
   messages,
@@ -52,9 +57,11 @@ const ChatBoxComp = ({
   onSubmit,
   readOnly,
   paramsList,
+  paramsInfoList,
   onRefreshHistory,
   clearIntialMessage,
   setChartsData,
+  setScene,
 }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams.get('initMessage');
@@ -65,6 +72,7 @@ const ChatBoxComp = ({
   const scrollableRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentParam, setCurrentParam] = useState<string | undefined | null>();
+  const [currentScene, setCurrentScene] = useState<string>('chat_normal');
   const [jsonModalOpen, setJsonModalOpen] = useState(false);
   const [currentJsonIndex, setCurrentJsonIndex] = useState<number>();
   const [showMessages, setShowMessages] = useState(messages);
@@ -74,6 +82,9 @@ const ChatBoxComp = ({
     resolver: zodResolver(Schema),
     defaultValues: {},
   });
+  const { watch, formState: { errors } } = methods
+  const queryLen = watch('query')?.length
+  const excessMax = queryLen > 4000
 
   const submit = async ({ query }: z.infer<typeof Schema>) => {
     try {
@@ -152,6 +163,7 @@ const ChatBoxComp = ({
       setCurrentParam(spaceNameOriginal || Object.keys(paramsList || {})?.[0]);
     }
   }, [paramsList]);
+
 
   useEffect(() => {
     if (isChartChat) {
@@ -238,6 +250,11 @@ const ChatBoxComp = ({
                           {typeof each.context === 'string' && (
                             <Markdown options={options}>{each.context?.replaceAll?.('\\n', '\n')}</Markdown>
                           )}
+                          {typeof each.relation == 'object' && each.relation?.length > 0 && (
+                            <Stack sx={{mt: 1}} direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                              {each.relation?.map(rr => (<Chip key={rr} sx={{borderColor: '#4393E4'}} variant="outlined" size="sm">{rr}</Chip>))}
+                            </Stack>
+                          )}
                         </>
                       )}
                     </div>
@@ -290,6 +307,23 @@ const ChatBoxComp = ({
               }}
             >
               <div style={{ display: 'flex', gap: '8px' }}>
+                {scene === 'chat_pipeline' && (
+                <div className="flex items-center gap-3">
+                  <Select
+                    value={currentScene}
+                    onChange={(e, newValue) => {
+                      setCurrentScene(newValue);
+                      setScene(newValue);
+                    }}
+                    sx={{ maxWidth: '100%' }}
+                  >
+                    <Option value='chat_normal'>Chat normal</Option>
+                    <Option value='chat_with_db_execute'>Chat Data</Option>
+                    <Option value='chat_with_db_qa'>Chat DB</Option>
+                    <Option value='chat_knowledge'>Chat Knowledge</Option>
+                  </Select>
+                </div>
+                )}
                 {Object.keys(paramsList || {}).length > 0 && (
                   <div className="flex items-center gap-3">
                     <Select
@@ -300,9 +334,12 @@ const ChatBoxComp = ({
                       sx={{ maxWidth: '100%' }}
                     >
                       {Object.keys(paramsList || {})?.map((paramItem) => (
-                        <Option key={paramItem} value={paramItem}>
-                          {paramItem}
-                        </Option>
+                        <Tooltip title={paramsInfoList?.[paramItem]}
+                            key={'tp-' + paramItem} variant="solid" placement="right">
+                          <Option key={paramItem} value={paramItem}>
+                            {paramItem}
+                          </Option>
+                        </Tooltip>
                       ))}
                     </Select>
                   </div>
@@ -323,17 +360,29 @@ const ChatBoxComp = ({
                   </>
                 )}
               </div>
-              <Input
+              <Textarea
                 disabled={scene === 'chat_excel' && !dialogue?.select_param}
-                className="w-full h-12"
+                className="w-full"
                 variant="outlined"
+                maxRows={3}
+                error={excessMax}
                 endDecorator={
-                  <IconButton type="submit" disabled={isLoading}>
-                    <SendRoundedIcon />
-                  </IconButton>
+                  <div className="flex-1 flex justify-between items-center">
+                    <Typography color="neutral">
+                      <Typography color={excessMax ? "danger" : "neutral"}>{queryLen}</Typography> / 4000
+                    </Typography>
+                    <IconButton type="submit" disabled={isLoading}>
+                      <SendRoundedIcon />
+                    </IconButton>
+                  </div>
                 }
                 {...methods.register('query')}
               />
+              {(errors.query || excessMax) && (
+                <Typography color="danger">
+                  {errors.query?.message || 'String must contain at most 4000 character(s)'}
+                </Typography>
+              )}
             </form>
           </Box>
         )}

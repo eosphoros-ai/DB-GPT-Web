@@ -1,7 +1,7 @@
 "use client";
 import { useRequest } from 'ahooks';
 import { useState } from 'react';
-import { Button, Input, Box, buttonClasses, Divider, Typography } from '@/lib/mui';
+import { Button, Textarea, Box, buttonClasses, Divider, Typography } from '@/lib/mui';
 import IconButton from '@mui/joy/IconButton';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,19 +12,21 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image'
 
 function Home() {
-  const Schema = z.object({ query: z.string().min(1) });
+  const Schema = z.object({ query: z.string().max(4000) });
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const methods = useForm<z.infer<typeof Schema>>({
+  const { reset, handleSubmit, register, watch, formState: { errors } } = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
     defaultValues: {},
   });
   const { data: scenesList } = useRequest(async () => await sendPostRequest('/v1/chat/dialogue/scenes'));
+  const queryLen = watch('query')?.length
+  const excessMax = queryLen > 4000
 
   const submit = async ({ query }: z.infer<typeof Schema>) => {
     try {
       setIsLoading(true);
-      methods.reset();
+      reset();
       const res = await sendPostRequest('/v1/chat/dialogue/new', {
         chat_mode: 'chat_normal'
       });
@@ -104,35 +106,46 @@ function Home() {
               width: '100%',
               position: 'relative',
               display: 'flex',
+              flexDirection: 'column',
               marginTop: 'auto',
               overflow: 'visible',
               background: 'none',
               justifyContent: 'center',
               marginLeft: 'auto',
               marginRight: 'auto',
-              height: '52px'
+              height: 'auto'
             }}
             onSubmit={(e) => {
-              methods.handleSubmit(submit)(e);
+              handleSubmit(submit)(e);
             }}
           >
-            <Input
-              sx={{ width: '100%' }}
+            <Textarea
+              className="w-full"
               variant="outlined"
               placeholder='Ask anything'
+              maxRows={3}
+              error={excessMax}
               endDecorator={
-                <IconButton type="submit" disabled={isLoading}>
-                  <SendRoundedIcon />
-                </IconButton>
+                <div className="flex-1 flex justify-between items-center">
+                  <Typography color="neutral">
+                    <Typography color={excessMax ? "danger" : "neutral"}>{queryLen}</Typography> / 4000
+                  </Typography>
+                  <IconButton type="submit" disabled={isLoading}>
+                    <SendRoundedIcon />
+                  </IconButton>
+                </div>
               }
-              {...methods.register('query')}
+              {...register('query')}
             />
+            {(errors.query || excessMax) && (
+              <Typography color="danger">
+                {errors.query?.message || 'String must contain at most 4000 character(s)'}
+              </Typography>
+            )}
           </form>
         </div>
       </div>
-      
-    </>
-    
+    </>    
   )
 }
 

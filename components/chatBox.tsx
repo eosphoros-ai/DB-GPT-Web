@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { Card, CircularProgress, IconButton, Input, Stack, Select, Option, Tooltip } from '@/lib/mui';
+import { Card, CircularProgress, IconButton, Textarea, Typography, Stack, Select, Option, Tooltip } from '@/lib/mui';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -19,7 +19,7 @@ type Props = {
   clearIntialMessage?: () => void;
 }; 
 
-const Schema = z.object({ query: z.string().min(1) });
+const Schema = z.object({ query: z.string().max(4000) });
 
 const ChatBoxComp = ({
   messages,
@@ -38,6 +38,9 @@ const ChatBoxComp = ({
     resolver: zodResolver(Schema),
     defaultValues: {},
   });
+  const { watch, formState: { errors } } = methods
+  const queryLen = watch('query')?.length
+  const excessMax = queryLen > 4000
 
   const submit = async ({ query }: z.infer<typeof Schema>) => {
     try {
@@ -245,17 +248,28 @@ const ChatBoxComp = ({
                 </Tooltip>
               </div>
             )}
-
-            <Input
-              sx={{ width: '100%' }}
+            <Textarea
+              className="w-full"
               variant="outlined"
+              maxRows={3}
+              error={excessMax}
               endDecorator={
-                <IconButton type="submit" disabled={isLoading}>
-                  <SendRoundedIcon />
-                </IconButton>
+                <div className="flex-1 flex justify-between items-center">
+                  <Typography color="neutral">
+                    <Typography color={excessMax ? "danger" : "neutral"}>{queryLen}</Typography> / 4000
+                  </Typography>
+                  <IconButton type="submit" disabled={isLoading}>
+                    <SendRoundedIcon />
+                  </IconButton>
+                </div>
               }
               {...methods.register('query')}
             />
+            {(errors.query || excessMax) && (
+              <Typography color="danger">
+                {errors.query?.message || 'String must contain at most 4000 character(s)'}
+              </Typography>
+            )}
           </form>
         )}
       </Stack>
