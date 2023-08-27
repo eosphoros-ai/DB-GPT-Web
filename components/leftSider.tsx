@@ -8,18 +8,18 @@ import Article from '@mui/icons-material/Article';
 import DataSaverOffIcon from '@mui/icons-material/DataSaverOff';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
-import MenuIcon from '@mui/icons-material/Menu';
-import AddIcon from '@mui/icons-material/Add';
 import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';
 import { useDialogueContext } from '@/app/context/dialogue';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { sendPostRequest } from '@/utils/request';
-import Image from 'next/image';
+import Image from 'next/image'
+import classNames from "classnames";
 
 const LeftSider = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 	const id = searchParams.get('id');
+  const scene = searchParams.get('scene');
 	const router = useRouter();
 	const [logoPath, setLogoPath] = useState('/LOGO_1.png');
 	const { dialogueList, queryDialogueList, refreshDialogList, isContract } = useDialogueContext();
@@ -180,16 +180,9 @@ const LeftSider = () => {
 		</List>
 	) : (
 		<>
-			<nav className='flex h-12 items-center justify-between border-b px-4 dark:border-gray-800 dark:bg-gray-800/70 md:hidden'>
-				<div>
-					<MenuIcon />
-				</div>
-				<span className='truncate px-4'>New Chat</span>
-				<a href='' className='-mr-3 flex h-9 w-9 shrink-0 items-center justify-center'>
-					<AddIcon />
-				</a>
-			</nav>
-			<nav className="grid max-h-screen h-full max-md:hidden">
+			<nav className={classNames('grid max-h-screen h-full max-md:hidden', {
+        'hidden': scene === 'chat_dashboard'
+      })}>
 				<Box
 					sx={{
 						display: 'flex',

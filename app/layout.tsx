@@ -9,9 +9,7 @@ import { joyTheme } from '@/defaultTheme';
 import TopProgressBar from '@/components/topProgressBar';
 import DialogueContext, { useDialogueContext } from './context/dialogue';
 import { useEffect } from 'react';
-import MenuIcon from '@mui/icons-material/Menu';
 import MyDrawer from '@/components/myDrawer';
-import WrapTextOutlinedIcon from '@mui/icons-material/WrapTextOutlined';
 
 function CssWrapper({
   children
@@ -49,29 +47,14 @@ function LayoutWarpper({
 }) {
   const { isContract, setIsContract } = useDialogueContext();
   const [open, setOpen] = React.useState<boolean>(false);
-
   return (
     <>
-      {isContract ? (
-        <div className="grid h-full w-screen grid-rows-1 grid-cols-[auto,1fr] overflow-hidden text-smd dark:text-gray-300 md:grid-rows-[60px,1fr] md:grid-cols-[1fr]">
-          <div className='border-[var(--joy-palette-divider)] bg-[#282828] text-[#f4f4f4] border-b border-solid flex items-center px-3 justify-between'>
-            <MenuIcon className='cursor-pointer' onClick={() => { setOpen(true) }} />
-            <div className='flex items-center cursor-pointer' onClick={() => { setIsContract(!isContract); }}>
-              <WrapTextOutlinedIcon style={{ marginRight: '4px' }} />Change Mode
-            </div>
-          </div>
-          <div className='relative min-h-0 min-w-0'>
-            {children}
-          </div>
+      <div className="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] text-smd dark:text-gray-300 md:grid-cols-[280px,1fr] md:grid-rows-[1fr]">
+        {!isContract && <LeftSider />}
+        <div className='relative min-h-0 w-screen'>
+          {children}
         </div>
-      ) : (
-        <div className="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] overflow-hidden text-smd dark:text-gray-300 md:grid-cols-[280px,1fr] md:grid-rows-[1fr]">
-          <LeftSider />
-          <div className='relative min-h-0 min-w-0'>
-            {children}
-          </div>
-        </div>
-      )}
+      </div>
       <MyDrawer
         title="DB-GPT"
         position="left"

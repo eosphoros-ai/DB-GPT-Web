@@ -141,7 +141,7 @@ const useAgentChat = ({
       setState({
         history: [
           ...history,
-          { role: 'view', context: answer || '请求出错' as string },
+          { role: 'view', context: answer || 'Sorry, We meet some error, please try agin later.' as string },
         ] as any,
       });
     }

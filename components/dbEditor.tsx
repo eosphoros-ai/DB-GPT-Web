@@ -4,10 +4,11 @@ import { Select, Option, Button, Table, Box, Typography, Tooltip } from "@/lib/m
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import { Input, Tree, Empty, Tabs } from 'antd';
 import type { DataNode } from 'antd/es/tree';
-import MonacoEditor from './reactMonacoEditor';
+import MonacoEditor from './MonacoEditor';
 import { sendGetRequest, sendSpacePostRequest } from '@/utils/request';
 import { useSearchParams } from 'next/navigation';
 import ChartContent from "./chartContent";
+import { OnChange } from "@monaco-editor/react";
 
 const { Search } = Input;
 
@@ -28,7 +29,7 @@ interface IProps {
 	editorValue?: EditorValueProps;
 	chartData?: any;
 	tableData?: any;
-	handleChange: (value: string, description?: string) => void;
+	handleChange: OnChange;
 
 }
 
@@ -55,15 +56,21 @@ function DbEditorContent({
 			<div className="flex-1 flex overflow-hidden">
 				<div className="flex-1" style={{ flexShrink: 0, overflow: 'auto' }}>
 					<MonacoEditor
+						value={editorValue?.sql || ''}
+						language="mysql"
+						onChange={handleChange}
+						thoughts={editorValue?.thoughts || ''}
+					/>
+          {/* <MonacoEditor
 						value={editorValue?.sql}
 						language="mysql"
 						handleChange={handleChange}
 						description={editorValue?.thoughts}
-					/>
+					/> */}
 				</div>
 				{chartWrapper}
 			</div>
-			<div className="h-60 border-[var(--joy-palette-divider)] border-t border-solid overflow-auto">
+			<div className="h-96 border-[var(--joy-palette-divider)] border-t border-solid overflow-auto">
 				{tableData?.values?.length > 0 ? (
 					<Table aria-label="basic table" stickyHeader>
 						<thead>
@@ -382,22 +389,7 @@ function DbEditor() {
   return (
 		<div className="flex flex-col w-full h-full">
 			<div className='bg-[#f8f8f8] border-[var(--joy-palette-divider)] border-b border-solid flex items-center px-3 justify-between'>
-				<div className="flex items-center py-3">
-					<AutoAwesomeMotionIcon className="mr-2" />
-					<Select
-						className="h-4 min-w-[240px]"
-						size="sm"
-						value={(currentRound as string | null | undefined)}
-						onChange={(e: React.SyntheticEvent | null, newValue: string | null) => {
-							setCurrentRound(newValue);
-						}}
-					>
-						{rounds?.data?.map((item: RoundPrpos) => (
-							<Option key={item?.round} value={item?.round}>{item?.round_name}</Option>
-						))}
-					</Select>
-				</div>
-				<div>
+				<div className="absolute right-6 top-4">
 					<Button
 						className="bg-[#1677ff] text-[#fff] hover:bg-[#1c558e]"
 						loading={runLoading || runChartsLoading}
@@ -432,6 +424,21 @@ function DbEditor() {
 			</div>
 			<div className="flex flex-1 overflow-auto">
 				<div className="text h-full border-[var(--joy-palette-divider)] border-r border-solid p-3 max-h-full overflow-auto" style={{ width: '300px' }}>
+          <div className="flex items-center py-3">
+            <Select
+              className="h-4 min-w-[240px]"
+              size="sm"
+              value={(currentRound as string | null | undefined)}
+              onChange={(e: React.SyntheticEvent | null, newValue: string | null) => {
+                setCurrentRound(newValue);
+              }}
+            >
+              {rounds?.data?.map((item: RoundPrpos) => (
+                <Option key={item?.round} value={item?.round}>{item?.round_name}</Option>
+              ))}
+            </Select>
+            <AutoAwesomeMotionIcon className="ml-2" />
+          </div>
 					<Search
 						style={{ marginBottom: 8 }}
 						placeholder="Search"
@@ -465,8 +472,7 @@ function DbEditor() {
 								}}
 							>
 								<Tabs
-									className="h-full"
-									type="card"
+									className="h-full dark:text-white"
 									activeKey={currentTabIndex}
 									onChange={(activeKey) => {
 										setCurrentTabIndex(activeKey);
