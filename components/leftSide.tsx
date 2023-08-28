@@ -15,6 +15,14 @@ import { sendPostRequest } from '@/utils/request';
 import Image from 'next/image'
 import classNames from "classnames";
 
+interface Dialogue {
+  conv_uid: string;
+  user_input: string;
+  user_name: string;
+  chat_mode: string;
+  select_param: string;
+}
+
 const LeftSide = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -69,29 +77,8 @@ const LeftSide = () => {
 			<nav className={classNames('grid max-h-screen h-full max-md:hidden', {
         'hidden': false
       })}>
-				<Box
-					sx={{
-						display: 'flex',
-						flexDirection: 'column',
-						borderRight: '1px solid',
-						borderColor: 'divider',
-						maxHeight: '100vh',
-						position: 'sticky',
-						left: '0px',
-						top: '0px',
-						overflow: 'hidden',
-					}}
-				>
-					<Box
-						sx={{
-							p: 2,
-							gap: 2,
-							display: 'flex',
-							flexDirection: 'row',
-							justifyContent: 'space-between',
-							alignItems: 'center',
-						}}
-					>
+				<Box className="flex flex-col border-r border-divider max-h-screen sticky left-0 top-0 overflow-hidden">
+					<Box className="p-2 gap-2 flex flex-row justify-between items-center">
 						<div className='flex items-center gap-3'>
 							<Image
 								src={logoPath}
@@ -103,11 +90,7 @@ const LeftSide = () => {
 							/>
 						</div>
 					</Box>
-					<Box
-						sx={{
-							px: 2
-						}}
-					>
+					<Box className="px-2">
 						<Link href={`/`}>
 							<Button
 								color="primary"
@@ -120,17 +103,7 @@ const LeftSide = () => {
 							</Button>
 						</Link>
 					</Box>
-					<Box
-						sx={{
-							p: 2,
-							display: {
-								xs: 'none',
-								sm: 'initial',
-							},
-							maxHeight: '100%',
-							overflow: 'auto',
-						}}
-					>
+					<Box className="p-2 hidden xs:block sm:inline-block max-h-full overflow-auto">
 						<List size="sm" sx={{ '--ListItem-radius': '8px' }}>
 							<ListItem nested>
 								<List
@@ -141,10 +114,10 @@ const LeftSide = () => {
 										gap: '4px'
 									}}
 								>
-									{dialogueList?.data?.map((each) => {
-										const isSelect = (pathname === `/chat` || pathname === '/chat/') && id === each.conv_uid;
+									{dialogueList?.data?.map((dialogue: Dialogue) => {
+										const isSelect = (pathname === `/chat` || pathname === '/chat/') && id === dialogue.conv_uid;
 										return (
-											<ListItem key={each.conv_uid}>
+											<ListItem key={dialogue.conv_uid}>
 												<ListItemButton
 													selected={isSelect}
 													variant={isSelect ? 'soft' : 'plain'}
@@ -155,10 +128,10 @@ const LeftSide = () => {
 													}}
 												>
 													<ListItemContent>
-														<Link href={`/chat?id=${each.conv_uid}&scene=${each?.chat_mode}`} className="flex items-center justify-between">
+														<Link href={`/chat?id=${dialogue.conv_uid}&scene=${dialogue?.chat_mode}`} className="flex items-center justify-between">
 															<Typography fontSize={14} noWrap={true}>
 																<SmsOutlinedIcon style={{ marginRight: '0.5rem' }} />
-																{each?.user_name || each?.user_input || 'undefined'}
+																{dialogue?.user_name || dialogue?.user_input || 'undefined'}
 															</Typography>
 															<IconButton
 																color="neutral"
@@ -173,9 +146,9 @@ const LeftSide = () => {
 																		width: '276px',
 																		centered: true,
 																		async onOk() {
-																			await sendPostRequest(`/v1/chat/dialogue/delete?con_uid=${each.conv_uid}`);
+																			await sendPostRequest(`/v1/chat/dialogue/delete?con_uid=${dialogue.conv_uid}`);
 																			await refreshDialogList();
-																			if (pathname === `/chat` && searchParams.get('id') === each.conv_uid) {
+																			if (pathname === `/chat` && searchParams.get('id') === dialogue.conv_uid) {
 																				router.push('/');
 																			}
 																		}
@@ -195,25 +168,8 @@ const LeftSide = () => {
 							</ListItem>
 						</List>
 					</Box>
-					<div className='flex flex-col justify-between flex-1'>
-						<div></div>
-						<Box
-							sx={{
-								p: 2,
-								pt: 3,
-								pb: 6,
-								borderTop: '1px solid',
-								borderColor: 'divider',
-								display: {
-									xs: 'none',
-									sm: 'initial',
-								},
-								position: 'sticky',
-								bottom: 0,
-								zIndex: 100,
-								background: 'var(--joy-palette-background-body)'
-							}}
-						>
+					<div className='flex flex-col justify-end flex-1'>
+						<Box className="p-2 pt-3 pb-6 border-t border-divider xs:block sticky bottom-0 z-100">
 							<List size="sm" sx={{ '--ListItem-radius': '8px' }}>
 								<ListItem nested>
 									<List
@@ -223,23 +179,23 @@ const LeftSide = () => {
 											'& .JoyListItemButton-root': { p: '8px' },
 										}}
 									>
-										{menus.map((each) => (
-											<Link key={each.route} href={each.route}>
+										{menus.map((menu) => (
+											<Link key={menu.route} href={menu.route}>
 												<ListItem>
 													<ListItemButton
 														color="neutral"
 														sx={{ marginBottom: 1, height: '2.5rem' }}
-														selected={each.active}
-														variant={each.active ? 'soft' : 'plain'}
+														selected={menu.active}
+														variant={menu.active ? 'soft' : 'plain'}
 													>
 														<ListItemDecorator
 															sx={{ 
-																color: each.active ? 'inherit' : 'neutral.500',
+																color: menu.active ? 'inherit' : 'neutral.500',
 															}}
 														>
-															{each.icon}
+															{menu.icon}
 														</ListItemDecorator>
-														<ListItemContent>{each.label}</ListItemContent>
+														<ListItemContent>{menu.label}</ListItemContent>
 													</ListItemButton>
 												</ListItem>
 											</Link>
@@ -247,8 +203,7 @@ const LeftSide = () => {
 									</List>
 								</ListItem>
 								<ListItem>
-									<ListItemButton
-										sx={{ height: '2.5rem' }}
+									<ListItemButton className='h-10'
 										onClick={handleChangeTheme}
 									>
 										<ListItemDecorator>
