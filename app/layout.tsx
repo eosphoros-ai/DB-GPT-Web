@@ -42,7 +42,7 @@ function CssWrapper({
   )
 }
 
-function LayoutWarpper({
+function LayoutWrapper({
   children,
 }: {
   children: React.ReactNode
@@ -86,9 +86,9 @@ function RootLayout({
           <CssVarsProvider theme={joyTheme} defaultMode="light">
             <CssWrapper>
               <div className={`contents h-full`}>
-                <LayoutWarpper>
+                <LayoutWrapper>
                   {children}
-                </LayoutWarpper>
+                </LayoutWrapper>
               </div>
             </CssWrapper>
           </CssVarsProvider>
