@@ -14,7 +14,7 @@ import MyDrawer from '@/components/myDrawer';
 function CssWrapper({
   children
 }: {
-  children: React.ReactNode
+  children: React.ReactElement
 }) {
   const { mode } = useColorScheme();
   const ref = React.useRef<HTMLDivElement>(null);
