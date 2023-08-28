@@ -6,9 +6,7 @@ export default function TableChart({ key, chart } : {
   key: string
   chart: ChartData
 }) {
-  console.log('....chart.values', chart.values)
   const data = groupBy(chart.values, 'type');
-  console.log('....data', data)
   return (
     <div className="flex-1" key={key}>
       <Card className="h-full overflow-auto" sx={{ background: 'transparent' }}>
