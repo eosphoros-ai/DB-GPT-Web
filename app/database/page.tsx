@@ -1,19 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { IDatabaseItem, IResponseModal } from '@/types';
+import { IDatabaseItem } from '@/types';
 import { Add, EditNote, DeleteOutline } from '@mui/icons-material';
-import { useRequest } from 'ahooks';
+import { useAsyncEffect, useRequest } from 'ahooks';
 import { sendGetRequest } from '@/utils/request';
 import { Button, Card, CardContent, Tooltip } from '@/lib/mui';
 import Image from 'next/image';
 import { Modal, Spin, message } from 'antd';
 import FormDialog from '@/components/DatabasePage/FormDialog';
-import axios from '@/utils/ctx-axios';
+import { apiInterceptors, getChatDbSupportType, postChatDbDelete } from '@/utils/api';
+import { DBType, GetChatDbSupportTypeResponse } from '@/types/schema.type';
 
-type DatabaseType = IDatabaseItem['db_type'];
-
-const iconMap: Record<DatabaseType, string> = {
+const iconMap: Record<DBType, string> = {
   mysql: '/icons/mysql.png',
   mssql: '/icons/mssql.png',
   duckdb: '/icons/duckdb.png',
@@ -30,30 +29,19 @@ const iconMap: Record<DatabaseType, string> = {
   postgresql: '/icon/postgresql.png',
 };
 
-export const dbOptions: { value: DatabaseType; label: string; isFileDb?: boolean }[] = [
-  { label: 'Mysql', value: 'mysql' },
-  { label: 'Mssql', value: 'mssql' },
-  { label: 'Duckdb', value: 'duckdb', isFileDb: true },
-  { label: 'Oracle', value: 'oracle' },
-  { label: 'Sqlite', value: 'sqlite' },
-  { label: 'Access', value: 'access' },
-  { label: 'Mongodb', value: 'mongodb' },
-  { label: 'DB2', value: 'db2' },
-  { label: 'HBase', value: 'hbase' },
-  { label: 'Clickhouse', value: 'clickhouse' },
-  { label: 'Redis', value: 'redis' },
-  { label: 'Cassandra', value: 'cassandra' },
-  { label: 'Couchbase', value: 'couchbase' },
-  { label: 'Postgresql', value: 'postgresql' },
-];
-
-export function isFileDb(dbType: DatabaseType) {
-  return dbOptions.find((item) => item.value === dbType)?.isFileDb;
+export function isFileDb(supportList: GetChatDbSupportTypeResponse, dbType: DBType) {
+  return supportList.find((item) => item.db_type === dbType)?.is_file_db;
 }
 
 function Database() {
+  const [dbSupportList, setDbSupportList] = useState<GetChatDbSupportTypeResponse>([]);
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<{ open: boolean; info?: IDatabaseItem }>({ open: false });
+
+  const getDbSupportList = async () => {
+    const [_, data] = await apiInterceptors(getChatDbSupportType());
+    setDbSupportList(data ?? []);
+  };
 
   const { data: { data: dbList } = { data: [] }, run: runDbList } = useRequest(async () => {
     try {
@@ -75,10 +63,11 @@ function Database() {
       onOk() {
         return new Promise<void>(async (resolve, reject) => {
           try {
-            const { success, err_msg } = await axios.post<null, IResponseModal<null>>(`/api/v1/chat/db/delete?db_name=${item.db_name}`);
-            if (!success) {
-              message.error(err_msg);
+            const [err] = await apiInterceptors(postChatDbDelete(item.db_name));
+            if (err) {
+              message.error(err.message);
               reject();
+              return;
             }
             message.success('success');
             runDbList();
@@ -91,6 +80,10 @@ function Database() {
       },
     });
   };
+
+  useAsyncEffect(async () => {
+    await getDbSupportList();
+  }, []);
 
   return (
     <div className="relative p-4 bg-slate-50 dark:bg-transparent min-h-full overflow-y-auto">
@@ -109,7 +102,7 @@ function Database() {
         </div>
         <div className="flex flex-wrap">
           {(dbList as IDatabaseItem[]).map((item) => {
-            const fileDb = isFileDb(item.db_type);
+            const fileDb = isFileDb(dbSupportList, item.db_type);
             return (
               <div key={item.db_name} className="px-1 w-full mb-2 sm:w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/4 2xl:w-1/5">
                 <Card
@@ -185,6 +178,7 @@ function Database() {
       </Spin>
       <FormDialog
         open={modal.open}
+        dbSupportList={dbSupportList}
         editValue={modal.info}
         dbNames={(dbList as IDatabaseItem[]).map((item) => item.db_name)}
         onSuccess={() => {

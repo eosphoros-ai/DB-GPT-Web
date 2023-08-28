@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { dbOptions, isFileDb } from '@/app/database/page';
+import { isFileDb } from '@/app/database/page';
 import { IDatabaseItem, IResponseModal } from '@/types';
 import { Button, Form, Input, InputNumber, Modal, Select, message } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import axios from '@/utils/ctx-axios';
+import { GetChatDbSupportTypeResponse } from '@/types/schema.type';
 
 interface Props {
+  dbSupportList: GetChatDbSupportTypeResponse;
   open: boolean;
   editValue?: IDatabaseItem;
   dbNames: string[];
@@ -13,11 +15,21 @@ interface Props {
   onClose?: () => void;
 }
 
-function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
+function FormDialog({ open, dbSupportList, editValue, dbNames, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
 
   const [form] = Form.useForm<IDatabaseItem>();
   const dbType = Form.useWatch('db_type', form);
+
+  const dbOptions = useMemo(() => {
+    const options = dbSupportList.map((item) => ({
+      label: item.db_type,
+      value: item.db_type,
+      isFileDb: item.is_file_db,
+    }));
+    return options;
+  }, [dbSupportList]);
+  const fileDb = useMemo(() => isFileDb(dbSupportList, dbType), [dbSupportList, dbType]);
 
   useEffect(() => {
     if (editValue) {
@@ -37,7 +49,6 @@ function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
       message.error('The database already exists!');
       return;
     }
-    const fileDb = isFileDb(dbType);
     const data: Partial<IDatabaseItem & { file_path: string }> = {
       db_host: fileDb ? undefined : db_host,
       db_port: fileDb ? undefined : db_port,
@@ -66,7 +77,14 @@ function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
   };
 
   return (
-    <Modal open={open} width={400} title={editValue ? 'Edit DB Connect' : 'Create DB Connenct'} maskClosable={false} footer={null} onCancel={onClose}>
+    <Modal
+      open={open}
+      width={400}
+      title={editValue ? 'Edit DB Connect' : 'Create DB Connenct'}
+      maskClosable={false}
+      footer={null}
+      onCancel={onClose}
+    >
       <Form form={form} className="pt-2" labelCol={{ span: 6 }} labelAlign="left" onFinish={onFinish}>
         <Form.Item name="db_type" label="SQL Type" className="mb-3" rules={[{ required: true }]}>
           <Select options={dbOptions} />
@@ -80,7 +98,7 @@ function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
         <Form.Item name="db_pwd" label="Password" className="mb-3" rules={[{ required: true }]}>
           <Input type="password" />
         </Form.Item>
-        {isFileDb(dbType) ? (
+        {fileDb ? (
           <Form.Item name="db_path" label="Path" className="mb-3" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
@@ -89,7 +107,7 @@ function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
             <Input />
           </Form.Item>
         )}
-        {!isFileDb(dbType) && (
+        {!fileDb && (
           <Form.Item name="db_port" label="Port" className="mb-3" rules={[{ required: true }]}>
             <InputNumber min={1} step={1} max={65535} />
           </Form.Item>
