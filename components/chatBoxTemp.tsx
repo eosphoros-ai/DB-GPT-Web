@@ -24,8 +24,9 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
-import { message, Tooltip } from 'antd';
+import { message } from 'antd';
 import Image from 'next/image';
+import ExcelUpload from './ChatPage/ExcelUpload';
 
 type Props = {
   messages: Message[];
@@ -214,12 +215,12 @@ const ChatBoxComp = ({
                       {each.role === 'view' ? (
                         <div className='flex items-center'>
                           <Image
-                            src="https://dummyimage.com/50x50/363536/ffffff?text=DB-GPT" alt='db-gpt'
-                            width={50}
-                            height={50}
+                            className='rounded-full'
+                            src="https://dummyimage.com/30x30/363536/ffffff?text=DB-GPT" alt='db-gpt'
+                            width={30}
+                            height={30}
                             unoptimized={true}
                           />
-                          <span>:</span>
                         </div>
                       ) : (
                         <>
