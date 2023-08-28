@@ -15,7 +15,7 @@ import { sendPostRequest } from '@/utils/request';
 import Image from 'next/image'
 import classNames from "classnames";
 
-const LeftSider = () => {
+const LeftSide = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 	const id = searchParams.get('id');
@@ -384,4 +384,4 @@ const LeftSider = () => {
 	)
 };
 
-export default LeftSider;
+export default LeftSide;

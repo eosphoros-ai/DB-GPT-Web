@@ -2,7 +2,7 @@
 import './globals.css'
 import '@/nprogress.css';
 import React from 'react';
-import LeftSider from '@/components/leftSider';
+import LeftSide from '@/components/leftSide';
 import { CssVarsProvider, ThemeProvider } from '@mui/joy/styles';
 import { useColorScheme } from '@/lib/mui';
 import { joyTheme } from '@/defaultTheme';
@@ -45,12 +45,12 @@ function LayoutWarpper({
 }: {
   children: React.ReactNode
 }) {
-  const { isContract, setIsContract } = useDialogueContext();
+  const { isContract } = useDialogueContext();
   const [open, setOpen] = React.useState<boolean>(false);
   return (
     <>
       <div className="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] text-smd dark:text-gray-300 md:grid-cols-[280px,1fr] md:grid-rows-[1fr]">
-        {!isContract && <LeftSider />}
+        {!isContract && <LeftSide />}
         <div className='relative min-h-0 w-screen'>
           {children}
         </div>
@@ -61,7 +61,7 @@ function LayoutWarpper({
         open={open}
         onClose={() => setOpen(false)}
       >
-        <LeftSider />
+        <LeftSide />
       </MyDrawer>
     </>
   )
