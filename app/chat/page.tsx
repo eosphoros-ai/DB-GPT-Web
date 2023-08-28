@@ -13,11 +13,11 @@ const AgentPage = () => {
 	const showChangeMode = scene && ['chat_with_db_execute', 'chat_dashboard'].includes(scene as string);
 	return (
 		<>
-			<div className='leading-[3rem] text-right pr-3 mb-3 h-16 flex justify-center'>
+			{showChangeMode && <div className='leading-[3rem] text-right pr-3 h-12 flex justify-center'>
         <div className='flex items-center cursor-pointer' onClick={() => { setIsContract(!isContract) }}>
           <ModeTab />
         </div>
-      </div>
+      </div>}
 			{isContract ? (
 				<DbEditor />
 			) : (

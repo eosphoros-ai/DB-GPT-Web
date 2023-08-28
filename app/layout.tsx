@@ -2,7 +2,7 @@
 import './globals.css'
 import '@/nprogress.css';
 import React from 'react';
-import LeftSider from '@/components/leftSider';
+import LeftSide from '@/components/leftSide';
 import { CssVarsProvider, ThemeProvider } from '@mui/joy/styles';
 import { useColorScheme } from '@/lib/mui';
 import { joyTheme } from '@/defaultTheme';
@@ -10,11 +10,13 @@ import TopProgressBar from '@/components/topProgressBar';
 import DialogueContext, { useDialogueContext } from './context/dialogue';
 import { useEffect } from 'react';
 import MyDrawer from '@/components/myDrawer';
+import classNames from 'classnames';
+import { useSearchParams } from 'next/navigation';
 
 function CssWrapper({
   children
 }: {
-  children: React.ReactNode
+  children: React.ReactElement
 }) {
   const { mode } = useColorScheme();
   const ref = React.useRef<HTMLDivElement>(null);
@@ -45,13 +47,17 @@ function LayoutWarpper({
 }: {
   children: React.ReactNode
 }) {
-  const { isContract, setIsContract } = useDialogueContext();
+  const { isContract } = useDialogueContext();
   const [open, setOpen] = React.useState<boolean>(false);
+	const searchParams = useSearchParams();
+	const scene = searchParams.get('scene');
   return (
     <>
       <div className="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] text-smd dark:text-gray-300 md:grid-cols-[280px,1fr] md:grid-rows-[1fr]">
-        {!isContract && <LeftSider />}
-        <div className='relative min-h-0 w-screen'>
+        {!isContract && <LeftSide />}
+        <div className={classNames('relative min-h-0 min-w-0', {
+          'w-screen': isContract
+        })}>
           {children}
         </div>
       </div>
@@ -61,7 +67,7 @@ function LayoutWarpper({
         open={open}
         onClose={() => setOpen(false)}
       >
-        <LeftSider />
+        <LeftSide />
       </MyDrawer>
     </>
   )
