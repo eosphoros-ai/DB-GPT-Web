@@ -389,7 +389,7 @@ function DbEditor() {
   return (
 		<div className="flex flex-col w-full h-full">
 			<div className='bg-[#f8f8f8] border-[var(--joy-palette-divider)] border-b border-solid flex items-center px-3 justify-between'>
-				<div className="absolute right-6 top-4">
+				<div className="absolute right-6 top-2">
 					<Button
 						className="bg-[#1677ff] text-[#fff] hover:bg-[#1c558e]"
 						loading={runLoading || runChartsLoading}
@@ -472,7 +472,7 @@ function DbEditor() {
 								}}
 							>
 								<Tabs
-									className="h-full dark:text-white"
+									className="h-full dark:text-white px-2"
 									activeKey={currentTabIndex}
 									onChange={(activeKey) => {
 										setCurrentTabIndex(activeKey);
