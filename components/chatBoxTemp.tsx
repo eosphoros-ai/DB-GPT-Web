@@ -19,15 +19,13 @@ import { useState, useRef, useEffect, Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { DialogueItem, Message } from '@/types';
-import FaceRetouchingNaturalOutlinedIcon from '@mui/icons-material/FaceRetouchingNaturalOutlined';
-import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
 import Markdown from 'markdown-to-jsx';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
-import { message } from 'antd';
-import ExcelUpload from './ChatPage/ExcelUpload';
+import { message, Tooltip } from 'antd';
+import Image from 'next/image';
 
 type Props = {
   messages: Message[];
@@ -207,32 +205,22 @@ const ChatBoxComp = ({
                         : 'unset',
                     border: 'unset',
                     borderRadius: 'unset',
-                    padding: '24px 0 26px 0',
+                    padding: '10px 0',
                     lineHeight: '24px',
                   })}
                 >
-                  <Box sx={{ width: '76%', margin: '0 auto' }} className="flex flex-row">
-                    <div className="mr-3 inline">
-                      {each.role === 'view' ? <SmartToyOutlinedIcon /> : <FaceRetouchingNaturalOutlinedIcon />}
-                    </div>
-                    <div className="inline align-middle mt-0.5 max-w-full flex-1 overflow-auto">
-                      {isChartChat && each.role === 'view' && typeof each?.context === 'object' ? (
-                        <>
-                          {`[${each.context.template_name}]: `}
-                          <Link
-                            sx={{
-                              color: '#1677ff',
-                            }}
-                            component="button"
-                            onClick={() => {
-                              setJsonModalOpen(true);
-                              setCurrentJsonIndex(index);
-                              setJsonValue(JSON.stringify(each?.context, null, 2));
-                            }}
-                          >
-                            {each.context.template_introduce || '暂无介绍'}
-                          </Link>
-                        </>
+                  <Box sx={{ width: '76%', margin: '0 auto' }} className="flex flex-row items-center">
+                    <div className='mr-3 inline'>
+                      {each.role === 'view' ? (
+                        <div className='flex items-center'>
+                          <Image
+                            src="https://dummyimage.com/50x50/363536/ffffff?text=DB-GPT" alt='db-gpt'
+                            width={50}
+                            height={50}
+                            unoptimized={true}
+                          />
+                          <span>:</span>
+                        </div>
                       ) : (
                         <>
                           {typeof each.context === 'string' && (
@@ -240,6 +228,36 @@ const ChatBoxComp = ({
                           )}
                         </>
                       )}
+                    </div>
+                    <div>
+                      {
+                        (isChartChat && each.role === 'view' && typeof each?.context === 'object') ? (
+                          <>
+                            {/* {`[${each.context.template_name}]: `} */}
+                            <Link
+                              sx={{
+                                color: '#1677ff'
+                              }}
+                              component="button"
+                              onClick={() => {
+                                setJsonModalOpen(true);
+                                setCurrentJsonIndex(index);
+                                setJsonValue(JSON.stringify(each?.context, null, 2)); 
+                              }}
+                            >
+                              {each.context.template_introduce || 'More Details'}
+                            </Link>
+                          </>
+                        ) : (
+                          <>
+                            {typeof each.context === 'string' && (
+                              <Markdown options={options}>
+                                {each.context?.replaceAll?.('\\n', '\n')}
+                              </Markdown>
+                            )}
+                          </>
+                        )
+                      }
                     </div>
                   </Box>
                 </Card>

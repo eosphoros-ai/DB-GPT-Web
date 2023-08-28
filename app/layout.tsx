@@ -7,8 +7,9 @@ import { CssVarsProvider, ThemeProvider } from '@mui/joy/styles';
 import { useColorScheme } from '@/lib/mui';
 import { joyTheme } from '@/defaultTheme';
 import TopProgressBar from '@/components/topProgressBar';
-import DialogueContext from './context/dialogue';
+import DialogueContext, { useDialogueContext } from './context/dialogue';
 import { useEffect } from 'react';
+import MyDrawer from '@/components/myDrawer';
 
 function CssWrapper({
   children
@@ -33,16 +34,36 @@ function CssWrapper({
     <div ref={ref} className='h-full'>
       <TopProgressBar />
       <DialogueContext>
-        <div className={`contents h-full`}>
-          <div className="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] overflow-hidden text-smd dark:text-gray-300 md:grid-cols-[280px,1fr] md:grid-rows-[1fr]">
-            <LeftSider />
-            <div className='relative min-h-0 min-w-0'>
-              {children}
-            </div>
-          </div>
-        </div>
+        {children}
       </DialogueContext>
     </div>
+  )
+}
+
+function LayoutWarpper({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const { isContract, setIsContract } = useDialogueContext();
+  const [open, setOpen] = React.useState<boolean>(false);
+  return (
+    <>
+      <div className="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] text-smd dark:text-gray-300 md:grid-cols-[280px,1fr] md:grid-rows-[1fr]">
+        {!isContract && <LeftSider />}
+        <div className='relative min-h-0 w-screen'>
+          {children}
+        </div>
+      </div>
+      <MyDrawer
+        title="DB-GPT"
+        position="left"
+        open={open}
+        onClose={() => setOpen(false)}
+      >
+        <LeftSider />
+      </MyDrawer>
+    </>
   )
 }
 
@@ -51,14 +72,18 @@ function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  
+
   return (
     <html lang="en" className="h-full font-sans">
       <body className={`h-full font-sans`}>
         <ThemeProvider theme={joyTheme}>
           <CssVarsProvider theme={joyTheme} defaultMode="light">
             <CssWrapper>
-              {children}
+              <div className={`contents h-full`}>
+                <LayoutWarpper>
+                  {children}
+                </LayoutWarpper>
+              </div>
             </CssWrapper>
           </CssVarsProvider>
         </ThemeProvider>
