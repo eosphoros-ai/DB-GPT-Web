@@ -213,7 +213,7 @@ const ChatBoxComp = ({
                   })}
                 >
                   <Box sx={{ width: '76%', margin: '0 auto' }} className="flex flex-row">
-                    {each.role === 'view' ? <SmartToyOutlinedIcon /> : <FaceRetouchingNaturalOutlinedIcon />}
+                    {each.role === 'view' ? <SmartToyOutlinedIcon className='mr-2 mt-1' /> : <FaceRetouchingNaturalOutlinedIcon className='mr-2 mt-1' />}
                     <div className="inline align-middle mt-0.5 max-w-full flex-1 overflow-auto">
                       {
                         (isChartChat && each.role === 'view' && typeof each?.context === 'object') ? (
