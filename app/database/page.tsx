@@ -16,13 +16,35 @@ type DatabaseType = IDatabaseItem['db_type'];
 const iconMap: Record<DatabaseType, string> = {
   mysql: '/icons/mysql.png',
   mssql: '/icons/mssql.png',
-  duckdb: '/icons/sql.png',
+  duckdb: '/icons/duckdb.png',
+  oracle: '/icon/oracle.png',
+  sqlite: '/icon/sqlite.png',
+  access: '/icon/access.png',
+  mongodb: '/icon/mongodb.png',
+  db2: '/icon/db2.png',
+  hbase: '/icon/hbase.png',
+  clickhouse: '/icon/clickhouse.png',
+  redis: '/icon/redis.png',
+  cassandra: '/icon/cassandra.png',
+  couchbase: '/icon/couchbase.png',
+  postgresql: '/icon/postgresql.png',
 };
 
 export const dbOptions: { value: DatabaseType; label: string; isFileDb?: boolean }[] = [
   { label: 'Mysql', value: 'mysql' },
   { label: 'Mssql', value: 'mssql' },
   { label: 'Duckdb', value: 'duckdb', isFileDb: true },
+  { label: 'Oracle', value: 'oracle' },
+  { label: 'Sqlite', value: 'sqlite' },
+  { label: 'Access', value: 'access' },
+  { label: 'Mongodb', value: 'mongodb' },
+  { label: 'DB2', value: 'db2' },
+  { label: 'HBase', value: 'hbase' },
+  { label: 'Clickhouse', value: 'clickhouse' },
+  { label: 'Redis', value: 'redis' },
+  { label: 'Cassandra', value: 'cassandra' },
+  { label: 'Couchbase', value: 'couchbase' },
+  { label: 'Postgresql', value: 'postgresql' },
 ];
 
 export function isFileDb(dbType: DatabaseType) {
@@ -53,9 +75,7 @@ function Database() {
       onOk() {
         return new Promise<void>(async (resolve, reject) => {
           try {
-            const { success, err_msg } = await axios.post<null, IResponseModal<null>>(
-              `/api/v1/chat/db/delete?db_name=${item.db_name}`,
-            );
+            const { success, err_msg } = await axios.post<null, IResponseModal<null>>(`/api/v1/chat/db/delete?db_name=${item.db_name}`);
             if (!success) {
               message.error(err_msg);
               reject();
@@ -106,7 +126,7 @@ function Database() {
                     <div className="flex items-center flex-wrap">
                       <Image
                         className="rounded-full border border-gray-200 mr-3"
-                        src={iconMap[item.db_type] ?? '/icons/sql.png'}
+                        src={iconMap[item.db_type] ?? '/icons/db.png'}
                         alt={item.db_type}
                         width={44}
                         height={44}

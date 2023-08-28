@@ -121,6 +121,20 @@ export interface IDatabaseItem {
   db_path: string;
   db_port: number;
   db_pwd: string;
-  db_type: 'mysql' | 'mssql' | 'duckdb';
+  db_type:
+    | 'mysql'
+    | 'duckdb'
+    | 'sqlite'
+    | 'mssql'
+    | 'clickhouse'
+    | 'oracle'
+    | 'postgresql'
+    | 'db2'
+    | 'access'
+    | 'mongodb'
+    | 'hbase'
+    | 'redis'
+    | 'cassandra'
+    | 'couchbase';
   db_user: string;
 }
