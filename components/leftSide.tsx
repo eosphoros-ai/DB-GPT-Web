@@ -36,7 +36,7 @@ const LeftSide = () => {
   const menus = useMemo(() => {
     return [
       {
-        label: 'Database',
+        label: 'Data Source',
         route: '/database',
         icon: <DatasetIcon fontSize='small' />,
         tooltip: 'Database',
