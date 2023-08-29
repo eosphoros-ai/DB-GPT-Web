@@ -401,10 +401,11 @@ function DbEditor() {
   return (
 		<div className="flex flex-col w-full h-full">
 			<div className='bg-[#f8f8f8] border-[var(--joy-palette-divider)] border-b border-solid flex items-center px-3 justify-between'>
-				<div className="absolute right-6 top-2">
+				<div className="absolute right-4 top-2">
 					<Button
-						className="bg-[#1677ff] text-[#fff] hover:bg-[#1c558e] px-8"
+						className="bg-[#1677ff] text-[#fff] hover:bg-[#1c558e] px-4 cursor-pointer"
 						loading={runLoading || runChartsLoading}
+            size="sm"
 						onClick={async () => {
 							if (scene === 'chat_dashboard') {
 								runCharts();
@@ -417,7 +418,8 @@ function DbEditor() {
 					</Button>
 					<Button
 						variant="outlined"
-						className="ml-3 px-8"
+            size="sm"
+						className="ml-3 px-4 cursor-pointer"
 						loading={submitLoading || submitChartLoading}
 						onClick={async () => {
 							if (scene === 'chat_dashboard') {
