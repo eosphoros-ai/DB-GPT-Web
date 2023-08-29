@@ -16,7 +16,7 @@ const AgentPage = () => {
     // 仅初始化执行，防止dashboard页面无法切换状态
     setIsMenuExpand(scene !== 'chat_dashboard')
     // 路由变了要取消Editor模式，再进来是默认的Preview模式
-    if (scene !== 'chat_dashboard') {
+    if (id && scene) {
       setIsContract(false)
     }
   }, [id, scene, setIsMenuExpand, setIsContract])
