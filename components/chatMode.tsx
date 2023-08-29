@@ -118,7 +118,7 @@ const ChatMode = () => {
   }, [chartsData]);
 
   return (
-    <Grid container spacing={2} className="h-full overflow-auto px-3" sx={{ flexGrow: 1 }}>
+    <Grid container spacing={2} className="h-full overflow-auto" sx={{ flexGrow: 1 }}>
       {chartsData && (
         <Grid xs={8} className="max-h-full">
           <div className="flex flex-col gap-3 h-full">

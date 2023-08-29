@@ -55,7 +55,7 @@ function LayoutWrapper({
         'md:grid-cols-[60px,1fr]': !isMenuExpand
       })}>
         <LeftSide />
-        <div className={classNames('relative min-h-0 min-w-0 overflow-hidden', {
+        <div className={classNames('relative min-h-0 min-w-0 overflow-hidden px-3', {
           'w-[calc(100vw - 76px)]': isContract
         })}>
           {children}
