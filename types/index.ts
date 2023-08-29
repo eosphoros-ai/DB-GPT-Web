@@ -56,10 +56,7 @@ export type EditorWillMount = (monaco: typeof monacoEditor) => void | EditorCons
 
 export type EditorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: typeof monacoEditor) => void;
 
-export type EditorWillUnmount = (
-  editor: monacoEditor.editor.IStandaloneCodeEditor,
-  monaco: typeof monacoEditor,
-) => void | EditorConstructionOptions;
+export type EditorWillUnmount = (editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: typeof monacoEditor) => void | EditorConstructionOptions;
 
 export type ChangeHandler = (value: string, event: monacoEditor.editor.IModelContentChangedEvent) => void;
 
@@ -105,22 +102,4 @@ export interface MonacoEditorProps extends MonacoEditorBaseProps {
    * Let the language be inferred from the uri
    */
   uri?: (monaco: typeof monacoEditor) => monacoEditor.Uri;
-}
-
-export interface IResponseModal<T = any> {
-  data: T;
-  err_code: string | null;
-  err_msg: string | null;
-  success: boolean;
-}
-
-export interface IDatabaseItem {
-  comment: string;
-  db_host: string;
-  db_name: string;
-  db_path: string;
-  db_port: number;
-  db_pwd: string;
-  db_type: 'mysql' | 'mssql' | 'duckdb';
-  db_user: string;
 }
