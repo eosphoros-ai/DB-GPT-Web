@@ -5,7 +5,7 @@
   },
   "prettier.arrowParens": "always",
   "prettier.tabWidth": 2,
-  "prettier.printWidth": 120,
+  "prettier.printWidth": 150,
   "prettier.singleQuote": true,
   "prettier.semi": true,
   "prettier.trailingComma": "all",
