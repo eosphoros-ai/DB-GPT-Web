@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { ApiResponse } from './types/request.type';
 
 const ins = axios.create({
-  baseURL: `${process.env.API_BASE_URL}/api/v1`,
+  baseURL: `${process.env.API_BASE_URL ?? ''}/api/v1`,
   timeout: 10000,
 });
 
