@@ -2,7 +2,7 @@
 import './globals.css'
 import '@/nprogress.css';
 import React from 'react';
-import LeftSider from '@/components/leftSider';
+import LeftSide from '@/components/leftSide';
 import { CssVarsProvider, ThemeProvider } from '@mui/joy/styles';
 import { useColorScheme } from '@/lib/mui';
 import { joyTheme } from '@/defaultTheme';
@@ -10,11 +10,12 @@ import TopProgressBar from '@/components/topProgressBar';
 import DialogueContext, { useDialogueContext } from './context/dialogue';
 import { useEffect } from 'react';
 import MyDrawer from '@/components/myDrawer';
+import classNames from 'classnames';
 
 function CssWrapper({
   children
 }: {
-  children: React.ReactNode
+  children: React.ReactElement
 }) {
   const { mode } = useColorScheme();
   const ref = React.useRef<HTMLDivElement>(null);
@@ -40,29 +41,26 @@ function CssWrapper({
   )
 }
 
-function LayoutWarpper({
+function LayoutWrapper({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { isContract, setIsContract } = useDialogueContext();
+  const { isContract, isMenuExpand } = useDialogueContext();
   const [open, setOpen] = React.useState<boolean>(false);
   return (
     <>
-      <div className="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] text-smd dark:text-gray-300 md:grid-cols-[280px,1fr] md:grid-rows-[1fr]">
-        {!isContract && <LeftSider />}
-        <div className='relative min-h-0 w-screen'>
+      <div className={classNames('grid h-full w-full grid-cols-1 grid-rows-[auto,1fr] text-smd dark:text-gray-300 md:grid-rows-[1fr] transition-width duration-500', {
+        'md:grid-cols-[280px,1fr]': isMenuExpand,
+        'md:grid-cols-[60px,1fr]': !isMenuExpand
+      })}>
+        <LeftSide />
+        <div className={classNames('relative min-h-0 min-w-0 overflow-hidden', {
+          'w-[calc(100vw - 76px)]': isContract
+        })}>
           {children}
         </div>
       </div>
-      <MyDrawer
-        title="DB-GPT"
-        position="left"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
-        <LeftSider />
-      </MyDrawer>
     </>
   )
 }
@@ -80,9 +78,9 @@ function RootLayout({
           <CssVarsProvider theme={joyTheme} defaultMode="light">
             <CssWrapper>
               <div className={`contents h-full`}>
-                <LayoutWarpper>
+                <LayoutWrapper>
                   {children}
-                </LayoutWarpper>
+                </LayoutWrapper>
               </div>
             </CssWrapper>
           </CssVarsProvider>

@@ -19,13 +19,16 @@ import { useState, useRef, useEffect, Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { DialogueItem, Message } from '@/types';
+import FaceRetouchingNaturalOutlinedIcon from '@mui/icons-material/FaceRetouchingNaturalOutlined';
+import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
 import Markdown from 'markdown-to-jsx';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
-import { message, Tooltip } from 'antd';
+import { message } from 'antd';
 import Image from 'next/image';
+import ExcelUpload from './ChatPage/ExcelUpload';
 
 type Props = {
   messages: Message[];
@@ -205,35 +208,17 @@ const ChatBoxComp = ({
                         : 'unset',
                     border: 'unset',
                     borderRadius: 'unset',
-                    padding: '10px 0',
+                    padding: '24px 0 26px 0',
                     lineHeight: '24px',
                   })}
                 >
-                  <Box sx={{ width: '76%', margin: '0 auto' }} className="flex flex-row items-center">
-                    <div className='mr-3 inline'>
-                      {each.role === 'view' ? (
-                        <div className='flex items-center'>
-                          <Image
-                            src="https://dummyimage.com/50x50/363536/ffffff?text=DB-GPT" alt='db-gpt'
-                            width={50}
-                            height={50}
-                            unoptimized={true}
-                          />
-                          <span>:</span>
-                        </div>
-                      ) : (
-                        <>
-                          {typeof each.context === 'string' && (
-                            <Markdown options={options}>{each.context?.replaceAll?.('\\n', '\n')}</Markdown>
-                          )}
-                        </>
-                      )}
-                    </div>
-                    <div>
+                  <Box sx={{ width: '76%', margin: '0 auto' }} className="flex flex-row">
+                    {each.role === 'view' ? <SmartToyOutlinedIcon className='mr-2 mt-1' /> : <FaceRetouchingNaturalOutlinedIcon className='mr-2 mt-1' />}
+                    <div className="inline align-middle mt-0.5 max-w-full flex-1 overflow-auto">
                       {
                         (isChartChat && each.role === 'view' && typeof each?.context === 'object') ? (
                           <>
-                            {/* {`[${each.context.template_name}]: `} */}
+                            {`[${each.context.template_name}]: `}
                             <Link
                               sx={{
                                 color: '#1677ff'
