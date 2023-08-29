@@ -66,7 +66,7 @@ function Database() {
     }) as DBOption[];
     const unSupportDbList = Object.keys(dbMapper)
       .filter((item) => !supportDbList.some((db) => db.value === item))
-      .map((item) => ({ ...dbMapper[item], disabled: true })) as DBOption[];
+      .map((item) => ({ ...dbMapper[item], value: dbMapper[item].label, disabled: true })) as DBOption[];
     return [...supportDbList, ...unSupportDbList];
   }, [dbSupportList]);
 
@@ -114,7 +114,6 @@ function Database() {
 
   const handleDbTypeClick = (info: DBOption) => {
     const dbItems = dbList.filter((item) => item.db_type === info.value);
-    console.log(dbItems);
     setDraw({ open: true, dbList: dbItems, name: info.label, type: info.value });
   };
 
