@@ -8,7 +8,7 @@ export default function TableChart({ key, chart } : {
 }) {
   const data = groupBy(chart.values, 'type');
   return (
-    <div className="flex-1" key={key}>
+    <div className="flex-1 min-w-0" key={key}>
       <Card className="h-full overflow-auto" sx={{ background: 'transparent' }}>
         <CardContent className="h-full">
           <Typography gutterBottom component="div">

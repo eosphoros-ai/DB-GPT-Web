@@ -1,20 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import {
-  Card,
-  CircularProgress,
-  IconButton,
-  Input,
-  Stack,
-  Select,
-  Option,
-  Box,
-  Modal,
-  ModalDialog,
-  ModalClose,
-  Button,
-  Link,
-} from '@/lib/mui';
+import { Card, CircularProgress, IconButton, Input, Stack, Select, Option, Box, Modal, ModalDialog, ModalClose, Button, Link } from '@/lib/mui';
 import { useState, useRef, useEffect, Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -47,16 +33,7 @@ type Props = {
 
 const Schema = z.object({ query: z.string().min(1) });
 
-const ChatBoxComp = ({
-  messages,
-  dialogue,
-  onSubmit,
-  readOnly,
-  paramsList,
-  onRefreshHistory,
-  clearIntialMessage,
-  setChartsData,
-}: Props) => {
+const ChatBoxComp = ({ messages, dialogue, onSubmit, readOnly, paramsList, onRefreshHistory, clearIntialMessage, setChartsData }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams.get('initMessage');
   const spaceNameOriginal = searchParams.get('spaceNameOriginal');
@@ -202,10 +179,7 @@ const ChatBoxComp = ({
                   variant={'outlined'}
                   color={each.role === 'view' ? 'primary' : 'neutral'}
                   sx={(theme) => ({
-                    background:
-                      each.role === 'view'
-                        ? 'var(--joy-palette-primary-softBg, var(--joy-palette-primary-100, #DDF1FF))'
-                        : 'unset',
+                    background: each.role === 'view' ? 'var(--joy-palette-primary-softBg, var(--joy-palette-primary-100, #DDF1FF))' : 'unset',
                     border: 'unset',
                     borderRadius: 'unset',
                     padding: '24px 0 26px 0',
@@ -213,36 +187,28 @@ const ChatBoxComp = ({
                   })}
                 >
                   <Box sx={{ width: '76%', margin: '0 auto' }} className="flex flex-row">
-                    {each.role === 'view' ? <SmartToyOutlinedIcon /> : <FaceRetouchingNaturalOutlinedIcon />}
+                    {each.role === 'view' ? <SmartToyOutlinedIcon className='mr-2 mt-1' /> : <FaceRetouchingNaturalOutlinedIcon className='mr-2 mt-1' />}
                     <div className="inline align-middle mt-0.5 max-w-full flex-1 overflow-auto">
-                      {
-                        (isChartChat && each.role === 'view' && typeof each?.context === 'object') ? (
-                          <>
-                            {`[${each.context.template_name}]: `}
-                            <Link
-                              sx={{
-                                color: '#1677ff'
-                              }}
-                              component="button"
-                              onClick={() => {
-                                setJsonModalOpen(true);
-                                setCurrentJsonIndex(index);
-                                setJsonValue(JSON.stringify(each?.context, null, 2)); 
-                              }}
-                            >
-                              {each.context.template_introduce || 'More Details'}
-                            </Link>
-                          </>
-                        ) : (
-                          <>
-                            {typeof each.context === 'string' && (
-                              <Markdown options={options}>
-                                {each.context?.replaceAll?.('\\n', '\n')}
-                              </Markdown>
-                            )}
-                          </>
-                        )
-                      }
+                      {isChartChat && each.role === 'view' && typeof each?.context === 'object' ? (
+                        <>
+                          {`[${each.context.template_name}]: `}
+                          <Link
+                            sx={{
+                              color: '#1677ff',
+                            }}
+                            component="button"
+                            onClick={() => {
+                              setJsonModalOpen(true);
+                              setCurrentJsonIndex(index);
+                              setJsonValue(JSON.stringify(each?.context, null, 2));
+                            }}
+                          >
+                            {each.context.template_introduce || 'More Details'}
+                          </Link>
+                        </>
+                      ) : (
+                        <>{typeof each.context === 'string' && <Markdown options={options}>{each.context?.replaceAll?.('\\n', '\n')}</Markdown>}</>
+                      )}
                     </div>
                   </Box>
                 </Card>

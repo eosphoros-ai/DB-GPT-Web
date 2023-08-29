@@ -7,7 +7,7 @@ export default function LineChart({ key, chart } : {
   chart: ChartData
 }) {
   return (
-    <div className="flex-1" key={key}>
+    <div className="flex-1 min-w-0" key={key}>
       <Card className="h-full" sx={{ background: 'transparent' }}>
         <CardContent className="h-full">
           <Typography gutterBottom component="div">

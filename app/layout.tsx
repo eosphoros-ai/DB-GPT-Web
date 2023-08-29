@@ -11,7 +11,6 @@ import DialogueContext, { useDialogueContext } from './context/dialogue';
 import { useEffect } from 'react';
 import MyDrawer from '@/components/myDrawer';
 import classNames from 'classnames';
-import { useSearchParams } from 'next/navigation';
 
 function CssWrapper({
   children
@@ -42,33 +41,26 @@ function CssWrapper({
   )
 }
 
-function LayoutWarpper({
+function LayoutWrapper({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { isContract } = useDialogueContext();
+  const { isContract, isMenuExpand } = useDialogueContext();
   const [open, setOpen] = React.useState<boolean>(false);
-	const searchParams = useSearchParams();
-	const scene = searchParams.get('scene');
   return (
     <>
-      <div className="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] text-smd dark:text-gray-300 md:grid-cols-[280px,1fr] md:grid-rows-[1fr]">
-        {!isContract && <LeftSide />}
-        <div className={classNames('relative min-h-0 min-w-0', {
-          'w-screen': isContract
+      <div className={classNames('grid h-full w-full grid-cols-1 grid-rows-[auto,1fr] text-smd dark:text-gray-300 md:grid-rows-[1fr] transition-width duration-500', {
+        'md:grid-cols-[280px,1fr]': isMenuExpand,
+        'md:grid-cols-[60px,1fr]': !isMenuExpand
+      })}>
+        <LeftSide />
+        <div className={classNames('relative min-h-0 min-w-0 overflow-hidden px-3', {
+          'w-[calc(100vw - 76px)]': isContract
         })}>
           {children}
         </div>
       </div>
-      <MyDrawer
-        title="DB-GPT"
-        position="left"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
-        <LeftSide />
-      </MyDrawer>
     </>
   )
 }
@@ -86,9 +78,9 @@ function RootLayout({
           <CssVarsProvider theme={joyTheme} defaultMode="light">
             <CssWrapper>
               <div className={`contents h-full`}>
-                <LayoutWarpper>
+                <LayoutWrapper>
                   {children}
-                </LayoutWarpper>
+                </LayoutWrapper>
               </div>
             </CssWrapper>
           </CssVarsProvider>
