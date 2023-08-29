@@ -1,12 +1,4 @@
-import { NextApiRequest, NextPage } from 'next/types';
-import { Session } from 'next-auth';
-import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-
 export type Message = { role: 'human' | 'view'; context: string; createdAt?: Date };
-
-export type AppNextApiRequest = NextApiRequest & {
-  session: Session;
-};
 
 export interface DialogueItem {
   chat_mode: string;
