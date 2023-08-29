@@ -253,7 +253,7 @@ const LeftSide = () => {
             </div>
           ))}
           <ListItem>
-            <ListItemButton className='h-10'
+            <ListItemButton
               onClick={handleChangeTheme}
             >
               <Tooltip title="Theme">
@@ -268,7 +268,7 @@ const LeftSide = () => {
             </ListItemButton>
           </ListItem>
           <ListItem>
-            <ListItemButton className='h-10'
+            <ListItemButton
               onClick={() => { setIsMenuExpand(true) }}
             >
               <Tooltip title="Expand Sidebar">
