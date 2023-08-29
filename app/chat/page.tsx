@@ -23,7 +23,7 @@ const AgentPage = () => {
 	return (
 		<>
 			{showChangeMode && <div className='leading-[3rem] text-right pr-3 h-12 flex justify-center'>
-        <div className='flex items-center cursor-pointer' onClick={() => { setIsContract(!isContract) }}>
+        <div className='flex items-center cursor-pointer'>
           <ModeTab />
         </div>
       </div>}
