@@ -21,19 +21,23 @@ type DBItem = GetChatDbListResponse[0];
 
 const dbMapper: Record<DBType, { label: string; icon: string; desc: string }> = {
   mysql: { label: 'Mysql', icon: '/icons/mysql.png', desc: 'Fast, reliable, scalable open-source relational database management system.' },
-  mssql: { label: 'Mssql', icon: '/icons/mssql.png', desc: 'Powerful, scalable, secure relational database system by Microsoft.' },
+  mssql: { label: 'MSSQL', icon: '/icons/mssql.png', desc: 'Powerful, scalable, secure relational database system by Microsoft.' },
   duckdb: { label: 'Duckdb', icon: '/icons/duckdb.png', desc: 'In-memory analytical database with efficient query processing.' },
-  sqlite: { label: 'Sqlite', icon: '/icons/db.png', desc: 'Lightweight embedded relational database with simplicity and portability.' },
-  clickhouse: { label: 'Clickhouse', icon: '/icons/clickhouse.png', desc: 'Columnar database for high-performance analytics and real-time queries.' },
+  sqlite: { label: 'Sqlite', icon: '/icons/sqlite.png', desc: 'Lightweight embedded relational database with simplicity and portability.' },
+  clickhouse: { label: 'ClickHouse', icon: '/icons/clickhouse.png', desc: 'Columnar database for high-performance analytics and real-time queries.' },
   oracle: { label: 'Oracle', icon: '/icons/oracle.png', desc: 'Robust, scalable, secure relational database widely used in enterprises.' },
-  access: { label: 'Access', icon: '/icons/db.png', desc: 'Easy-to-use relational database for small-scale applications by Microsoft.' },
-  mongodb: { label: 'Mongodb', icon: '/icons/mongodb.png', desc: 'Flexible, scalable NoSQL document database for web and mobile apps.' },
-  db2: { label: 'DB2', icon: '/icons/db.png', desc: 'Scalable, secure relational database system developed by IBM.' },
-  hbase: { label: 'HBase', icon: '/icons/db.png', desc: 'Distributed, scalable NoSQL database for large structured/semi-structured data.' },
-  redis: { label: 'Redis', icon: '/icons/db.png', desc: 'Fast, versatile in-memory data structure store as cache, DB, or broker.' },
-  cassandra: { label: 'Cassandra', icon: '/icons/db.png', desc: 'Scalable, fault-tolerant distributed NoSQL database for large data.' },
-  couchbase: { label: 'Couchbase', icon: '/icons/db.png', desc: 'High-performance NoSQL document database with distributed architecture.' },
-  postgresql: { label: 'Postgresql', icon: '/icons/db.png', desc: 'Powerful open-source relational database with extensibility and SQL standards.' },
+  access: { label: 'Access', icon: '/icons/access.png', desc: 'Easy-to-use relational database for small-scale applications by Microsoft.' },
+  mongodb: { label: 'MongoDB', icon: '/icons/mongodb.png', desc: 'Flexible, scalable NoSQL document database for web and mobile apps.' },
+  db2: { label: 'DB2', icon: '/icons/db2.png', desc: 'Scalable, secure relational database system developed by IBM.' },
+  hbase: { label: 'HBase', icon: '/icons/hbase.png', desc: 'Distributed, scalable NoSQL database for large structured/semi-structured data.' },
+  redis: { label: 'Redis', icon: '/icons/redis.png', desc: 'Fast, versatile in-memory data structure store as cache, DB, or broker.' },
+  cassandra: { label: 'Cassandra', icon: '/icons/cassandra.png', desc: 'Scalable, fault-tolerant distributed NoSQL database for large data.' },
+  couchbase: { label: 'Couchbase', icon: '/icons/couchbase.png', desc: 'High-performance NoSQL document database with distributed architecture.' },
+  postgresql: {
+    label: 'Postgresql',
+    icon: '/icons/postgresql.png',
+    desc: 'Powerful open-source relational database with extensibility and SQL standards.',
+  },
 };
 
 export function isFileDb(dbTypeList: DBOption[], dbType: DBType) {
@@ -44,7 +48,7 @@ function Database() {
   const [dbList, setDbList] = useState<GetChatDbListResponse>([]);
   const [dbSupportList, setDbSupportList] = useState<GetChatDbSupportTypeResponse>([]);
   const [loading, setLoading] = useState(false);
-  const [modal, setModal] = useState<{ open: boolean; info?: DBItem }>({ open: false });
+  const [modal, setModal] = useState<{ open: boolean; info?: DBItem; dbType?: DBType }>({ open: false });
   const [draw, setDraw] = useState<{ open: boolean; dbList?: GetChatDbListResponse; name?: string; type?: DBType }>({ open: false });
 
   const getDbSupportList = async () => {
@@ -148,14 +152,15 @@ function Database() {
       <FormDialog
         open={modal.open}
         dbTypeList={dbTypeList}
+        choiceDBType={modal.dbType}
         editValue={modal.info}
         dbNames={dbList.map((item) => item.db_name)}
         onSuccess={() => {
-          setModal({ open: false, info: undefined });
+          setModal({ open: false });
           getDbList();
         }}
         onClose={() => {
-          setModal({ open: false, info: undefined });
+          setModal({ open: false });
         }}
       />
       <Drawer
@@ -205,7 +210,7 @@ function Database() {
               className="flex items-center mx-auto"
               icon={<PlusOutlined />}
               onClick={() => {
-                setModal({ open: true });
+                setModal({ open: true, dbType: draw.type });
               }}
             >
               Create Now
