@@ -1,6 +1,6 @@
-'use client'
-import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
+'use client';
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
 
 const resources = {
   en: {
@@ -57,22 +57,17 @@ const resources = {
       'Please input the text': 'Please input the text',
       Embedding: 'Embedding',
       topk: 'topk',
-      'the top k vectors based on similarity score':
-        'the top k vectors based on similarity score',
+      'the top k vectors based on similarity score': 'the top k vectors based on similarity score',
       recall_score: 'recall_score',
-      'Set a threshold score for the retrieval of similar vectors':
-        'Set a threshold score for the retrieval of similar vectors',
+      'Set a threshold score for the retrieval of similar vectors': 'Set a threshold score for the retrieval of similar vectors',
       recall_type: 'recall_type',
       'recall type': 'recall type',
       model: 'model',
-      'A model used to create vector representations of text or other data':
-        'A model used to create vector representations of text or other data',
+      'A model used to create vector representations of text or other data': 'A model used to create vector representations of text or other data',
       chunk_size: 'chunk_size',
-      'The size of the data chunks used in processing':
-        'The size of the data chunks used in processing',
+      'The size of the data chunks used in processing': 'The size of the data chunks used in processing',
       chunk_overlap: 'chunk_overlap',
-      'The amount of overlap between adjacent data chunks':
-        'The amount of overlap between adjacent data chunks',
+      'The amount of overlap between adjacent data chunks': 'The amount of overlap between adjacent data chunks',
       Prompt: 'Prompt',
       scene: 'scene',
       'A contextual parameter used to define the setting or environment in which the prompt is being used':
@@ -81,8 +76,7 @@ const resources = {
       'A pre-defined structure or format for the prompt, which can help ensure that the AI system generates responses that are consistent with the desired style or tone.':
         'A pre-defined structure or format for the prompt, which can help ensure that the AI system generates responses that are consistent with the desired style or tone.',
       max_token: 'max_token',
-      'The maximum number of tokens or words allowed in a prompt':
-        'The maximum number of tokens or words allowed in a prompt',
+      'The maximum number of tokens or words allowed in a prompt': 'The maximum number of tokens or words allowed in a prompt',
       Theme: 'Theme',
       'database list': 'database list',
       'Link address/domain name': 'Address',
@@ -92,8 +86,10 @@ const resources = {
       Remark: 'Remark',
       'Add a new line': 'Add a new line',
       Edit: 'Edit',
-      Database: 'Database'
-    }
+      Database: 'Database',
+      'Data Source': 'Data Source',
+      'Close Sidebar': 'Close Sidebar',
+    },
   },
   zh: {
     translation: {
@@ -111,8 +107,7 @@ const resources = {
       Description: '描述',
       'Please input the description': '请输入描述',
       Next: '下一步',
-      'the name can only contain numbers, letters, Chinese characters, "-" and "_"':
-        '名称只能包含数字、字母、中文字符、-或_',
+      'the name can only contain numbers, letters, Chinese characters, "-" and "_"': '名称只能包含数字、字母、中文字符、-或_',
       Text: '文本',
       'Fill your raw text': '填写您的原始文本',
       URL: '网址',
@@ -149,22 +144,17 @@ const resources = {
       'Please input the text': '请输入文本',
       Embedding: '嵌入',
       topk: '球',
-      'the top k vectors based on similarity score':
-        '基于相似度得分的前 k 个向量',
+      'the top k vectors based on similarity score': '基于相似度得分的前 k 个向量',
       recall_score: '召回分数',
-      'Set a threshold score for the retrieval of similar vectors':
-        '设置相似向量检索的阈值分数',
+      'Set a threshold score for the retrieval of similar vectors': '设置相似向量检索的阈值分数',
       recall_type: '回忆类型',
       'recall type': '回忆类型',
       model: '模型',
-      'A model used to create vector representations of text or other data':
-        '用于创建文本或其他数据的矢量表示的模型',
+      'A model used to create vector representations of text or other data': '用于创建文本或其他数据的矢量表示的模型',
       chunk_size: '块大小',
-      'The size of the data chunks used in processing':
-        '处理中使用的数据块的大小',
+      'The size of the data chunks used in processing': '处理中使用的数据块的大小',
       chunk_overlap: '块重叠',
-      'The amount of overlap between adjacent data chunks':
-        '相邻数据块之间的重叠量',
+      'The amount of overlap between adjacent data chunks': '相邻数据块之间的重叠量',
       Prompt: '迅速的',
       scene: '场景',
       'A contextual parameter used to define the setting or environment in which the prompt is being used':
@@ -173,8 +163,7 @@ const resources = {
       'A pre-defined structure or format for the prompt, which can help ensure that the AI system generates responses that are consistent with the desired style or tone.':
         '预定义的提示结构或格式，有助于确保人工智能系统生成与所需风格或语气一致的响应。',
       max_token: '最大令牌',
-      'The maximum number of tokens or words allowed in a prompt':
-        '提示中允许的最大标记或单词数',
+      'The maximum number of tokens or words allowed in a prompt': '提示中允许的最大标记或单词数',
       Theme: '主题',
       'database list': '数据库列表',
       'Link address/domain name': '链接地址/域名',
@@ -184,17 +173,19 @@ const resources = {
       Remark: '备注',
       'Add a new line': '新增一行',
       Edit: '编辑',
-      Database: '数据库'
-    }
-  }
-}
+      Database: '数据库',
+      'Data Source': '数据源',
+      'Close Sidebar': '关闭侧边栏',
+    },
+  },
+};
 
 i18n.use(initReactI18next).init({
   resources,
   lng: 'en',
   interpolation: {
-    escapeValue: false
-  }
-})
+    escapeValue: false,
+  },
+});
 
-export default i18n
+export default i18n;

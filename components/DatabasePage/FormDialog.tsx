@@ -1,23 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { dbOptions, isFileDb } from '@/app/database/page';
-import { IDatabaseItem, IResponseModal } from '@/types';
+import { DBOption, isFileDb } from '@/app/database/page';
 import { Button, Form, Input, InputNumber, Modal, Select, message } from 'antd';
-import { useEffect, useState } from 'react';
-import axios from '@/utils/ctx-axios';
+import { useEffect, useMemo, useState } from 'react';
+import { GetChatDbListResponse, PostChatDbParams, apiInterceptors, postChatDbAdd, postChatDbEdit } from '@/client/api';
+
+type DBItem = GetChatDbListResponse[0];
 
 interface Props {
+  dbTypeList: DBOption[];
   open: boolean;
-  editValue?: IDatabaseItem;
+  editValue?: DBItem;
   dbNames: string[];
   onSuccess?: () => void;
   onClose?: () => void;
 }
 
-function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
+function FormDialog({ open, dbTypeList, editValue, dbNames, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
 
-  const [form] = Form.useForm<IDatabaseItem>();
+  const [form] = Form.useForm<DBItem>();
   const dbType = Form.useWatch('db_type', form);
+
+  const fileDb = useMemo(() => isFileDb(dbTypeList, dbType), [dbTypeList, dbType]);
 
   useEffect(() => {
     if (editValue) {
@@ -31,14 +35,13 @@ function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
     }
   }, [open]);
 
-  const onFinish = async (val: IDatabaseItem) => {
+  const onFinish = async (val: DBItem) => {
     const { db_host, db_path, db_port, ...params } = val;
     if (!editValue && dbNames.some((item) => item === params.db_name)) {
       message.error('The database already exists!');
       return;
     }
-    const fileDb = isFileDb(dbType);
-    const data: Partial<IDatabaseItem & { file_path: string }> = {
+    const data: PostChatDbParams = {
       db_host: fileDb ? undefined : db_host,
       db_port: fileDb ? undefined : db_port,
       file_path: fileDb ? db_path : undefined,
@@ -46,14 +49,9 @@ function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
     };
     setLoading(true);
     try {
-      let res: IResponseModal<null>;
-      if (editValue) {
-        res = await axios.post<typeof data, IResponseModal<null>>('/api/v1/chat/db/edit', data);
-      } else {
-        res = await axios.post<typeof data, IResponseModal<null>>('/api/v1/chat/db/add', data);
-      }
-      if (!res.success) {
-        message.error(res.err_msg);
+      const [err] = await apiInterceptors((editValue ? postChatDbEdit : postChatDbAdd)(data));
+      if (err) {
+        message.error(err.message);
         return;
       }
       message.success('success');
@@ -68,8 +66,8 @@ function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
   return (
     <Modal open={open} width={400} title={editValue ? 'Edit DB Connect' : 'Create DB Connenct'} maskClosable={false} footer={null} onCancel={onClose}>
       <Form form={form} className="pt-2" labelCol={{ span: 6 }} labelAlign="left" onFinish={onFinish}>
-        <Form.Item name="db_type" label="SQL Type" className="mb-3" rules={[{ required: true }]}>
-          <Select options={dbOptions} />
+        <Form.Item name="db_type" label="DB Type" className="mb-3" rules={[{ required: true }]}>
+          <Select aria-readonly={!!editValue} disabled={!!editValue} options={dbTypeList} />
         </Form.Item>
         <Form.Item name="db_name" label="DB Name" className="mb-3" rules={[{ required: true }]}>
           <Input readOnly={!!editValue} disabled={!!editValue} />
@@ -80,7 +78,7 @@ function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
         <Form.Item name="db_pwd" label="Password" className="mb-3" rules={[{ required: true }]}>
           <Input type="password" />
         </Form.Item>
-        {isFileDb(dbType) ? (
+        {fileDb ? (
           <Form.Item name="db_path" label="Path" className="mb-3" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
@@ -89,7 +87,7 @@ function FormDialog({ open, editValue, dbNames, onClose, onSuccess }: Props) {
             <Input />
           </Form.Item>
         )}
-        {!isFileDb(dbType) && (
+        {!fileDb && (
           <Form.Item name="db_port" label="Port" className="mb-3" rules={[{ required: true }]}>
             <InputNumber min={1} step={1} max={65535} />
           </Form.Item>

@@ -1,14 +1,16 @@
 'use client';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Chart, LineAdvance, Interval, Tooltip, getTheme } from 'bizcharts';
-import { Card, CardContent, Typography, Grid, Table, Skeleton, AspectRatio, Box, aspectRatioClasses } from '@/lib/mui';
+import { Card, CardContent, Typography, Grid, Skeleton, AspectRatio, Box, aspectRatioClasses } from '@/lib/mui';
 import { useRequest } from 'ahooks';
 import { sendGetRequest, sendPostRequest } from '@/utils/request';
 import useAgentChat from '@/hooks/useAgentChat';
 import ChatBoxComp from '@/components/chatBoxTemp';
 import { useDialogueContext } from '@/app/context/dialogue';
 import { useSearchParams } from 'next/navigation';
-import lodash from 'lodash';
+import { ChartData } from '@/types/chart';
+import LineChart from './Chart/LineChart';
+import BarChart from './Chart/BarChart';
+import TableChart from './Chart/TableChart';
 
 const ChartSkeleton = () => {
   return (
@@ -31,7 +33,7 @@ const ChartSkeleton = () => {
 };
 
 const ChatMode = () => {
-  const [chartsData, setChartsData] = useState();
+  const [chartsData, setChartsData] = useState<Array<ChartData>>();
   const buttonRef = React.useRef(null);
   const [open, setOpen] = React.useState(false);
   const searchParams = useSearchParams();
@@ -39,10 +41,7 @@ const ChatMode = () => {
   const id = searchParams.get('id');
   const scene = searchParams.get('scene');
 
-  const currentDialogue = useMemo(
-    () => ((dialogueList?.data ?? []) as any[]).find((item) => item.conv_uid === id),
-    [id, dialogueList],
-  );
+  const currentDialogue = useMemo(() => ((dialogueList?.data ?? []) as any[]).find((item) => item.conv_uid === id), [id, dialogueList]);
 
   const { data: historyList, run: runHistoryList } = useRequest(
     async () =>
@@ -63,14 +62,6 @@ const ChatMode = () => {
     ready: !!scene && !!['chat_with_db_execute', 'chat_with_db_qa'].includes(scene),
   });
 
-  const { data: paramsList, run: runParamsList } = useRequest(
-    async () => await sendPostRequest(`/v1/chat/mode/params/list?chat_mode=${scene}`),
-    {
-      ready: !!scene,
-      refreshDeps: [id, scene],
-    },
-  );
-
   const { history, handleChatSubmit } = useAgentChat({
     queryAgentURL: `/v1/chat/completions`,
     queryBody: {
@@ -79,6 +70,11 @@ const ChatMode = () => {
     },
     initHistory: historyList?.data,
     runHistoryList,
+  });
+
+  const { data: paramsList, run: runParamsList } = useRequest(async () => await sendPostRequest(`/v1/chat/mode/params/list?chat_mode=${scene}`), {
+    ready: !!scene,
+    refreshDeps: [id, scene],
   });
 
   useEffect(() => {
@@ -98,8 +94,7 @@ const ChatMode = () => {
       const chartCalc = chartsData?.filter((item) => item.chart_type === 'IndicatorValue');
       if (chartCalc.length > 0) {
         res.push({
-          rowIndex: res.length,
-          cols: chartCalc,
+          charts: chartCalc,
           type: 'IndicatorValue',
         });
       }
@@ -108,14 +103,12 @@ const ChatMode = () => {
       let curIndex = 0;
       // charts 数量 3～8个，暂定每行排序
       let chartLengthMap = [[0], [1], [2], [1, 2], [1, 3], [2, 1, 2], [2, 1, 3], [3, 1, 3], [3, 2, 3]];
-      let currentRowsSort = chartLengthMap[otherLength];
-      currentRowsSort.forEach((item) => {
+      chartLengthMap[otherLength].forEach((item) => {
         if (item > 0) {
           const rowsItem = otherCharts.slice(curIndex, curIndex + item);
           curIndex = curIndex + item;
           res.push({
-            rowIndex: res.length,
-            cols: rowsItem,
+            charts: rowsItem,
           });
         }
       });
@@ -125,20 +118,17 @@ const ChatMode = () => {
   }, [chartsData]);
 
   return (
-    <Grid container spacing={2} className="h-full" sx={{ flexGrow: 1 }}>
+    <Grid container spacing={2} className="h-full overflow-auto" sx={{ flexGrow: 1 }}>
       {chartsData && (
         <Grid xs={8} className="max-h-full">
           <div className="flex flex-col gap-3 h-full">
-            {chartRows?.map((chartRow) => (
-              <div
-                key={chartRow.rowIndex}
-                className={`${chartRow?.type !== 'IndicatorValue' ? 'flex flex-1 gap-3 overflow-hidden' : ''}`}
-              >
-                {chartRow.cols.map((col) => {
-                  if (col.chart_type === 'IndicatorValue') {
+            {chartRows?.map((chartRow, index) => (
+              <div key={`chart_row_${index}`} className={`${chartRow?.type !== 'IndicatorValue' ? 'flex gap-3' : ''}`}>
+                {chartRow.charts.map((chart) => {
+                  if (chart.chart_type === 'IndicatorValue') {
                     return (
-                      <div key={col.chart_uid} className="flex flex-row gap-3">
-                        {col.values.map((item) => (
+                      <div key={chart.chart_uid} className="flex flex-row gap-3">
+                        {chart.values.map((item) => (
                           <div key={item.name} className="flex-1">
                             <Card sx={{ background: 'transparent' }}>
                               <CardContent className="justify-around">
@@ -152,89 +142,12 @@ const ChatMode = () => {
                         ))}
                       </div>
                     );
-                  } else if (col.chart_type === 'LineChart') {
-                    return (
-                      <div className="flex-1 overflow-hidden" key={col.chart_uid}>
-                        <Card className="h-full" sx={{ background: 'transparent' }}>
-                          <CardContent className="h-full">
-                            <Typography gutterBottom component="div">
-                              {col.chart_name}
-                            </Typography>
-                            <Typography gutterBottom level="body3">
-                              {col.chart_desc}
-                            </Typography>
-                            <div className="flex-1 h-full">
-                              <Chart padding={[10, 20, 50, 40]} autoFit data={col.values}>
-                                <LineAdvance shape="smooth" point area position="name*value" color="type" />
-                              </Chart>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    );
-                  } else if (col.chart_type === 'BarChart') {
-                    return (
-                      <div className="flex-1" key={col.chart_uid}>
-                        <Card className="h-full" sx={{ background: 'transparent' }}>
-                          <CardContent className="h-full">
-                            <Typography gutterBottom component="div">
-                              {col.chart_name}
-                            </Typography>
-                            <Typography gutterBottom level="body3">
-                              {col.chart_desc}
-                            </Typography>
-                            <div className="flex-1">
-                              <Chart autoFit data={col.values}>
-                                <Interval
-                                  position="name*value"
-                                  style={{
-                                    lineWidth: 3,
-                                    stroke: getTheme().colors10[0],
-                                  }}
-                                />
-                                <Tooltip shared />
-                              </Chart>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    );
-                  } else if (col.chart_type === 'Table') {
-                    const data = lodash.groupBy(col.values, 'type');
-                    return (
-                      <div className="flex-1" key={col.chart_uid}>
-                        <Card className="h-full overflow-auto" sx={{ background: 'transparent' }}>
-                          <CardContent className="h-full">
-                            <Typography gutterBottom component="div">
-                              {col.chart_name}
-                            </Typography>
-                            <Typography gutterBottom level="body3">
-                              {col.chart_desc}
-                            </Typography>
-                            <div className="flex-1">
-                              <Table aria-label="basic table" stripe="odd" hoverRow borderAxis="bothBetween">
-                                <thead>
-                                  <tr>
-                                    {Object.keys(data).map((key) => (
-                                      <th key={key}>{key}</th>
-                                    ))}
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {Object.values(data)?.[0]?.map((value, i) => (
-                                    <tr key={i}>
-                                      {Object.keys(data)?.map((k) => (
-                                        <td key={k}>{data?.[k]?.[i].value || ''}</td>
-                                      ))}
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </Table>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    );
+                  } else if (chart.chart_type === 'LineChart') {
+                    return <LineChart key={chart.chart_uid} chart={chart} />;
+                  } else if (chart.chart_type === 'BarChart') {
+                    return <BarChart key={chart.chart_uid} chart={chart} />;
+                  } else if (chart.chart_type === 'Table') {
+                    return <TableChart key={chart.chart_uid} chart={chart} />;
                   }
                 })}
               </div>
@@ -242,6 +155,7 @@ const ChatMode = () => {
           </div>
         </Grid>
       )}
+      {/** skeleton */}
       {!chartsData && scene === 'chat_dashboard' && (
         <Grid xs={8} className="max-h-full p-6">
           <div className="flex flex-col gap-3 h-full">
@@ -264,11 +178,9 @@ const ChatMode = () => {
           </div>
         </Grid>
       )}
+      {/** chat panel */}
       <Grid xs={scene === 'chat_dashboard' ? 4 : 12} className="h-full max-h-full">
-        <div
-          className="h-full"
-          style={{ boxShadow: scene === 'chat_dashboard' ? '0px 0px 9px 0px #c1c0c080' : 'unset' }}
-        >
+        <div className="h-full" style={{ boxShadow: scene === 'chat_dashboard' ? '0px 0px 9px 0px #c1c0c080' : 'unset' }}>
           <ChatBoxComp
             clearIntialMessage={async () => {
               await refreshDialogList();
@@ -276,11 +188,10 @@ const ChatMode = () => {
             dialogue={currentDialogue}
             dbList={dbList?.data}
             runDbList={runDbList}
+            onRefreshHistory={runHistoryList}
             supportTypes={supportTypes?.data}
-            isChartChat={scene === 'chat_dashboard'}
             messages={history || []}
             onSubmit={handleChatSubmit}
-            onRefreshHistory={runHistoryList}
             paramsList={paramsList?.data}
             runParamsList={runParamsList}
             setChartsData={setChartsData}

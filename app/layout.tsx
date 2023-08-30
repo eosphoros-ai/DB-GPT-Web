@@ -3,7 +3,7 @@ import './globals.css'
 import '@/nprogress.css';
 import './i18n';
 import React, { useLayoutEffect } from 'react';
-import LeftSider from '@/components/leftSider';
+import LeftSide from '@/components/leftSide';
 import { CssVarsProvider, ThemeProvider } from '@mui/joy/styles';
 import { useColorScheme } from '@/lib/mui';
 import { joyTheme } from '@/defaultTheme';
@@ -11,14 +11,13 @@ import TopProgressBar from '@/components/topProgressBar';
 import DialogueContext, { useDialogueContext } from './context/dialogue';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import MenuIcon from '@mui/icons-material/Menu';
 import MyDrawer from '@/components/myDrawer';
-import WrapTextOutlinedIcon from '@mui/icons-material/WrapTextOutlined';
+import classNames from 'classnames';
 
 function CssWrapper({
   children
 }: {
-  children: React.ReactNode
+  children: React.ReactElement
 }) {
   const { i18n } = useTranslation();
   const { mode } = useColorScheme();
@@ -48,44 +47,26 @@ function CssWrapper({
   )
 }
 
-function LayoutWarpper({
+function LayoutWrapper({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { isContract, setIsContract } = useDialogueContext();
+  const { isContract, isMenuExpand } = useDialogueContext();
   const [open, setOpen] = React.useState<boolean>(false);
-
   return (
     <>
-      {isContract ? (
-        <div className="grid h-full w-screen grid-rows-1 grid-cols-[auto,1fr] overflow-hidden text-smd dark:text-gray-300 md:grid-rows-[60px,1fr] md:grid-cols-[1fr]">
-          <div className='border-[var(--joy-palette-divider)] bg-[#282828] text-[#f4f4f4] border-b border-solid flex items-center px-3 justify-between'>
-            <MenuIcon className='cursor-pointer' onClick={() => { setOpen(true) }} />
-            <div className='flex items-center cursor-pointer' onClick={() => { setIsContract(!isContract); }}>
-              <WrapTextOutlinedIcon style={{ marginRight: '4px' }} />Change Mode
-            </div>
-          </div>
-          <div className='relative min-h-0 min-w-0'>
-            {children}
-          </div>
+      <div className={classNames('grid h-full w-full grid-cols-1 grid-rows-[auto,1fr] text-smd dark:text-gray-300 md:grid-rows-[1fr] transition-width duration-500', {
+        'md:grid-cols-[280px,1fr]': isMenuExpand,
+        'md:grid-cols-[60px,1fr]': !isMenuExpand
+      })}>
+        <LeftSide />
+        <div className={classNames('relative min-h-0 min-w-0 overflow-hidden px-3', {
+          'w-[calc(100vw - 76px)]': isContract
+        })}>
+          {children}
         </div>
-      ) : (
-        <div className="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] overflow-hidden text-smd dark:text-gray-300 md:grid-cols-[280px,1fr] md:grid-rows-[1fr]">
-          <LeftSider />
-          <div className='relative min-h-0 min-w-0'>
-            {children}
-          </div>
-        </div>
-      )}
-      <MyDrawer
-        title="DB-GPT"
-        position="left"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
-        <LeftSider />
-      </MyDrawer>
+      </div>
     </>
   )
 }
@@ -103,9 +84,9 @@ function RootLayout({
           <CssVarsProvider theme={joyTheme} defaultMode="light">
             <CssWrapper>
               <div className={`contents h-full`}>
-                <LayoutWarpper>
+                <LayoutWrapper>
                   {children}
-                </LayoutWarpper>
+                </LayoutWrapper>
               </div>
             </CssWrapper>
           </CssVarsProvider>

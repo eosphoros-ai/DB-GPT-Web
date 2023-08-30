@@ -4,10 +4,11 @@ import { Select, Option, Button, Table, Box, Typography, Tooltip } from "@/lib/m
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import { Input, Tree, Empty, Tabs } from 'antd';
 import type { DataNode } from 'antd/es/tree';
-import MonacoEditor from './reactMonacoEditor';
+import MonacoEditor from './MonacoEditor';
 import { sendGetRequest, sendSpacePostRequest } from '@/utils/request';
 import { useSearchParams } from 'next/navigation';
 import ChartContent from "./chartContent";
+import { OnChange } from "@monaco-editor/react";
 
 const { Search } = Input;
 
@@ -18,7 +19,7 @@ interface EditorValueProps {
 	showcase?: string;
 }
 
-interface RoundPrpos {
+interface RoundProps {
 	db_name: string;
 	round: number;
 	round_name: string;
@@ -28,8 +29,17 @@ interface IProps {
 	editorValue?: EditorValueProps;
 	chartData?: any;
 	tableData?: any;
-	handleChange: (value: string, description?: string) => void;
+	handleChange: OnChange;
+}
 
+interface ITableTreeItem {
+  title: string;
+  key: string;
+  type: string;
+  default_value: string | null;
+  can_null: string;
+  comment: string | null;
+  children: Array<ITableTreeItem>
 }
 
 function DbEditorContent({
@@ -55,15 +65,21 @@ function DbEditorContent({
 			<div className="flex-1 flex overflow-hidden">
 				<div className="flex-1" style={{ flexShrink: 0, overflow: 'auto' }}>
 					<MonacoEditor
+						value={editorValue?.sql || ''}
+						language="mysql"
+						onChange={handleChange}
+						thoughts={editorValue?.thoughts || ''}
+					/>
+          {/* <MonacoEditor
 						value={editorValue?.sql}
 						language="mysql"
 						handleChange={handleChange}
 						description={editorValue?.thoughts}
-					/>
+					/> */}
 				</div>
 				{chartWrapper}
 			</div>
-			<div className="h-60 border-[var(--joy-palette-divider)] border-t border-solid overflow-auto">
+			<div className="h-96 border-[var(--joy-palette-divider)] border-t border-solid overflow-auto">
 				{tableData?.values?.length > 0 ? (
 					<Table aria-label="basic table" stickyHeader>
 						<thead>
@@ -95,6 +111,7 @@ function DbEditorContent({
 
 function DbEditor() {
 	const [expandedKeys, setExpandedKeys] = React.useState<React.Key[]>([]);
+  const [defaultExpandedKeys, setDefaultExpandedKeys] = React.useState<React.Key[]>([]);
   const [searchValue, setSearchValue] = React.useState('');
 	const [currentRound, setCurrentRound] = React.useState<null | string | number>();
   const [autoExpandParent, setAutoExpandParent] = React.useState(true);
@@ -173,7 +190,7 @@ function DbEditor() {
 	});
 
 	const { run: submitSql, loading: submitLoading } = useRequest(async () => {
-		const db_name = rounds?.data?.find((item: RoundPrpos) => item.round === currentRound)?.db_name;
+		const db_name = rounds?.data?.find((item: RoundProps) => item.round === currentRound)?.db_name;
 		return await sendSpacePostRequest(`/api/v1/sql/editor/submit`, {
 			conv_uid: id,
 			db_name,
@@ -214,15 +231,15 @@ function DbEditor() {
 	});
 
 	const { data: tables } = useRequest(async () => {
-		const db_name = rounds?.data?.find((item: RoundPrpos) => item.round === currentRound)?.db_name;
+		const db_name = rounds?.data?.find((item: RoundProps) => item.round === currentRound)?.db_name;
 		return await sendGetRequest('/v1/editor/db/tables', {
 			db_name,
 			page_index: 1,
 			page_size: 200
 		});
 	}, {
-		ready: !!rounds?.data?.find((item: RoundPrpos) => item.round === currentRound)?.db_name,
-		refreshDeps: [rounds?.data?.find((item: RoundPrpos) => item.round === currentRound)?.db_name]
+		ready: !!rounds?.data?.find((item: RoundProps) => item.round === currentRound)?.db_name,
+		refreshDeps: [rounds?.data?.find((item: RoundProps) => item.round === currentRound)?.db_name]
 	});
 
 	const { run: handleGetEditorSql } = useRequest(async (round) => await sendGetRequest('/v1/editor/sql', {
@@ -256,9 +273,9 @@ function DbEditor() {
 	});
 
 	const treeData = React.useMemo(() => {
-    const loop = (data: DataNode[], parentKey?: string | number): DataNode[] =>
-      data.map((item) => {
-        const strTitle = item.title as string;
+    const loop = (data: Array<ITableTreeItem>, parentKey?: string | number): DataNode[] =>
+      data.map((item: ITableTreeItem) => {
+        const strTitle = item.title;
         const index = strTitle.indexOf(searchValue);
         const beforeStr = strTitle.substring(0, index);
         const afterStr = strTitle.slice(index + searchValue.length);
@@ -300,6 +317,8 @@ function DbEditor() {
         };
       });
 		if (tables?.data) {
+      // default expand first node
+      setExpandedKeys([tables?.data.key])
 			return loop([tables?.data]);
 		}
 		return [];
@@ -346,13 +365,13 @@ function DbEditor() {
 				setExpandedKeys([]);
 			} else {
 				const newExpandedKeys = dataList
-				.map((item) => {
-					if (item.title.indexOf(value) > -1) {
-						return getParentKey(item.key, treeData);
-					}
-					return null;
-				})
-				.filter((item, i, self) => item && self.indexOf(item) === i);
+          .map((item) => {
+            if (item.title.indexOf(value) > -1) {
+              return getParentKey(item.key, treeData);
+            }
+            return null;
+          })
+          .filter((item, i, self) => item && self.indexOf(item) === i);
 				setExpandedKeys(newExpandedKeys as React.Key[]);
 			}
 			setSearchValue(value);
@@ -382,25 +401,11 @@ function DbEditor() {
   return (
 		<div className="flex flex-col w-full h-full">
 			<div className='bg-[#f8f8f8] border-[var(--joy-palette-divider)] border-b border-solid flex items-center px-3 justify-between'>
-				<div className="flex items-center py-3">
-					<AutoAwesomeMotionIcon className="mr-2" />
-					<Select
-						className="h-4 min-w-[240px]"
-						size="sm"
-						value={(currentRound as string | null | undefined)}
-						onChange={(e: React.SyntheticEvent | null, newValue: string | null) => {
-							setCurrentRound(newValue);
-						}}
-					>
-						{rounds?.data?.map((item: RoundPrpos) => (
-							<Option key={item?.round} value={item?.round}>{item?.round_name}</Option>
-						))}
-					</Select>
-				</div>
-				<div>
+				<div className="absolute right-4 top-2">
 					<Button
-						className="bg-[#1677ff] text-[#fff] hover:bg-[#1c558e]"
+						className="bg-[#1677ff] text-[#fff] hover:bg-[#1c558e] px-4 cursor-pointer"
 						loading={runLoading || runChartsLoading}
+            size="sm"
 						onClick={async () => {
 							if (scene === 'chat_dashboard') {
 								runCharts();
@@ -413,7 +418,8 @@ function DbEditor() {
 					</Button>
 					<Button
 						variant="outlined"
-						className="ml-3"
+            size="sm"
+						className="ml-3 px-4 cursor-pointer"
 						loading={submitLoading || submitChartLoading}
 						onClick={async () => {
 							if (scene === 'chat_dashboard') {
@@ -425,19 +431,31 @@ function DbEditor() {
 					>
 						Save
 					</Button>
-					{/* {scene === 'chat_dashboard' && (
-						<BarChartIcon className="ml-3 text-[#1677ff] cursor-pointer" />
-					)} */}
 				</div>
 			</div>
 			<div className="flex flex-1 overflow-auto">
 				<div className="text h-full border-[var(--joy-palette-divider)] border-r border-solid p-3 max-h-full overflow-auto" style={{ width: '300px' }}>
+          <div className="flex items-center py-3">
+            <Select
+              className="h-4 min-w-[240px]"
+              size="sm"
+              value={(currentRound as string | null | undefined)}
+              onChange={(e: React.SyntheticEvent | null, newValue: string | null) => {
+                setCurrentRound(newValue);
+              }}
+            >
+              {rounds?.data?.map((item: RoundProps) => (
+                <Option key={item?.round} value={item?.round}>{item?.round_name}</Option>
+              ))}
+            </Select>
+            <AutoAwesomeMotionIcon className="ml-2" />
+          </div>
 					<Search
 						style={{ marginBottom: 8 }}
 						placeholder="Search"
 						onChange={onChange}
 					/>
-					<Tree
+					{treeData && treeData.length > 0 && <Tree
 						onExpand={(newExpandedKeys: React.Key[]) => {
 							setExpandedKeys(newExpandedKeys);
 							setAutoExpandParent(false);
@@ -448,7 +466,7 @@ function DbEditor() {
 						fieldNames={{
 							title: 'showTitle'
 						}}
-					/>
+					/>}
 				</div>				
 				<div className="flex flex-col flex-1 max-w-full overflow-hidden">
 					{Array.isArray(editorValue) ? (
@@ -465,8 +483,7 @@ function DbEditor() {
 								}}
 							>
 								<Tabs
-									className="h-full"
-									type="card"
+									className="h-full dark:text-white px-2"
 									activeKey={currentTabIndex}
 									onChange={(activeKey) => {
 										setCurrentTabIndex(activeKey);
