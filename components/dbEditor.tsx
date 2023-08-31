@@ -511,7 +511,7 @@ function DbEditor() {
                           handleChange={(value) => {
                             if (newEditorValue) {
                               const temp = JSON.parse(JSON.stringify(newEditorValue));
-                              const match = value && value.match(/^--.*$/gm);
+                              const match = value && value.match(/(--.*)\n([\s\S]*)/);
                               let description = '';
                               if (match && match.length > 0) {
                                 description = match[0];
@@ -534,7 +534,7 @@ function DbEditor() {
             <DbEditorContent
               editorValue={editorValue}
               handleChange={(value) => {
-                const match = value && value.match(/^--.*$/gm);
+                const match = value && value.match(/(--.*)\n([\s\S]*)/);
                 let description = '';
                 if (match && match.length > 0) {
                   description = match[0];
