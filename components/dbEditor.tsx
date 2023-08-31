@@ -508,9 +508,14 @@ function DbEditor() {
                       <div className="flex flex-col h-full">
                         <DbEditorContent
                           editorValue={item}
-                          handleChange={(value, description) => {
+                          handleChange={(value) => {
                             if (newEditorValue) {
                               const temp = JSON.parse(JSON.stringify(newEditorValue));
+                              const match = value && value.match(/^--.*$/gm);
+                              let description = '';
+                              if (match && match.length > 0) {
+                                description = match[0];
+                              }
                               temp.sql = value;
                               temp.thoughts = description;
                               setNewEditorValue(temp);
@@ -528,7 +533,12 @@ function DbEditor() {
           ) : (
             <DbEditorContent
               editorValue={editorValue}
-              handleChange={(value, description) => {
+              handleChange={(value) => {
+                const match = value && value.match(/^--.*$/gm);
+                let description = '';
+                if (match && match.length > 0) {
+                  description = match[0];
+                }
                 setNewEditorValue({
                   thoughts: description,
                   sql: value,
