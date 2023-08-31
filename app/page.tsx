@@ -10,7 +10,6 @@ import { z } from 'zod';
 import { sendPostRequest } from '@/utils/request';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'
-import SelectLang from '@/components/SelectLang';
 
 function Home() {
   const Schema = z.object({ query: z.string().min(1) });
@@ -131,7 +130,6 @@ function Home() {
           </form>
         </div>
       </div>
-      <SelectLang/>
     </>
     
   )

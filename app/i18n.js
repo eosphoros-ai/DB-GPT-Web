@@ -89,6 +89,7 @@ const resources = {
       Database: 'Database',
       'Data Source': 'Data Source',
       'Close Sidebar': 'Close Sidebar',
+      'Switch Language': 'Switch Language',
     },
   },
   zh: {
@@ -176,6 +177,7 @@ const resources = {
       Database: '数据库',
       'Data Source': '数据源',
       'Close Sidebar': '关闭侧边栏',
+      'Switch Language': '切换语言',
     },
   },
 };

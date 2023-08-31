@@ -16,6 +16,7 @@ import classNames from "classnames";
 import MenuIcon from '@mui/icons-material/Menu';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import ExpandIcon from '@mui/icons-material/Expand';
+import LanguageIcon from '@mui/icons-material/Language';
 import { useTranslation } from 'react-i18next';
 
 interface Dialogue {
@@ -217,6 +218,22 @@ const LeftSide = () => {
                     </ListItemDecorator>
                   </Tooltip>
                   <ListItemContent>{t('Theme')}</ListItemContent>
+                </ListItemButton>
+              </ListItem>
+              <ListItem>
+                <ListItemButton className='h-10'
+                  onClick={() => {
+                    const language = i18n.language === 'en' ? 'zh' : 'en'
+                    i18n.changeLanguage(language)
+                    window.localStorage.setItem('lng', language)
+                  }}
+                >
+                  <Tooltip title='Switch Language'>
+                    <ListItemDecorator className='text-2xl'>
+                      <LanguageIcon fontSize='small' />
+                    </ListItemDecorator>
+                  </Tooltip>
+                  <ListItemContent>{t('Switch Language')}</ListItemContent>
                 </ListItemButton>
               </ListItem>
               <ListItem>
