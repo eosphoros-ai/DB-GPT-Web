@@ -46,7 +46,7 @@ const LeftSide = () => {
         active: pathname === '/database',
       },
       {
-        label: t('Knowledge Space'),
+        label: t('Knowledge_Space'),
         route: '/datastores',
         icon: <Article fontSize="small" />,
         tooltip: 'Knowledge',

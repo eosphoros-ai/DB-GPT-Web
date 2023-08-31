@@ -66,8 +66,8 @@ const Documents = () => {
   const [synchChecked, setSynchChecked] = useState<boolean>(true)
   const { t } = useTranslation()
   const stepsOfAddingDocument = [
-    t('Choose a Datasource type'),
-    t('Setup the Datasource')
+    t('Choose_a_Datasource_type'),
+    t('Setup_the_Datasource')
   ]
   const documentTypeList = [
     {
@@ -137,7 +137,7 @@ const Documents = () => {
             color="neutral"
             fontSize="inherit"
           >
-            {t('Knowledge Space')}
+            {t('Knowledge_Space')}
           </Link>
           <Typography fontSize="inherit">{t('Documents')}</Typography>
         </Breadcrumbs>
@@ -463,7 +463,7 @@ const Documents = () => {
               <Box sx={{ margin: '30px auto' }}>
                 {t('Name')}:
                 <Input
-                  placeholder={t('Please input the name')}
+                  placeholder={t('Please_input_the_name')}
                   onChange={(e: any) => setDocumentName(e.target.value)}
                   sx={{ marginBottom: '20px' }}
                 />
@@ -544,7 +544,7 @@ const Documents = () => {
                   variant="outlined"
                   onClick={async () => {
                     if (documentName === '') {
-                      message.error(t('Please input the name'))
+                      message.error(t('Please_input_the_name'))
                       return
                     }
                     if (documentType === 'webPage') {

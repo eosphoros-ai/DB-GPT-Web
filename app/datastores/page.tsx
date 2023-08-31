@@ -63,9 +63,9 @@ const Index = () => {
     useState<boolean>(false)
   const [knowledgeSpaceToDelete, setKnowledgeSpaceToDelete] = useState<any>({})
   const stepsOfAddingSpace = [
-    t('Knowledge Space Config'),
-    t('Choose a Datasource type'),
-    t('Setup the Datasource')
+    t('Knowledge_Space_Config'),
+    t('Choose_a_Datasource_type'),
+    t('Setup_the_Datasource')
   ]
   const documentTypeList = [
     {
@@ -367,21 +367,21 @@ const Index = () => {
           {activeStep === 0 ? (
             <>
               <Box sx={{ margin: '30px auto' }}>
-                {t('Knowledge Space Name')}:
+                {t('Knowledge_Space_Name')}:
                 <Input
-                  placeholder={t('Please input the name')}
+                  placeholder={t('Please_input_the_name')}
                   onChange={(e: any) => setKnowledgeSpaceName(e.target.value)}
                   sx={{ marginBottom: '20px' }}
                 />
                 {t('Owner')}:
                 <Input
-                  placeholder={t('Please input the owner')}
+                  placeholder={t('Please_input_the_owner')}
                   onChange={(e: any) => setOwner(e.target.value)}
                   sx={{ marginBottom: '20px' }}
                 />
                 {t('Description')}:
                 <Input
-                  placeholder={t('Please input the description')}
+                  placeholder={t('Please_input_the_description')}
                   onChange={(e: any) => setDescription(e.target.value)}
                   sx={{ marginBottom: '20px' }}
                 />
@@ -390,23 +390,23 @@ const Index = () => {
                 variant="outlined"
                 onClick={async () => {
                   if (knowledgeSpaceName === '') {
-                    message.error(t('Please input the name'))
+                    message.error(t('Please_input_the_name'))
                     return
                   }
                   if (/[^\u4e00-\u9fa50-9a-zA-Z_-]/.test(knowledgeSpaceName)) {
                     message.error(
                       t(
-                        'the name can only contain numbers, letters, Chinese characters, "-" and "_"'
+                        'the_name_can_only_contain'
                       )
                     )
                     return
                   }
                   if (owner === '') {
-                    message.error(t('Please input the owner'))
+                    message.error(t('Please_input_the_owner'))
                     return
                   }
                   if (description === '') {
-                    message.error(t('Please input the description'))
+                    message.error(t('Please_input_the_description'))
                     return
                   }
                   const data = await sendSpacePostRequest(
@@ -472,7 +472,7 @@ const Index = () => {
               <Box sx={{ margin: '30px auto' }}>
                 {t('Name')}:
                 <Input
-                  placeholder={t('Please input the name')}
+                  placeholder={t('Please_input_the_name')}
                   onChange={(e: any) => setDocumentName(e.target.value)}
                   sx={{ marginBottom: '20px' }}
                 />
@@ -553,7 +553,7 @@ const Index = () => {
                   variant="outlined"
                   onClick={async () => {
                     if (documentName === '') {
-                      message.error(t('Please input the name'))
+                      message.error(t('Please_input_the_name'))
                       return
                     }
                     if (documentType === 'webPage') {

@@ -68,7 +68,7 @@ const ChunkList = () => {
             color="neutral"
             fontSize="inherit"
           >
-            {t('Knowledge Space')}
+            {t('Knowledge_Space')}
           </Link>
           <Link
             onClick={() => {
