@@ -1,67 +1,51 @@
-'use client'
+'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation'
-import React, { useState, useEffect } from 'react'
-import {
-  useColorScheme,
-  Table,
-  Stack,
-  Typography,
-  Breadcrumbs,
-  Link,
-  Box
-} from '@/lib/mui'
-import { Popover, Pagination } from 'antd'
-import { sendSpacePostRequest } from '@/utils/request'
-import { useTranslation } from 'react-i18next'
-const page_size = 20
+import { useSearchParams, useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useColorScheme, Table, Stack, Typography, Breadcrumbs, Link, Box } from '@/lib/mui';
+import { Popover, Pagination } from 'antd';
+import { sendSpacePostRequest } from '@/utils/request';
+import { useTranslation } from 'react-i18next';
+const page_size = 20;
 
 const ChunkList = () => {
-  const router = useRouter()
-  const { mode } = useColorScheme()
-  const spaceName = useSearchParams().get('spacename')
-  const documentId = useSearchParams().get('documentid')
-  const [total, setTotal] = useState<number>(0)
-  const [current, setCurrent] = useState<number>(0)
-  const [chunkList, setChunkList] = useState<any>([])
-  const { t } = useTranslation()
+  const router = useRouter();
+  const { mode } = useColorScheme();
+  const spaceName = useSearchParams().get('spacename');
+  const documentId = useSearchParams().get('documentid');
+  const [total, setTotal] = useState<number>(0);
+  const [current, setCurrent] = useState<number>(0);
+  const [chunkList, setChunkList] = useState<any>([]);
+  const { t } = useTranslation();
   useEffect(() => {
     async function fetchChunks() {
-      const data = await sendSpacePostRequest(
-        `/knowledge/${spaceName}/chunk/list`,
-        {
-          document_id: documentId,
-          page: 1,
-          page_size
-        }
-      )
+      const data = await sendSpacePostRequest(`/knowledge/${spaceName}/chunk/list`, {
+        document_id: documentId,
+        page: 1,
+        page_size,
+      });
       if (data.success) {
-        setChunkList(data.data.data)
-        setTotal(data.data.total)
-        setCurrent(data.data.page)
+        setChunkList(data.data.data);
+        setTotal(data.data.total);
+        setCurrent(data.data.page);
       }
     }
-    fetchChunks()
-  }, [])
+    fetchChunks();
+  }, []);
   return (
     <Box
       className="p-4"
       sx={{
         '&': {
-          height: '90%'
-        }
+          height: '90%',
+        },
       }}
     >
-      <Stack
-        direction="row"
-        justifyContent="flex-start"
-        alignItems="center"
-        sx={{ marginBottom: '20px' }}
-      >
+      <Stack direction="row" justifyContent="flex-start" alignItems="center" sx={{ marginBottom: '20px' }}>
         <Breadcrumbs aria-label="breadcrumbs">
           <Link
             onClick={() => {
-              router.push('/datastores')
+              router.push('/datastores');
             }}
             key="Knowledge Space"
             underline="hover"
@@ -72,7 +56,7 @@ const ChunkList = () => {
           </Link>
           <Link
             onClick={() => {
-              router.push(`/datastores/documents?name=${spaceName}`)
+              router.push(`/datastores/documents?name=${spaceName}`);
             }}
             key="Knowledge Space"
             underline="hover"
@@ -89,11 +73,11 @@ const ChunkList = () => {
         sx={{
           '&': {
             height: '90%',
-            overflow: 'auto'
+            overflow: 'auto',
           },
           '&::-webkit-scrollbar': {
-            display: 'none'
-          }
+            display: 'none',
+          },
         }}
       >
         {chunkList.length ? (
@@ -104,19 +88,18 @@ const ChunkList = () => {
               size="lg"
               sx={{
                 '& tbody tr: hover': {
-                  backgroundColor:
-                    mode === 'light' ? 'rgb(246, 246, 246)' : 'rgb(33, 33, 40)'
+                  backgroundColor: mode === 'light' ? 'rgb(246, 246, 246)' : 'rgb(33, 33, 40)',
                 },
                 '& tbody tr: hover a': {
-                  textDecoration: 'underline'
-                }
+                  textDecoration: 'underline',
+                },
               }}
             >
               <thead>
                 <tr>
                   <th>{t('Name')}</th>
                   <th>{t('Content')}</th>
-                  <th>{t('Meta Data')}</th>
+                  <th>{t('Meta_Data')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,25 +109,14 @@ const ChunkList = () => {
                     <td>
                       {
                         <Popover content={row.content} trigger="hover">
-                          {row.content.length > 10
-                            ? `${row.content.slice(0, 10)}...`
-                            : row.content}
+                          {row.content.length > 10 ? `${row.content.slice(0, 10)}...` : row.content}
                         </Popover>
                       }
                     </td>
                     <td>
                       {
-                        <Popover
-                          content={JSON.stringify(
-                            row.meta_info || '{}',
-                            null,
-                            2
-                          )}
-                          trigger="hover"
-                        >
-                          {row.meta_info.length > 10
-                            ? `${row.meta_info.slice(0, 10)}...`
-                            : row.meta_info}
+                        <Popover content={JSON.stringify(row.meta_info || '{}', null, 2)} trigger="hover">
+                          {row.meta_info.length > 10 ? `${row.meta_info.slice(0, 10)}...` : row.meta_info}
                         </Popover>
                       }
                     </td>
@@ -161,7 +133,7 @@ const ChunkList = () => {
         direction="row"
         justifyContent="flex-end"
         sx={{
-          marginTop: '20px'
+          marginTop: '20px',
         }}
       >
         <Pagination
@@ -170,25 +142,22 @@ const ChunkList = () => {
           current={current}
           total={total}
           onChange={async (page) => {
-            const data = await sendSpacePostRequest(
-              `/knowledge/${spaceName}/chunk/list`,
-              {
-                document_id: documentId,
-                page,
-                page_size
-              }
-            )
+            const data = await sendSpacePostRequest(`/knowledge/${spaceName}/chunk/list`, {
+              document_id: documentId,
+              page,
+              page_size,
+            });
             if (data.success) {
-              setChunkList(data.data.data)
-              setTotal(data.data.total)
-              setCurrent(data.data.page)
+              setChunkList(data.data.data);
+              setTotal(data.data.total);
+              setCurrent(data.data.page);
             }
           }}
           hideOnSinglePage
         />
       </Stack>
     </Box>
-  )
-}
+  );
+};
 
-export default ChunkList
+export default ChunkList;
