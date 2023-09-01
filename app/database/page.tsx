@@ -173,6 +173,16 @@ function Database() {
       >
         {draw.type && dbListByType[draw.type] && dbListByType[draw.type].length ? (
           <>
+            <Button
+              type="primary"
+              className="mb-4 flex items-center"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setModal({ open: true, dbType: draw.type });
+              }}
+            >
+              Create
+            </Button>
             {dbListByType[draw.type].map((item) => (
               <Card
                 key={item.db_name}
@@ -196,10 +206,16 @@ function Database() {
                 }
                 className="mb-4"
               >
-                <p>host: {item.db_host}</p>
-                <p>username: {item.db_user}</p>
-                <p>port: {item.db_port}</p>
-                {!!item.db_path && <p>path: {item.db_path}</p>}
+                {item.db_path ? (
+                  <p>path: {item.db_path}</p>
+                ) : (
+                  <>
+                    <p>host: {item.db_host}</p>
+                    <p>username: {item.db_user}</p>
+                    <p>port: {item.db_port}</p>
+                  </>
+                )}
+                <p>remark: {item.comment}</p>
               </Card>
             ))}
           </>
