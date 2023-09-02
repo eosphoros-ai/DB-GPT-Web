@@ -15,6 +15,7 @@ import lodash from 'lodash';
 import { message } from 'antd';
 import Image from 'next/image';
 import ExcelUpload from './ChatPage/ExcelUpload';
+import ChatItem from './ChatPage/ChatItem';
 
 type Props = {
   messages: Message[];
@@ -173,46 +174,17 @@ const ChatBoxComp = ({ messages, dialogue, onSubmit, readOnly, paramsList, onRef
         >
           {showMessages?.map((each, index) => {
             return (
-              <Stack key={index}>
-                <Card
-                  size="sm"
-                  variant={'outlined'}
-                  color={each.role === 'view' ? 'primary' : 'neutral'}
-                  sx={(theme) => ({
-                    background: each.role === 'view' ? 'var(--joy-palette-primary-softBg, var(--joy-palette-primary-100, #DDF1FF))' : 'unset',
-                    border: 'unset',
-                    borderRadius: 'unset',
-                    padding: '24px 0 26px 0',
-                    lineHeight: '24px',
-                  })}
-                >
-                  <Box sx={{ width: '76%', margin: '0 auto' }} className="flex flex-row">
-                    {each.role === 'view' ? <SmartToyOutlinedIcon className='mr-2 mt-1' /> : <FaceRetouchingNaturalOutlinedIcon className='mr-2 mt-1' />}
-                    <div className="inline align-middle mt-0.5 max-w-full flex-1 overflow-auto">
-                      {isChartChat && each.role === 'view' && typeof each?.context === 'object' ? (
-                        <>
-                          {`[${each.context.template_name}]: `}
-                          <Link
-                            sx={{
-                              color: '#1677ff',
-                            }}
-                            component="button"
-                            onClick={() => {
-                              setJsonModalOpen(true);
-                              setCurrentJsonIndex(index);
-                              setJsonValue(JSON.stringify(each?.context, null, 2));
-                            }}
-                          >
-                            {each.context.template_introduce || 'More Details'}
-                          </Link>
-                        </>
-                      ) : (
-                        <>{typeof each.context === 'string' && <Markdown options={options}>{each.context?.replaceAll?.('\\n', '\n')}</Markdown>}</>
-                      )}
-                    </div>
-                  </Box>
-                </Card>
-              </Stack>
+              <ChatItem
+                key={index}
+                context={each.context}
+                isChartChat={isChartChat}
+                isRobbort={each.role === 'view'}
+                onLinkClick={() => {
+                  setJsonModalOpen(true);
+                  setCurrentJsonIndex(index);
+                  setJsonValue(JSON.stringify(each?.context, null, 2));
+                }}
+              />
             );
           })}
           {isLoading && <CircularProgress variant="soft" color="neutral" size="sm" sx={{ mx: 'auto', my: 2 }} />}

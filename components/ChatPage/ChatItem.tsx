@@ -1,13 +1,15 @@
 import { Fragment } from 'react';
-import { Table } from '@/lib/mui';
+import { Link, Table } from '@/lib/mui';
 import { RobotOutlined, UserOutlined } from '@ant-design/icons';
 import Markdown, { MarkdownToJSX } from 'markdown-to-jsx';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface Props {
+  isChartChat?: boolean;
   isRobbort?: boolean;
-  content: string;
+  context: Record<string, any> | string;
+  onLinkClick: () => void;
 }
 
 const options: MarkdownToJSX.Options = {
@@ -42,13 +44,27 @@ const options: MarkdownToJSX.Options = {
   wrapper: Fragment,
 };
 
-function ChatItem({ content, isRobbort }: Props) {
+function ChatItem({ context, isChartChat, isRobbort, onLinkClick }: Props) {
   return (
     <div className={`${isRobbort ? 'bg-slate-100' : 'bg-white'}`}>
       <div className="py-8 px-4 flex items-start mx-auto leading-7 w-full lg:w-4/5 xl:3/4">
         <div className="flex items-center h-7 mr-4">{isRobbort ? <RobotOutlined /> : <UserOutlined />}</div>
         <div className="text-md font-normal text-gray-900">
-          <Markdown options={options}>{content}</Markdown>
+          {isChartChat && typeof context === 'object' && (
+            <>
+              {`[${context.template_name}]: `}
+              <Link
+                sx={{
+                  color: '#1677ff',
+                }}
+                component="button"
+                onClick={onLinkClick}
+              >
+                {context.template_introduce || 'More Details'}
+              </Link>
+            </>
+          )}
+          {typeof context === 'string' && <Markdown options={options}>{context}</Markdown>}
         </div>
       </div>
     </div>
