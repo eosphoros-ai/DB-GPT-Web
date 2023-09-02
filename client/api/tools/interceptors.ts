@@ -8,10 +8,7 @@ import { ApiResponse, FailedTuple, SuccessTuple } from '../types/request.type';
  * @param ignoreCodes ignore error codes
  * @returns
  */
-export const apiInterceptors = <T = any, D = any>(
-  promise: Promise<ApiResponse<T, D>>,
-  ignoreCodes?: '*' | (number | string)[],
-) => {
+export const apiInterceptors = <T = any, D = any>(promise: Promise<ApiResponse<T, D>>, ignoreCodes?: '*' | (number | string)[]) => {
   return promise
     .then<SuccessTuple<T, D>>((response) => {
       const { data } = response;
