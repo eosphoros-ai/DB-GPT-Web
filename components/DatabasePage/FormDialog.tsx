@@ -2,26 +2,33 @@
 import { DBOption, isFileDb } from '@/app/database/page';
 import { Button, Form, Input, InputNumber, Modal, Select, message } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
-import { GetChatDbListResponse, PostChatDbParams, apiInterceptors, postChatDbAdd, postChatDbEdit } from '@/client/api';
+import { DBType, GetChatDbListResponse, PostChatDbParams, apiInterceptors, postChatDbAdd, postChatDbEdit } from '@/client/api';
 
 type DBItem = GetChatDbListResponse[0];
 
 interface Props {
   dbTypeList: DBOption[];
   open: boolean;
+  choiceDBType?: DBType;
   editValue?: DBItem;
   dbNames: string[];
   onSuccess?: () => void;
   onClose?: () => void;
 }
 
-function FormDialog({ open, dbTypeList, editValue, dbNames, onClose, onSuccess }: Props) {
+function FormDialog({ open, choiceDBType, dbTypeList, editValue, dbNames, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
 
   const [form] = Form.useForm<DBItem>();
   const dbType = Form.useWatch('db_type', form);
 
   const fileDb = useMemo(() => isFileDb(dbTypeList, dbType), [dbTypeList, dbType]);
+
+  useEffect(() => {
+    if (choiceDBType) {
+      form.setFieldValue('db_type', choiceDBType);
+    }
+  }, [choiceDBType]);
 
   useEffect(() => {
     if (editValue) {
@@ -63,35 +70,39 @@ function FormDialog({ open, dbTypeList, editValue, dbNames, onClose, onSuccess }
     }
   };
 
+  const lockDBType = useMemo(() => !!editValue || !!choiceDBType, [editValue, choiceDBType]);
+
   return (
     <Modal open={open} width={400} title={editValue ? 'Edit DB Connect' : 'Create DB Connenct'} maskClosable={false} footer={null} onCancel={onClose}>
       <Form form={form} className="pt-2" labelCol={{ span: 6 }} labelAlign="left" onFinish={onFinish}>
         <Form.Item name="db_type" label="DB Type" className="mb-3" rules={[{ required: true }]}>
-          <Select aria-readonly={!!editValue} disabled={!!editValue} options={dbTypeList} />
+          <Select aria-readonly={lockDBType} disabled={lockDBType} options={dbTypeList} />
         </Form.Item>
         <Form.Item name="db_name" label="DB Name" className="mb-3" rules={[{ required: true }]}>
           <Input readOnly={!!editValue} disabled={!!editValue} />
         </Form.Item>
-        <Form.Item name="db_user" label="Username" className="mb-3" rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item name="db_pwd" label="Password" className="mb-3" rules={[{ required: true }]}>
-          <Input type="password" />
-        </Form.Item>
-        {fileDb ? (
+        {fileDb === true && (
           <Form.Item name="db_path" label="Path" className="mb-3" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-        ) : (
-          <Form.Item name="db_host" label="Host" className="mb-3" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
         )}
-        {!fileDb && (
-          <Form.Item name="db_port" label="Port" className="mb-3" rules={[{ required: true }]}>
-            <InputNumber min={1} step={1} max={65535} />
-          </Form.Item>
+        {fileDb === false && (
+          <>
+            <Form.Item name="db_user" label="Username" className="mb-3" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="db_pwd" label="Password" className="mb-3" rules={[{ required: true }]}>
+              <Input type="password" />
+            </Form.Item>
+            <Form.Item name="db_host" label="Host" className="mb-3" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="db_port" label="Port" className="mb-3" rules={[{ required: true }]}>
+              <InputNumber min={1} step={1} max={65535} />
+            </Form.Item>
+          </>
         )}
+
         <Form.Item name="comment" label="Remark" className="mb-3">
           <Input />
         </Form.Item>
