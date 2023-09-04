@@ -223,7 +223,7 @@ const LeftSide = () => {
                   onClick={() => {
                     const language = i18n.language === 'en' ? 'zh' : 'en';
                     i18n.changeLanguage(language);
-                    window.localStorage.setItem('lng', language);
+                    window.localStorage.setItem('db_gpt_lng', language);
                   }}
                 >
                   <Tooltip title="Switch Language">
