@@ -115,42 +115,13 @@ const Index = () => {
             onClick={() => setIsAddKnowledgeSpaceModalShow(true)}
             className="bg-[#E9EBEE] dark:bg-[#484848] flex content-start box-content w-[390px] h-[79px] pt-[33px] px-5 pb-10 mr-[30px] mb-[30px] text-lg font-bold text-black shrink-0 grow-0 cursor-pointer rounded-2xl"
           >
-            <Box
-              sx={{
-                width: '32px',
-                height: '32px',
-                lineHeight: '28px',
-                border: '1px solid #2AA3FF',
-                textAlign: 'center',
-                borderRadius: '5px',
-                marginRight: '5px',
-                fontWeight: '300',
-                color: '#2AA3FF',
-              }}
-            >
-              +
-            </Box>
-            <Box
-              sx={{
-                fontSize: '16px',
-              }}
-            >
-              {t('space')}
-            </Box>
+            <Box className="w-8 h-8 leading-7 border border-blue-500 text-center rounded-md mr-1 font-light text-blue-500">+</Box>
+            <Box className="text-base">{t('space')}</Box>
           </Box>
           {knowledgeSpaceList.map((item: any, index: number) => (
             <Box
               key={index}
               sx={{
-                position: 'relative',
-                padding: '30px 20px 40px',
-                marginRight: '30px',
-                marginBottom: '30px',
-                borderTop: '4px solid rgb(84, 164, 248)',
-                flexShrink: 0,
-                flexGrow: 0,
-                cursor: 'pointer',
-                borderRadius: '10px',
                 '&: hover': {
                   boxShadow: '0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);',
                 },
@@ -158,88 +129,35 @@ const Index = () => {
               onClick={() => {
                 router.push(`/datastores/documents?name=${item.name}`);
               }}
-              className="bg-[#FFFFFF] dark:bg-[#484848]"
+              className="bg-[#FFFFFF] dark:bg-[#484848] relative pt-[30px] px-5 pb-[40px] mr-[30px] mb-[30px] shrink-0 grow-0 cursor-pointer rounded-[10px] border-t-4 border-[#54A4F8] border-solid"
             >
-              <Box
-                sx={{
-                  fontSize: '18px',
-                  marginBottom: '10px',
-                  fontWeight: 'bold',
-                  color: 'black',
-                }}
-              >
-                <ContentPasteSearchOutlinedIcon sx={{ marginRight: '5px', color: '#2AA3FF' }} />
+              <Box className="text-lg mb-[10px] font-bold text-black">
+                <ContentPasteSearchOutlinedIcon className="mr-[5px] text-[#2AA3FF]" />
                 {item.name}
               </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                }}
-              >
-                <Box
-                  sx={{
-                    width: '130px',
-                    flexGrow: 0,
-                    flexShrink: 0,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: '#2AA3FF',
-                    }}
-                  >
-                    {item.vector_type}
-                  </Box>
-                  <Box sx={{ fontSize: '12px', color: 'black' }}>{t('Vector')}</Box>
+              <Box className="flex justify-start">
+                <Box className="w-[130px] shrink-0 grow-0">
+                  <Box className="text-[#2AA3FF]">{item.vector_type}</Box>
+                  <Box className="text-xs text-black">{t('Vector')}</Box>
                 </Box>
-                <Box
-                  sx={{
-                    width: '130px',
-                    flexGrow: 0,
-                    flexShrink: 0,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: '#2AA3FF',
-                    }}
-                  >
-                    {item.owner}
-                  </Box>
-                  <Box sx={{ fontSize: '12px', color: 'black' }}>{t('Owner')}</Box>
+                <Box className="w-[130px] shrink-0 grow-0">
+                  <Box className="text-[#2AA3FF]">{item.owner}</Box>
+                  <Box className="text-xs text-black">{t('Owner')}</Box>
                 </Box>
-                <Box
-                  sx={{
-                    width: '130px',
-                    flexGrow: 0,
-                    flexShrink: 0,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: '#2AA3FF',
-                    }}
-                  >
-                    {item.docs || 0}
-                  </Box>
-                  <Box sx={{ fontSize: '12px', color: 'black' }}>{t('Docs')}</Box>
+                <Box className="w-[130px] shrink-0 grow-0">
+                  <Box className="text-[#2AA3FF]">{item.docs || 0}</Box>
+                  <Box className="text-xs text-black">{t('Docs')}</Box>
                 </Box>
               </Box>
               <Box
-                sx={{
-                  position: 'absolute',
-                  right: '10px',
-                  top: '10px',
-                  color: 'rgb(205, 32, 41)',
-                }}
+                className="absolute right-2.5 top-2.5 text-[#CD2029]"
                 onClick={(e) => {
                   e.stopPropagation();
                   setKnowledgeSpaceToDelete(item);
                   setIsDeleteKnowledgeSpaceModalShow(true);
                 }}
               >
-                <DeleteOutlineIcon sx={{ fontSize: '30px' }} />
+                <DeleteOutlineIcon className="text-3xl" />
               </Box>
             </Box>
           ))}
@@ -266,25 +184,12 @@ const Index = () => {
         </Stack>
       </Box>
       <Modal
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          'z-index': 1000,
-        }}
+        className="flex justify-center items-center z-[1000]"
         open={isAddKnowledgeSpaceModalShow}
         onClose={() => setIsAddKnowledgeSpaceModalShow(false)}
       >
-        <Sheet
-          variant="outlined"
-          sx={{
-            width: 800,
-            borderRadius: 'md',
-            p: 3,
-            boxShadow: 'lg',
-          }}
-        >
-          <Box sx={{ width: '100%' }}>
+        <Sheet variant="outlined" className="w-[800px] rounded-md shadow-lg p-6">
+          <Box className="w-full">
             <Stack spacing={2} direction="row">
               {stepsOfAddingSpace.map((item: any, index: number) => (
                 <Item
@@ -302,21 +207,13 @@ const Index = () => {
           </Box>
           {activeStep === 0 ? (
             <>
-              <Box sx={{ margin: '30px auto' }}>
+              <Box className="my-[30px] mx-auto">
                 {t('Knowledge_Space_Name')}:
-                <Input
-                  placeholder={t('Please_input_the_name')}
-                  onChange={(e: any) => setKnowledgeSpaceName(e.target.value)}
-                  sx={{ marginBottom: '20px' }}
-                />
+                <Input placeholder={t('Please_input_the_name')} onChange={(e: any) => setKnowledgeSpaceName(e.target.value)} className="mb-5" />
                 {t('Owner')}:
-                <Input placeholder={t('Please_input_the_owner')} onChange={(e: any) => setOwner(e.target.value)} sx={{ marginBottom: '20px' }} />
+                <Input placeholder={t('Please_input_the_owner')} onChange={(e: any) => setOwner(e.target.value)} className="mb-5" />
                 {t('Description')}:
-                <Input
-                  placeholder={t('Please_input_the_description')}
-                  onChange={(e: any) => setDescription(e.target.value)}
-                  sx={{ marginBottom: '20px' }}
-                />
+                <Input placeholder={t('Please_input_the_description')} onChange={(e: any) => setDescription(e.target.value)} className="mb-5" />
               </Box>
               <Button
                 variant="outlined"
