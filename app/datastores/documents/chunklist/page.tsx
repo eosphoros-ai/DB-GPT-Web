@@ -33,15 +33,8 @@ const ChunkList = () => {
     fetchChunks();
   }, []);
   return (
-    <Box
-      className="p-4"
-      sx={{
-        '&': {
-          height: '90%',
-        },
-      }}
-    >
-      <Stack direction="row" justifyContent="flex-start" alignItems="center" sx={{ marginBottom: '20px' }}>
+    <Box className="p-4 h-9/10">
+      <Stack className="mb-5" direction="row" justifyContent="flex-start" alignItems="center">
         <Breadcrumbs aria-label="breadcrumbs">
           <Link
             onClick={() => {
@@ -69,11 +62,8 @@ const ChunkList = () => {
         </Breadcrumbs>
       </Stack>
       <Box
-        className="p-4 overflow-auto"
+        className="p-4 overflow-auto h-9/10"
         sx={{
-          '&': {
-            height: '90%',
-          },
           '&::-webkit-scrollbar': {
             display: 'none',
           },
