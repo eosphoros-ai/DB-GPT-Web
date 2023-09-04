@@ -69,11 +69,10 @@ const ChunkList = () => {
         </Breadcrumbs>
       </Stack>
       <Box
-        className="p-4"
+        className="p-4 overflow-auto"
         sx={{
           '&': {
             height: '90%',
-            overflow: 'auto',
           },
           '&::-webkit-scrollbar': {
             display: 'none',
@@ -129,13 +128,7 @@ const ChunkList = () => {
           <></>
         )}
       </Box>
-      <Stack
-        direction="row"
-        justifyContent="flex-end"
-        sx={{
-          marginTop: '20px',
-        }}
-      >
+      <Stack className="mt-5" direction="row" justifyContent="flex-end">
         <Pagination
           defaultPageSize={20}
           showSizeChanger={false}
