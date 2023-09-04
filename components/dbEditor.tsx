@@ -524,9 +524,11 @@ function DbEditor() {
                           editorValue={item}
                           handleChange={(value) => {
                             const { sql, thoughts } = resolveSqlAndThoughts(value);
-                            setNewEditorValue({
-                              sql,
-                              thoughts,
+                            setNewEditorValue((old) => {
+                              return Object.assign({}, old, {
+                                sql,
+                                thoughts,
+                              });
                             });
                           }}
                           tableData={tableData}
@@ -543,9 +545,11 @@ function DbEditor() {
               editorValue={editorValue}
               handleChange={(value) => {
                 const { sql, thoughts } = resolveSqlAndThoughts(value);
-                setNewEditorValue({
-                  thoughts,
-                  sql,
+                setNewEditorValue((old) => {
+                  return Object.assign({}, old, {
+                    sql,
+                    thoughts,
+                  });
                 });
               }}
               tableData={tableData}
