@@ -85,20 +85,10 @@ const Index = () => {
     fetchData();
   }, []);
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-      }}
-      className="bg-[#F1F2F5] dark:bg-[#212121]"
-    >
+    <Box className="bg-[#F1F2F5] dark:bg-[#212121] w-full h-full">
       <Box
-        className="page-body p-4"
+        className="page-body p-4 h-[90%] overflow-auto"
         sx={{
-          '&': {
-            height: '90%',
-            overflow: 'auto',
-          },
           '&::-webkit-scrollbar': {
             display: 'none',
           },
@@ -118,27 +108,12 @@ const Index = () => {
         >
           <Box
             sx={{
-              display: 'flex',
-              alignContent: 'start',
-              boxSizing: 'content-box',
-              width: '390px',
-              height: '79px',
-              padding: '33px 20px 40px',
-              marginRight: '30px',
-              marginBottom: '30px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              color: 'black',
-              flexShrink: 0,
-              flexGrow: 0,
-              cursor: 'pointer',
-              borderRadius: '16px',
               '&: hover': {
                 boxShadow: '0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);',
               },
             }}
             onClick={() => setIsAddKnowledgeSpaceModalShow(true)}
-            className="bg-[#E9EBEE] dark:bg-[#484848]"
+            className="bg-[#E9EBEE] dark:bg-[#484848] flex content-start box-content w-[390px] h-[79px] pt-[33px] px-5 pb-10 mr-[30px] mb-[30px] text-lg font-bold text-black shrink-0 grow-0 cursor-pointer rounded-2xl"
           >
             <Box
               sx={{
