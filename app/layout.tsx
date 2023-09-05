@@ -1,7 +1,8 @@
 'use client';
 import './globals.css';
 import '@/nprogress.css';
-import React from 'react';
+import './i18n';
+import React, { useLayoutEffect } from 'react';
 import LeftSide from '@/components/leftSide';
 import { CssVarsProvider, ThemeProvider } from '@mui/joy/styles';
 import { useColorScheme } from '@/lib/mui';
@@ -9,9 +10,12 @@ import { joyTheme } from '@/defaultTheme';
 import TopProgressBar from '@/components/topProgressBar';
 import DialogueContext, { useDialogueContext } from './context/dialogue';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import MyDrawer from '@/components/myDrawer';
 import classNames from 'classnames';
 
 function CssWrapper({ children }: { children: React.ReactElement }) {
+  const { i18n } = useTranslation();
   const { mode } = useColorScheme();
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -25,6 +29,9 @@ function CssWrapper({ children }: { children: React.ReactElement }) {
       }
     }
   }, [ref, mode]);
+  useLayoutEffect(() => {
+    i18n.changeLanguage(window.localStorage.getItem('db_gpt_lng') || 'en');
+  }, []);
 
   return (
     <div ref={ref} className="h-full">
