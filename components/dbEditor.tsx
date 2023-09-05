@@ -401,6 +401,20 @@ function DbEditor() {
     }
   }, [scene, editorValue, runSql]);
 
+  function resolveSqlAndThoughts(value: string | undefined) {
+    if (!value) {
+      return { sql: '', thoughts: '' };
+    }
+    const match = value && value.match(/(--.*)\n([\s\S]*)/);
+    let thoughts = '';
+    let sql;
+    if (match && match.length >= 3) {
+      thoughts = match[1];
+      sql = match[2];
+    }
+    return { sql, thoughts };
+  }
+
   return (
     <div className="flex flex-col w-full h-full">
       <div className="bg-[#f8f8f8] border-[var(--joy-palette-divider)] border-b border-solid flex items-center px-3 justify-between">
@@ -502,13 +516,14 @@ function DbEditor() {
                       <div className="flex flex-col h-full">
                         <DbEditorContent
                           editorValue={item}
-                          handleChange={(value, description) => {
-                            if (newEditorValue) {
-                              const temp = JSON.parse(JSON.stringify(newEditorValue));
-                              temp.sql = value;
-                              temp.thoughts = description;
-                              setNewEditorValue(temp);
-                            }
+                          handleChange={(value) => {
+                            const { sql, thoughts } = resolveSqlAndThoughts(value);
+                            setNewEditorValue((old) => {
+                              return Object.assign({}, old, {
+                                sql,
+                                thoughts,
+                              });
+                            });
                           }}
                           tableData={tableData}
                           chartData={chartData}
@@ -522,10 +537,13 @@ function DbEditor() {
           ) : (
             <DbEditorContent
               editorValue={editorValue}
-              handleChange={(value, description) => {
-                setNewEditorValue({
-                  thoughts: description,
-                  sql: value,
+              handleChange={(value) => {
+                const { sql, thoughts } = resolveSqlAndThoughts(value);
+                setNewEditorValue((old) => {
+                  return Object.assign({}, old, {
+                    sql,
+                    thoughts,
+                  });
                 });
               }}
               tableData={tableData}
