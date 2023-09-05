@@ -57,12 +57,6 @@ function DbEditorContent({ editorValue, chartData, tableData, handleChange }: IP
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1" style={{ flexShrink: 0, overflow: 'auto' }}>
           <MonacoEditor value={editorValue?.sql || ''} language="mysql" onChange={handleChange} thoughts={editorValue?.thoughts || ''} />
-          {/* <MonacoEditor
-						value={editorValue?.sql}
-						language="mysql"
-						handleChange={handleChange}
-						description={editorValue?.thoughts}
-					/> */}
         </div>
         {chartWrapper}
       </div>
@@ -524,9 +518,11 @@ function DbEditor() {
                           editorValue={item}
                           handleChange={(value) => {
                             const { sql, thoughts } = resolveSqlAndThoughts(value);
-                            setNewEditorValue({
-                              sql,
-                              thoughts,
+                            setNewEditorValue((old) => {
+                              return Object.assign({}, old, {
+                                sql,
+                                thoughts,
+                              });
                             });
                           }}
                           tableData={tableData}
@@ -543,9 +539,11 @@ function DbEditor() {
               editorValue={editorValue}
               handleChange={(value) => {
                 const { sql, thoughts } = resolveSqlAndThoughts(value);
-                setNewEditorValue({
-                  thoughts,
-                  sql,
+                setNewEditorValue((old) => {
+                  return Object.assign({}, old, {
+                    sql,
+                    thoughts,
+                  });
                 });
               }}
               tableData={tableData}

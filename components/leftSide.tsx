@@ -29,9 +29,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import ExpandIcon from '@mui/icons-material/Expand';
 import { GetChatDialogueListResponse } from '@/client/api';
+import LanguageIcon from '@mui/icons-material/Language';
+import { useTranslation } from 'react-i18next';
 
 const LeftSide = () => {
   const pathname = usePathname();
+  const { t, i18n } = useTranslation();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const router = useRouter();
@@ -41,21 +44,21 @@ const LeftSide = () => {
   const menus = useMemo(() => {
     return [
       {
-        label: 'Data Source',
+        label: t('Data_Source'),
         route: '/database',
         icon: <DatasetIcon fontSize="small" />,
         tooltip: 'Database',
         active: pathname === '/database',
       },
       {
-        label: 'Knowledge Space',
+        label: t('Knowledge_Space'),
         route: '/datastores',
         icon: <Article fontSize="small" />,
         tooltip: 'Knowledge',
         active: pathname === '/datastores',
       },
     ];
-  }, [pathname]);
+  }, [pathname, i18n.language]);
 
   function handleChangeTheme() {
     if (mode === 'light') {
@@ -166,7 +169,7 @@ const LeftSide = () => {
           </List>
         </Box>
         <div className="flex flex-col justify-end flex-1">
-          <Box className="px-2 py-3 border-t border-divider xs:block sticky bottom-0 z-100">
+          <Box className="p-2 pt-3 pb-6 border-t border-divider xs:block sticky bottom-0 z-100">
             <List size="sm" sx={{ '--ListItem-radius': '8px' }}>
               <ListItem nested>
                 <List
@@ -204,7 +207,24 @@ const LeftSide = () => {
                   <Tooltip title="Theme">
                     <ListItemDecorator>{mode === 'dark' ? <DarkModeIcon fontSize="small" /> : <WbSunnyIcon fontSize="small" />}</ListItemDecorator>
                   </Tooltip>
-                  <ListItemContent>Theme</ListItemContent>
+                  <ListItemContent>{t('Theme')}</ListItemContent>
+                </ListItemButton>
+              </ListItem>
+              <ListItem>
+                <ListItemButton
+                  className="h-10"
+                  onClick={() => {
+                    const language = i18n.language === 'en' ? 'zh' : 'en';
+                    i18n.changeLanguage(language);
+                    window.localStorage.setItem('db_gpt_lng', language);
+                  }}
+                >
+                  <Tooltip title="Switch Language">
+                    <ListItemDecorator className="text-2xl">
+                      <LanguageIcon fontSize="small" />
+                    </ListItemDecorator>
+                  </Tooltip>
+                  <ListItemContent>{t('Switch_Language')}</ListItemContent>
                 </ListItemButton>
               </ListItem>
               <ListItem>
@@ -219,7 +239,7 @@ const LeftSide = () => {
                       <ExpandIcon className="transform rotate-90" fontSize="small" />
                     </ListItemDecorator>
                   </Tooltip>
-                  <ListItemContent>Close Sidebar</ListItemContent>
+                  <ListItemContent>{t('Close_Sidebar')}</ListItemContent>
                 </ListItemButton>
               </ListItem>
             </List>

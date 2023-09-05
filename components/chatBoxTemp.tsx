@@ -1,16 +1,14 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import { CircularProgress, IconButton, Input, Select, Option, Box, Modal, ModalDialog, ModalClose, Button } from '@/lib/mui';
-import { useState, useRef, useEffect, useMemo, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
-import { message } from 'antd';
-import ChatContent from './ChatPage/ChatContent';
-import ChatExcelTab from './ChatPage/ChatExcelTab';
-import { IChatDialogueMessageSchema, IChatDialogueSchema } from '@/client/api';
+import MonacoEditor from './MonacoEditor';
 import { useDialogueContext } from '@/app/context/dialogue';
+import ChatExcelTab from './ChatPage/ChatExcelTab';
+import ChatContent from './ChatPage/ChatContent';
+import { IChatDialogueMessageSchema } from '@/client/api';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
@@ -23,9 +21,11 @@ type Props = {
   setChartsData?: (chartsData: any) => void;
 };
 
-const Schema = z.object({ query: z.string().min(1) });
+type FormData = {
+  query: string;
+};
 
-const ChatBoxComp = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, clearIntialMessage, setChartsData }: Props) => {
+const ChatBoxComp = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, clearIntialMessage }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams.get('initMessage');
   const spaceNameOriginal = searchParams.get('spaceNameOriginal');
@@ -44,12 +44,9 @@ const ChatBoxComp = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, cle
 
   const paramsOpts = useMemo(() => Object.entries(paramsObj).map(([k, v]) => ({ key: k, value: v })), [paramsObj]);
 
-  const methods = useForm<z.infer<typeof Schema>>({
-    resolver: zodResolver(Schema),
-    defaultValues: {},
-  });
+  const methods = useForm<FormData>();
 
-  const submit = async ({ query }: z.infer<typeof Schema>) => {
+  const submit = async ({ query }: FormData) => {
     try {
       setIsLoading(true);
       methods.reset();
@@ -86,18 +83,7 @@ const ChatBoxComp = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, cle
     return res;
   };
 
-  const MyAceEditor = useMemo(() => {
-    // fix npm run compile 'window is not defined' error
-    if (typeof window !== 'undefined' && typeof window?.fetch === 'function') {
-      const AceEditor = require('react-ace');
-      require('ace-builds/src-noconflict/mode-json');
-      require('ace-builds/src-noconflict/ext-language_tools');
-      return AceEditor.default;
-    }
-    return undefined;
-  }, []);
-
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!scrollableRef.current) return;
     scrollableRef.current.scrollTo(0, scrollableRef.current.scrollHeight);
   }, [messages?.length]);
@@ -200,54 +186,15 @@ const ChatBoxComp = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, cle
           setJsonModalOpen(false);
         }}
       >
-        <ModalDialog aria-labelledby="variant-modal-title" aria-describedby="variant-modal-description">
-          <ModalClose />
-          <Box sx={{ marginTop: '32px' }}>
-            {!!MyAceEditor && (
-              <MyAceEditor
-                mode="json"
-                value={jsonValue}
-                height={'600px'}
-                width={'820px'}
-                onChange={setJsonValue}
-                placeholder={'默认json数据'}
-                debounceChangePeriod={100}
-                showPrintMargin={true}
-                showGutter={true}
-                highlightActiveLine={true}
-                setOptions={{
-                  useWorker: true,
-                  showLineNumbers: true,
-                  highlightSelectedWord: true,
-                  tabSize: 2,
-                }}
-              />
-            )}
-            <Button
-              variant="outlined"
-              className="w-full"
-              sx={{
-                marginTop: '12px',
-              }}
-              onClick={() => {
-                if (currentJsonIndex) {
-                  try {
-                    const temp = lodash.cloneDeep(showMessages);
-                    const jsonObj = JSON.parse(jsonValue);
-                    temp[currentJsonIndex].context = jsonObj;
-                    setShowMessages(temp);
-                    setChartsData?.(jsonObj?.charts);
-                    setJsonModalOpen(false);
-                    setJsonValue('');
-                  } catch (e) {
-                    message.error('JSON 格式化出错');
-                  }
-                }
-              }}
-            >
-              Submit
-            </Button>
-          </Box>
+        <ModalDialog
+          className="w-1/2 h-[600px] flex items-center justify-center"
+          aria-labelledby="variant-modal-title"
+          aria-describedby="variant-modal-description"
+        >
+          <MonacoEditor className="w-full h-[500px]" language="json" value={jsonValue} />
+          <Button variant="outlined" className="w-full mt-2" onClick={() => setJsonModalOpen(false)}>
+            OK
+          </Button>
         </ModalDialog>
       </Modal>
     </>
