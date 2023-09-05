@@ -1,53 +1,48 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { Card, CircularProgress, IconButton, Input, Stack, Select, Option, Box, Modal, ModalDialog, ModalClose, Button, Link } from '@/lib/mui';
-import { useState, useRef, useEffect, Fragment, useMemo } from 'react';
+import { CircularProgress, IconButton, Input, Select, Option, Box, Modal, ModalDialog, ModalClose, Button } from '@/lib/mui';
+import { useState, useRef, useEffect, useMemo, useLayoutEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { DialogueItem, Message } from '@/types';
-import FaceRetouchingNaturalOutlinedIcon from '@mui/icons-material/FaceRetouchingNaturalOutlined';
-import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
-import Markdown from 'markdown-to-jsx';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
 import { message } from 'antd';
-import Image from 'next/image';
-import ExcelUpload from './ChatPage/ExcelUpload';
-import ChatItem from './ChatPage/ChatItem';
+import ChatContent from './ChatPage/ChatContent';
+import ChatExcelTab from './ChatPage/ChatExcelTab';
+import { IChatDialogueMessageSchema, IChatDialogueSchema } from '@/client/api';
+import { useDialogueContext } from '@/app/context/dialogue';
 
 type Props = {
-  messages: Message[];
-  dialogue: DialogueItem | null;
+  messages: IChatDialogueMessageSchema[];
   onRefreshHistory?: () => void;
   onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
-  readOnly?: boolean;
-  paramsList?: { [key: string]: string };
-  runParamsList: () => void;
+  paramsObj?: Record<string, string>;
   dbList?: Record<string, string | undefined | null | boolean>[];
   runDbList: () => void;
-  supportTypes?: Record<string, string | undefined | null | boolean>[];
   clearIntialMessage?: () => void;
   setChartsData?: (chartsData: any) => void;
 };
 
 const Schema = z.object({ query: z.string().min(1) });
 
-const ChatBoxComp = ({ messages, dialogue, onSubmit, readOnly, paramsList, onRefreshHistory, clearIntialMessage, setChartsData }: Props) => {
+const ChatBoxComp = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, clearIntialMessage, setChartsData }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams.get('initMessage');
   const spaceNameOriginal = searchParams.get('spaceNameOriginal');
-  const id = searchParams.get('id');
   const scene = searchParams.get('scene');
+
+  const { currentDialogue } = useDialogueContext();
   const isChartChat = scene === 'chat_dashboard';
-  const scrollableRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentParam, setCurrentParam] = useState<string | undefined | null>();
+  const [currentParam, setCurrentParam] = useState<string>('');
   const [jsonModalOpen, setJsonModalOpen] = useState(false);
   const [currentJsonIndex, setCurrentJsonIndex] = useState<number>();
   const [showMessages, setShowMessages] = useState(messages);
   const [jsonValue, setJsonValue] = useState('');
+
+  const scrollableRef = useRef<HTMLDivElement>(null);
+
+  const paramsOpts = useMemo(() => Object.entries(paramsObj).map(([k, v]) => ({ key: k, value: v })), [paramsObj]);
 
   const methods = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
@@ -59,7 +54,7 @@ const ChatBoxComp = ({ messages, dialogue, onSubmit, readOnly, paramsList, onRef
       setIsLoading(true);
       methods.reset();
       await onSubmit(query, {
-        select_param: scene === 'chat_excel' ? dialogue?.select_param : paramsList?.[currentParam],
+        select_param: scene === 'chat_excel' ? currentDialogue?.select_param : paramsObj[currentParam],
       });
     } catch (err) {
     } finally {
@@ -72,24 +67,13 @@ const ChatBoxComp = ({ messages, dialogue, onSubmit, readOnly, paramsList, onRef
       const searchParamsTemp = new URLSearchParams(window.location.search);
       const initMessage = searchParamsTemp.get('initMessage');
       searchParamsTemp.delete('initMessage');
-      window.history?.replaceState(null, null, `?${searchParamsTemp.toString()}`);
+      window.history?.replaceState(null, '', `?${searchParamsTemp.toString()}`);
       await submit({ query: initMessage as string });
     } catch (err) {
       console.log(err);
     } finally {
       clearIntialMessage?.();
     }
-  };
-
-  const options = {
-    overrides: {
-      code: ({ children }) => (
-        <SyntaxHighlighter language="javascript" style={okaidia}>
-          {children}
-        </SyntaxHighlighter>
-      ),
-    },
-    wrapper: Fragment,
   };
 
   const handleJson2Obj = (jsonStr: string) => {
@@ -113,10 +97,8 @@ const ChatBoxComp = ({ messages, dialogue, onSubmit, readOnly, paramsList, onRef
     return undefined;
   }, []);
 
-  useEffect(() => {
-    if (!scrollableRef.current) {
-      return;
-    }
+  useLayoutEffect(() => {
+    if (!scrollableRef.current) return;
     scrollableRef.current.scrollTo(0, scrollableRef.current.scrollHeight);
   }, [messages?.length]);
 
@@ -127,10 +109,10 @@ const ChatBoxComp = ({ messages, dialogue, onSubmit, readOnly, paramsList, onRef
   }, [initMessage, messages.length]);
 
   useEffect(() => {
-    if (paramsList && Object.keys(paramsList || {})?.length > 0) {
-      setCurrentParam(spaceNameOriginal || Object.keys(paramsList || {})?.[0]);
+    if (paramsOpts?.length) {
+      setCurrentParam(spaceNameOriginal || paramsOpts[0].value);
     }
-  }, [paramsList]);
+  }, [paramsOpts?.length]);
 
   useEffect(() => {
     if (isChartChat) {
@@ -144,37 +126,21 @@ const ChatBoxComp = ({ messages, dialogue, onSubmit, readOnly, paramsList, onRef
     } else {
       setShowMessages(messages.filter((item) => ['view', 'human'].includes(item.role)));
     }
-  }, [isChartChat, messages]);
+  }, [isChartChat, messages.length]);
 
   return (
-    <div className="w-full h-full">
-      <Stack
-        className="w-full h-full bg-[#fefefe] dark:bg-[#212121]"
-        sx={{
-          table: {
-            borderCollapse: 'collapse',
-            border: '1px solid #ccc',
-            width: '100%',
-          },
-          'th, td': {
-            border: '1px solid #ccc',
-            padding: '10px',
-            textAlign: 'center',
-          },
+    <>
+      <ChatExcelTab
+        onComplete={() => {
+          clearIntialMessage?.();
+          onRefreshHistory?.();
         }}
-      >
-        <Stack
-          ref={scrollableRef}
-          direction={'column'}
-          sx={{
-            overflowY: 'auto',
-            maxHeight: '100%',
-            flex: 1,
-          }}
-        >
+      />
+      <div ref={scrollableRef} className="flex flex-1 overflow-y-auto pb-8 w-full flex-col">
+        <div className="flex items-center flex-1 flex-col text-sm leading-6 text-slate-900 dark:text-slate-300 sm:text-base sm:leading-7">
           {showMessages?.map((each, index) => {
             return (
-              <ChatItem
+              <ChatContent
                 key={index}
                 context={each.context}
                 isChartChat={isChartChat}
@@ -188,97 +154,46 @@ const ChatBoxComp = ({ messages, dialogue, onSubmit, readOnly, paramsList, onRef
             );
           })}
           {isLoading && <CircularProgress variant="soft" color="neutral" size="sm" sx={{ mx: 'auto', my: 2 }} />}
-        </Stack>
-        {!readOnly && (
-          <Box
-            className="bg-[#fefefe] dark:bg-[#212121] before:bg-[#fefefe] before:dark:bg-[#212121]"
-            sx={{
-              position: 'relative',
-              '&::before': {
-                content: '" "',
-                position: 'absolute',
-                top: '-18px',
-                left: '0',
-                right: '0',
-                width: '100%',
-                margin: '0 auto',
-                height: '20px',
-                filter: 'blur(10px)',
-                zIndex: 2,
-              },
-            }}
-          >
-            <form
-              style={{
-                maxWidth: '100%',
-                width: '76%',
-                position: 'relative',
-                display: 'flex',
-                marginTop: 'auto',
-                overflow: 'visible',
-                background: 'none',
-                justifyContent: 'center',
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                flexDirection: 'column',
-                gap: '12px',
-                paddingBottom: '58px',
-                paddingTop: '20px',
-              }}
-              onSubmit={(e) => {
-                e.stopPropagation();
-                methods.handleSubmit(submit)(e);
-              }}
-            >
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {Object.keys(paramsList || {}).length > 0 && (
-                  <div className="flex items-center gap-3">
-                    <Select
-                      value={currentParam}
-                      onChange={(e, newValue) => {
-                        setCurrentParam(newValue);
-                      }}
-                      sx={{ maxWidth: '100%' }}
-                    >
-                      {Object.keys(paramsList || {})?.map((paramItem) => (
-                        <Option key={paramItem} value={paramItem}>
-                          {paramItem}
-                        </Option>
-                      ))}
-                    </Select>
-                  </div>
-                )}
-                {/* Chat Excel: Upload File */}
-                {scene === 'chat_excel' && (
-                  <>
-                    <ExcelUpload
-                      convUid={id!}
-                      chatMode={scene}
-                      fileName={dialogue?.select_param}
-                      onComplete={() => {
-                        /** refresh dialogue list */
-                        clearIntialMessage?.();
-                        onRefreshHistory?.();
-                      }}
-                    />
-                  </>
-                )}
-              </div>
-              <Input
-                disabled={scene === 'chat_excel' && !dialogue?.select_param}
-                className="w-full h-12"
-                variant="outlined"
-                endDecorator={
-                  <IconButton type="submit" disabled={isLoading}>
-                    <SendRoundedIcon />
-                  </IconButton>
-                }
-                {...methods.register('query')}
-              />
-            </form>
-          </Box>
-        )}
-      </Stack>
+        </div>
+      </div>
+      <div className="relative after:absolute after:-top-8 after:h-8 after:w-full after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-[#212121]">
+        <form
+          className="flex w-full lg:w-4/5 xl:w-3/4 mx-auto py-2 sm:pt-6 sm:pb-10"
+          onSubmit={(e) => {
+            e.stopPropagation();
+            methods.handleSubmit(submit)(e);
+          }}
+        >
+          {!!paramsOpts?.length && (
+            <div className="flex items-center max-w-[6rem] sm:max-w-[12rem] h-12 mr-2">
+              <Select
+                className="h-full w-full"
+                value={currentParam}
+                onChange={(_, newValue) => {
+                  setCurrentParam(newValue ?? '');
+                }}
+              >
+                {paramsOpts.map((item) => (
+                  <Option key={item.key} value={item.value}>
+                    {item.key}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          )}
+          <Input
+            disabled={scene === 'chat_excel' && !currentDialogue?.select_param}
+            className="flex-1 h-12"
+            variant="outlined"
+            endDecorator={
+              <IconButton type="submit" disabled={isLoading}>
+                <SendRoundedIcon />
+              </IconButton>
+            }
+            {...methods.register('query')}
+          />
+        </form>
+      </div>
       <Modal
         open={jsonModalOpen}
         onClose={() => {
@@ -335,7 +250,7 @@ const ChatBoxComp = ({ messages, dialogue, onSubmit, readOnly, paramsList, onRef
           </Box>
         </ModalDialog>
       </Modal>
-    </div>
+    </>
   );
 };
 
