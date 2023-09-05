@@ -430,7 +430,7 @@ const Documents = () => {
                       sx={{ marginBottom: '20px' }}
                     />
                     {t('Text')}:
-                    <Textarea onChange={(e: any) => setText(e.target.value)} minRows={4} sx={{ marginBottom: '20px' }} />
+                    <Textarea onChange={(e: any) => setText(e.target.value)} minRows={4} maxRows={4} sx={{ marginBottom: '20px' }} />
                   </>
                 )}
                 <Typography
