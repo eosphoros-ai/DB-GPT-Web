@@ -1,32 +1,30 @@
-"use client";
+'use client';
 import { useRequest } from 'ahooks';
 import { useState } from 'react';
 import { Button, Input, Box, buttonClasses, Divider } from '@/lib/mui';
 import IconButton from '@mui/joy/IconButton';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { sendPostRequest } from '@/utils/request';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image'
+import Image from 'next/image';
+
+type FormData = {
+  query: string;
+};
 
 function Home() {
-  const Schema = z.object({ query: z.string().min(1) });
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const methods = useForm<z.infer<typeof Schema>>({
-    resolver: zodResolver(Schema),
-    defaultValues: {},
-  });
+  const methods = useForm<FormData>();
   const { data: scenesList } = useRequest(async () => await sendPostRequest('/v1/chat/dialogue/scenes'));
 
-  const submit = async ({ query }: z.infer<typeof Schema>) => {
+  const submit = async ({ query }: FormData) => {
     try {
       setIsLoading(true);
       methods.reset();
       const res = await sendPostRequest('/v1/chat/dialogue/new', {
-        chat_mode: 'chat_normal'
+        chat_mode: 'chat_normal',
       });
       if (res?.success && res?.data?.conv_uid) {
         router.push(`/chat?id=${res?.data?.conv_uid}&initMessage=${query}`);
@@ -39,22 +37,22 @@ function Home() {
 
   return (
     <>
-      <div className='mx-auto h-full justify-center flex max-w-3xl flex-col gap-8 px-5 pt-6'>
-        <div className='my-0 mx-auto'>
+      <div className="mx-auto h-full justify-center flex max-w-3xl flex-col gap-8 px-5 pt-6">
+        <div className="my-0 mx-auto">
           <Image
             src="/LOGO.png"
             alt="Revolutionizing Database Interactions with Private LLM Technology"
             width={856}
             height={160}
-            className='w-full'
+            className="w-full"
             unoptimized
           />
         </div>
-        <div className='grid gap-8 lg:grid-cols-3'>
-          <div className='lg:col-span-3'>
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-3">
             <Divider className="text-[#878c93]">Quick Start</Divider>
             <Box
-              className='grid pt-7 rounded-xl gap-2 lg:grid-cols-3 lg:gap-6'
+              className="grid pt-7 rounded-xl gap-2 lg:grid-cols-3 lg:gap-6"
               sx={{
                 [`& .${buttonClasses.root}`]: {
                   color: 'var(--joy-palette-primary-solidColor)',
@@ -62,8 +60,8 @@ function Home() {
                   height: '52px',
                   '&: hover': {
                     backgroundColor: 'var(--joy-palette-primary-solidHoverBg)',
-                  }
-                }, 
+                  },
+                },
                 [`& .${buttonClasses.disabled}`]: {
                   cursor: 'not-allowed',
                   pointerEvents: 'unset',
@@ -71,8 +69,8 @@ function Home() {
                   backgroundColor: 'var(--joy-palette-primary-softDisabledBg)',
                   '&: hover': {
                     backgroundColor: 'var(--joy-palette-primary-softDisabledBg)',
-                  }
-                }
+                  },
+                },
               }}
             >
               {scenesList?.data?.map((scene) => (
@@ -81,23 +79,23 @@ function Home() {
                   disabled={scene?.show_disable}
                   size="md"
                   variant="solid"
-                  className='text-base rounded-none'
+                  className="text-base rounded-none"
                   onClick={async () => {
                     const res = await sendPostRequest('/v1/chat/dialogue/new', {
-                      chat_mode: scene['chat_scene']
+                      chat_mode: scene['chat_scene'],
                     });
                     if (res?.success && res?.data?.conv_uid) {
                       router.push(`/chat?id=${res?.data?.conv_uid}&scene=${scene['chat_scene']}`);
                     }
                   }}
                 >
-                  {scene['scene_name']
-                }</Button>
+                  {scene['scene_name']}
+                </Button>
               ))}
             </Box>
           </div>
         </div>
-        <div className='mt-6 mb-[10%] pointer-events-none inset-x-0 bottom-0 z-0 mx-auto flex w-full max-w-3xl flex-col items-center justify-center max-md:border-t xl:max-w-4xl [&>*]:pointer-events-auto'>
+        <div className="mt-6 mb-[10%] pointer-events-none inset-x-0 bottom-0 z-0 mx-auto flex w-full max-w-3xl flex-col items-center justify-center max-md:border-t xl:max-w-4xl [&>*]:pointer-events-auto">
           <form
             style={{
               maxWidth: '100%',
@@ -110,7 +108,7 @@ function Home() {
               justifyContent: 'center',
               marginLeft: 'auto',
               marginRight: 'auto',
-              height: '52px'
+              height: '52px',
             }}
             onSubmit={(e) => {
               methods.handleSubmit(submit)(e);
@@ -119,7 +117,7 @@ function Home() {
             <Input
               sx={{ width: '100%' }}
               variant="outlined"
-              placeholder='Ask anything'
+              placeholder="Ask anything"
               endDecorator={
                 <IconButton type="submit" disabled={isLoading}>
                   <SendRoundedIcon />
@@ -131,8 +129,7 @@ function Home() {
         </div>
       </div>
     </>
-    
-  )
+  );
 }
 
 export default Home;
