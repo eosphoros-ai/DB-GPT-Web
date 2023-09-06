@@ -112,7 +112,7 @@ const ChatBoxComp = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, cle
     } else {
       setShowMessages(messages.filter((item) => ['view', 'human'].includes(item.role)));
     }
-  }, [isChartChat, messages.length]);
+  }, [isChartChat, messages]);
 
   return (
     <>

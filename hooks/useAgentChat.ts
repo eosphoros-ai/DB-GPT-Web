@@ -23,8 +23,8 @@ const useAgentChat = ({ queryAgentURL, channel, queryBody, initHistory = [] }: P
   const ctrl = new AbortController();
 
   useEffect(() => {
-    if (initHistory.length) setState({ history: initHistory });
-  }, [initHistory.length]);
+    if (initHistory) setState({ history: initHistory });
+  }, [initHistory]);
 
   const handleChatSubmit = async (context: string, otherQueryBody?: any) => {
     if (!context) {
