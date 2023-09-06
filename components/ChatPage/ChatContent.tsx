@@ -44,7 +44,7 @@ const options: MarkdownToJSX.Options = {
     },
     td: {
       props: {
-        className: 'border border-slate-300 dark:border-slate-700 !p-4 text-slate-500 dark:text-slate-400 !text-left whitespace-pre-wrap',
+        className: 'border border-slate-300 dark:border-slate-700 !p-2 text-slate-500 dark:text-slate-400 !text-left whitespace-pre-wrap',
       },
     },
   },
