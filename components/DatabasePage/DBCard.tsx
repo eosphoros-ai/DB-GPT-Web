@@ -21,7 +21,7 @@ function DBCard({ info, onClick }: Props) {
       onClick={handleClick}
     >
       <div className="flex items-center">
-        <img className="w-11 h-11 rounded-full mr-4 border border-gray-200 object-contain" src={info.icon} alt={info.label} />
+        <img className="w-11 h-11 rounded-full mr-4 border border-gray-200 object-contain bg-white" src={info.icon} alt={info.label} />
         <div className="flex flex-col">
           <h2 className="text-sm font-semibold">{info.label}</h2>
           {info.disabled && (

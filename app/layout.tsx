@@ -11,7 +11,6 @@ import TopProgressBar from '@/components/topProgressBar';
 import DialogueContext, { useDialogueContext } from './context/dialogue';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import MyDrawer from '@/components/myDrawer';
 import classNames from 'classnames';
 
 function CssWrapper({ children }: { children: React.ReactElement }) {
@@ -43,7 +42,7 @@ function CssWrapper({ children }: { children: React.ReactElement }) {
 
 function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const { isContract, isMenuExpand } = useDialogueContext();
-  const [open, setOpen] = React.useState<boolean>(false);
+
   return (
     <>
       <div
@@ -57,7 +56,7 @@ function LayoutWrapper({ children }: { children: React.ReactNode }) {
       >
         <LeftSide />
         <div
-          className={classNames('relative min-h-0 min-w-0 overflow-hidden px-3', {
+          className={classNames('flex flex-col flex-1 relative overflow-hidden px-3', {
             'w-[calc(100vw - 76px)]': isContract,
           })}
         >

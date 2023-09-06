@@ -28,16 +28,9 @@ import classNames from 'classnames';
 import MenuIcon from '@mui/icons-material/Menu';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import ExpandIcon from '@mui/icons-material/Expand';
+import { GetChatDialogueListResponse } from '@/client/api';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useTranslation } from 'react-i18next';
-
-interface Dialogue {
-  conv_uid: string;
-  user_input: string;
-  user_name: string;
-  chat_mode: string;
-  select_param: string;
-}
 
 const LeftSide = () => {
   const pathname = usePathname();
@@ -121,7 +114,7 @@ const LeftSide = () => {
                   gap: '4px',
                 }}
               >
-                {dialogueList?.data?.map((dialogue: Dialogue) => {
+                {dialogueList.map((dialogue: GetChatDialogueListResponse[0]) => {
                   const isSelect = (pathname === `/chat` || pathname === '/chat/') && id === dialogue.conv_uid;
                   return (
                     <ListItem key={dialogue.conv_uid}>

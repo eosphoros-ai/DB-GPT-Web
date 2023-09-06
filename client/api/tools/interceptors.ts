@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import { ApiResponse, FailedTuple, SuccessTuple } from '../types/request.type';
+import { message } from 'antd';
 
 /**
  * Response processing
@@ -8,10 +9,7 @@ import { ApiResponse, FailedTuple, SuccessTuple } from '../types/request.type';
  * @param ignoreCodes ignore error codes
  * @returns
  */
-export const apiInterceptors = <T = any, D = any>(
-  promise: Promise<ApiResponse<T, D>>,
-  ignoreCodes?: '*' | (number | string)[],
-) => {
+export const apiInterceptors = <T = any, D = any>(promise: Promise<ApiResponse<T, D>>, ignoreCodes?: '*' | (number | string)[]) => {
   return promise
     .then<SuccessTuple<T, D>>((response) => {
       const { data } = response;
@@ -20,6 +18,7 @@ export const apiInterceptors = <T = any, D = any>(
       }
       if (!data.success) {
         if (ignoreCodes && ignoreCodes !== '*' && data.err_code && ignoreCodes.includes(data.err_code)) {
+          message.error(data.err_msg);
           throw new Error(data.err_msg ?? '');
         }
       }

@@ -11,6 +11,7 @@ import { ChartData } from '@/types/chart';
 import LineChart from './Chart/LineChart';
 import BarChart from './Chart/BarChart';
 import TableChart from './Chart/TableChart';
+import { apiInterceptors, getChatDialogueMessagesHistory, postChatModeParamsList } from '@/client/api';
 
 const ChartSkeleton = () => {
   return (
@@ -34,20 +35,16 @@ const ChartSkeleton = () => {
 
 const ChatMode = () => {
   const [chartsData, setChartsData] = useState<Array<ChartData>>();
-  const buttonRef = React.useRef(null);
-  const [open, setOpen] = React.useState(false);
   const searchParams = useSearchParams();
-  const { dialogueList, refreshDialogList } = useDialogueContext();
+  const { currentDialogue, refreshDialogList } = useDialogueContext();
   const id = searchParams.get('id');
   const scene = searchParams.get('scene');
 
-  const currentDialogue = useMemo(() => ((dialogueList?.data ?? []) as any[]).find((item) => item.conv_uid === id), [id, dialogueList]);
-
-  const { data: historyList, run: runHistoryList } = useRequest(
-    async () =>
-      await sendGetRequest('/v1/chat/dialogue/messages/history', {
-        con_uid: id,
-      }),
+  const { data: historyList = [], run: runHistoryList } = useRequest(
+    async () => {
+      const [, res] = await apiInterceptors(getChatDialogueMessagesHistory(id as string));
+      return res ?? [];
+    },
     {
       ready: !!id,
       refreshDeps: [id],
@@ -58,34 +55,35 @@ const ChatMode = () => {
     ready: !!scene && !!['chat_with_db_execute', 'chat_with_db_qa'].includes(scene),
   });
 
-  const { data: supportTypes } = useRequest(async () => await sendGetRequest('/v1/chat/db/support/type'), {
-    ready: !!scene && !!['chat_with_db_execute', 'chat_with_db_qa'].includes(scene),
-  });
-
   const { history, handleChatSubmit } = useAgentChat({
     queryAgentURL: `/v1/chat/completions`,
     queryBody: {
       conv_uid: id,
       chat_mode: scene || 'chat_normal',
     },
-    initHistory: historyList?.data,
-    runHistoryList,
+    initHistory: historyList,
   });
 
-  const { data: paramsList, run: runParamsList } = useRequest(async () => await sendPostRequest(`/v1/chat/mode/params/list?chat_mode=${scene}`), {
-    ready: !!scene,
-    refreshDeps: [id, scene],
-  });
+  const { data: paramsObj = {} } = useRequest(
+    async () => {
+      const [, res] = await apiInterceptors(postChatModeParamsList(scene as string));
+      return res ?? {};
+    },
+    {
+      ready: !!scene,
+      refreshDeps: [id, scene],
+    },
+  );
 
   useEffect(() => {
     try {
-      const contextTemp = history?.[history.length - 1]?.context;
+      const contextTemp = history?.[history.length - 1]?.context as string;
       const contextObj = JSON.parse(contextTemp);
       setChartsData(contextObj?.template_name === 'report' ? contextObj?.charts : undefined);
     } catch (e) {
       setChartsData(undefined);
     }
-  }, [history]);
+  }, [history.length]);
 
   const chartRows = useMemo(() => {
     if (chartsData) {
@@ -118,9 +116,9 @@ const ChatMode = () => {
   }, [chartsData]);
 
   return (
-    <Grid container spacing={2} className="h-full overflow-auto" sx={{ flexGrow: 1 }}>
+    <div className="flex flex-1 overflow-hidden">
       {chartsData && (
-        <Grid xs={8} className="max-h-full">
+        <div className="w-3/4">
           <div className="flex flex-col gap-3 h-full">
             {chartRows?.map((chartRow, index) => (
               <div key={`chart_row_${index}`} className={`${chartRow?.type !== 'IndicatorValue' ? 'flex gap-3' : ''}`}>
@@ -153,11 +151,11 @@ const ChatMode = () => {
               </div>
             ))}
           </div>
-        </Grid>
+        </div>
       )}
       {/** skeleton */}
       {!chartsData && scene === 'chat_dashboard' && (
-        <Grid xs={8} className="max-h-full p-6">
+        <div className="w-3/4 p-6">
           <div className="flex flex-col gap-3 h-full">
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
               <Grid xs={8}>
@@ -176,29 +174,24 @@ const ChatMode = () => {
               </Grid>
             </Grid>
           </div>
-        </Grid>
+        </div>
       )}
       {/** chat panel */}
-      <Grid xs={scene === 'chat_dashboard' ? 4 : 12} className="h-full max-h-full">
-        <div className="h-full" style={{ boxShadow: scene === 'chat_dashboard' ? '0px 0px 9px 0px #c1c0c080' : 'unset' }}>
-          <ChatBoxComp
-            clearIntialMessage={async () => {
-              await refreshDialogList();
-            }}
-            dialogue={currentDialogue}
-            dbList={dbList?.data}
-            runDbList={runDbList}
-            onRefreshHistory={runHistoryList}
-            supportTypes={supportTypes?.data}
-            messages={history || []}
-            onSubmit={handleChatSubmit}
-            paramsList={paramsList?.data}
-            runParamsList={runParamsList}
-            setChartsData={setChartsData}
-          />
-        </div>
-      </Grid>
-    </Grid>
+      <div className={`${scene === 'chat_dashboard' ? 'w-1/3' : 'w-full'} flex flex-1 flex-col h-full`}>
+        <ChatBoxComp
+          clearIntialMessage={async () => {
+            await refreshDialogList();
+          }}
+          dbList={dbList?.data}
+          runDbList={runDbList}
+          onRefreshHistory={runHistoryList}
+          messages={history}
+          onSubmit={handleChatSubmit}
+          paramsObj={paramsObj}
+          setChartsData={setChartsData}
+        />
+      </div>
+    </div>
   );
 };
 

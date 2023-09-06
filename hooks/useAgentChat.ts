@@ -1,31 +1,21 @@
-import {
-  EventStreamContentType,
-  fetchEventSource,
-} from '@microsoft/fetch-event-source';
+import { EventStreamContentType, fetchEventSource } from '@microsoft/fetch-event-source';
 import useStateReducer from './useStateReducer';
-import { Message } from '@/types';
 import { useEffect } from 'react';
 import { useDialogueContext } from '@/app/context/dialogue';
 import { useSearchParams } from 'next/navigation';
 import { message } from 'antd';
+import { IChatDialogueMessageSchema } from '@/client/api';
 
 type Props = {
   queryAgentURL: string;
-  channel?: "dashboard" | "website" | "slack" | "crisp";
+  channel?: 'dashboard' | 'website' | 'slack' | 'crisp';
   queryBody?: any;
-  initHistory?: Message[];
-  runHistoryList?: () => void;
+  initHistory?: IChatDialogueMessageSchema[];
 };
 
-const useAgentChat = ({
-  queryAgentURL,
-  channel,
-  queryBody,
-  initHistory,
-  runHistoryList
-}: Props) => {
+const useAgentChat = ({ queryAgentURL, channel, queryBody, initHistory = [] }: Props) => {
   const [state, setState] = useStateReducer({
-    history: (initHistory || []) as { role: 'human' | 'view'; context: string; id?: string }[],
+    history: initHistory,
   });
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
@@ -33,8 +23,8 @@ const useAgentChat = ({
   const ctrl = new AbortController();
 
   useEffect(() => {
-    if (initHistory) setState({ history: initHistory });
-  }, [initHistory]);
+    if (initHistory.length) setState({ history: initHistory });
+  }, [initHistory.length]);
 
   const handleChatSubmit = async (context: string, otherQueryBody?: any) => {
     if (!context) {
@@ -61,7 +51,7 @@ const useAgentChat = ({
       return;
     }
     try {
-      await fetchEventSource(`${process.env.API_BASE_URL ? process.env.API_BASE_URL : ''}${"/api" + queryAgentURL}`, {
+      await fetchEventSource(`${process.env.API_BASE_URL ? process.env.API_BASE_URL : ''}${'/api' + queryAgentURL}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,18 +64,11 @@ const useAgentChat = ({
             refreshDialogList();
             const searchParams = new URLSearchParams(window.location.search);
             searchParams.delete('initMessage');
-            window.history?.replaceState(null, null, `?${searchParams.toString()}`);
+            window.history?.replaceState(null, '', `?${searchParams.toString()}`);
           }
-          if (
-            response.ok &&
-            response.headers.get('content-type') === EventStreamContentType
-          ) {
+          if (response.ok && response.headers.get('content-type') === EventStreamContentType) {
             return; // everything's good
-          } else if (
-            response.status >= 400 &&
-            response.status < 500 &&
-            response.status !== 429
-          ) {
+          } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
             if (response.status === 402) {
               //throw new ApiError(ApiErrorType.USAGE_LIMIT);
             }
@@ -99,13 +82,13 @@ const useAgentChat = ({
           // if the server closes the connection unexpectedly, retry:
           console.log('onclose');
         },
-        onerror(err) {       
-          console.log('onerror');     
+        onerror(err) {
+          console.log('onerror');
           throw new Error(err);
         },
         onmessage: (event) => {
           event.data = event.data?.replaceAll('\\n', '\n');
-          
+
           if (event.data === '[DONE]') {
             // ctrl.abort();
           } else if (event.data?.startsWith('[ERROR]')) {
@@ -131,7 +114,6 @@ const useAgentChat = ({
                 history: h as any,
               });
             }
-            
           }
         },
       });
@@ -139,10 +121,7 @@ const useAgentChat = ({
       console.log(err);
 
       setState({
-        history: [
-          ...history,
-          { role: 'view', context: answer || 'Sorry, We meet some error, please try agin later.' as string },
-        ] as any,
+        history: [...history, { role: 'view', context: answer || ('Sorry, We meet some error, please try agin later.' as string) }] as any,
       });
     }
   };
