@@ -1,15 +1,19 @@
 import { useRequest } from 'ahooks';
 import { createCtx } from '@/utils/ctx-helper';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { GetChatDialogueListResponse, apiInterceptors, getChatDialogueList } from '@/client/api';
 
 export const [useDialogueContext, DialogueProvider] = createCtx<{
   isContract?: boolean;
   isMenuExpand?: boolean;
+  scene: string;
+  chatId: string;
   dialogueList: GetChatDialogueListResponse;
   setIsContract: (val: boolean) => void;
   setIsMenuExpand: (val: boolean) => void;
+  setScene: (val: string) => void;
+  setChatId: (val: string) => void;
   queryDialogueList: () => void;
   refreshDialogList: () => void;
   currentDialogue?: GetChatDialogueListResponse[0];
@@ -17,10 +21,10 @@ export const [useDialogueContext, DialogueProvider] = createCtx<{
 
 const DialogueContext = ({ children }: { children: React.ReactElement }) => {
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-  const scene = searchParams.get('scene');
-  const [isContract, setIsContract] = React.useState(false);
-  const [isMenuExpand, setIsMenuExpand] = React.useState<boolean>(scene !== 'chat_dashboard');
+  const [isContract, setIsContract] = useState(false);
+  const [scene, setScene] = useState<string>(searchParams.get('scene') || '');
+  const [chatId, setChatId] = useState<string>(searchParams.get('id') || '');
+  const [isMenuExpand, setIsMenuExpand] = useState<boolean>(scene !== 'chat_dashboard');
   const {
     run: queryDialogueList,
     data: dialogueList = [],
@@ -34,16 +38,20 @@ const DialogueContext = ({ children }: { children: React.ReactElement }) => {
       manual: true,
     },
   );
-  const currentDialogue = useMemo(() => dialogueList.find((item) => item.conv_uid === id), [id, dialogueList]);
+  const currentDialogue = useMemo(() => dialogueList.find((item) => item.conv_uid === chatId), [chatId, dialogueList]);
 
   return (
     <DialogueProvider
       value={{
         isContract,
         isMenuExpand,
+        scene,
+        chatId,
         dialogueList,
         setIsContract,
         setIsMenuExpand,
+        setScene,
+        setChatId,
         queryDialogueList,
         refreshDialogList,
         currentDialogue,

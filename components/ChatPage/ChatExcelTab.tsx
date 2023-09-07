@@ -1,6 +1,5 @@
 import { useDialogueContext } from '@/app/context/dialogue';
 import ExcelUpload from './ExcelUpload';
-import { useSearchParams } from 'next/navigation';
 import { LinkOutlined } from '@ant-design/icons';
 
 interface Props {
@@ -8,10 +7,7 @@ interface Props {
 }
 
 function ChatExcelTab({ onComplete }: Props) {
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-  const scene = searchParams.get('scene');
-  const { currentDialogue } = useDialogueContext();
+  const { currentDialogue, scene, chatId } = useDialogueContext();
 
   if (scene !== 'chat_excel') return null;
 
@@ -26,7 +22,7 @@ function ChatExcelTab({ onComplete }: Props) {
             <div className="bg-gray-100 px-3 py-2 text-xs rounded-tr rounded-br dark:text-gray-800">{currentDialogue.select_param}</div>
           </div>
         ) : (
-          <ExcelUpload convUid={id as string} chatMode={scene} onComplete={onComplete} />
+          <ExcelUpload convUid={chatId} chatMode={scene} onComplete={onComplete} />
         )}
       </div>
     </div>
