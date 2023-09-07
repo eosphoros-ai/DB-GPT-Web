@@ -83,7 +83,7 @@ const ChatMode = () => {
     } catch (e) {
       setChartsData(undefined);
     }
-  }, [history.length]);
+  }, [history]);
 
   const chartRows = useMemo(() => {
     if (chartsData) {

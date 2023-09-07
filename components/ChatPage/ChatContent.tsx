@@ -38,13 +38,12 @@ const options: MarkdownToJSX.Options = {
     },
     th: {
       props: {
-        className:
-          'border border-slate-300 dark:border-slate-600 font-semibold !p-4 text-slate-900 dark:text-slate-200 !text-left whitespace-pre-wrap',
+        className: 'border border-slate-300 dark:border-slate-600 font-semibold !p-2 text-slate-900 dark:text-slate-200 !text-left',
       },
     },
     td: {
       props: {
-        className: 'border border-slate-300 dark:border-slate-700 !p-4 text-slate-500 dark:text-slate-400 !text-left whitespace-pre-wrap',
+        className: 'border border-slate-300 dark:border-slate-700 !p-2 text-slate-500 dark:text-slate-400 !text-left',
       },
     },
   },
