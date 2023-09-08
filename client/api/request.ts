@@ -1,12 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
-import {
-  GetChatDbListResponse,
-  GetChatDbSupportTypeResponse,
-  GetChatDialogueListResponse,
-  GetChatDialogueMessagesHistoryResponse,
-  PostChatDbParams,
-} from './types/schema.type';
+import { GetChatDbListResponse, GetChatDbSupportTypeResponse, PostChatDbParams } from '@/types/db';
+import { GetChatDialogueListResponse, getChatHistoryResponse } from '@/types/chart';
 
 /** Database Page */
 export const getChatDbList = () => {
@@ -32,8 +27,8 @@ export const getChatDialogueList = () => {
 export const postChatModeParamsList = (chatMode: string) => {
   return POST<null, Record<string, string>>(`/chat/mode/params/list?chat_mode=${chatMode}`);
 };
-export const getChatDialogueMessagesHistory = (convId: string) => {
-  return GET<null, GetChatDialogueMessagesHistoryResponse>(`/chat/dialogue/messages/history?con_uid=${convId}`);
+export const getChatHistory = (convId: string) => {
+  return GET<null, getChatHistoryResponse>(`/chat/dialogue/messages/history?con_uid=${convId}`);
 };
 export const postChatModeParamsFileLoad = ({
   convUid,
@@ -46,7 +41,7 @@ export const postChatModeParamsFileLoad = ({
   data: FormData;
   config?: Omit<AxiosRequestConfig, 'headers'>;
 }) => {
-  return POST<FormData, GetChatDialogueMessagesHistoryResponse>(`/chat/mode/params/file/load?conv_uid=${convUid}&chat_mode=${chatMode}`, data, {
+  return POST<FormData, getChatHistoryResponse>(`/chat/mode/params/file/load?conv_uid=${convUid}&chat_mode=${chatMode}`, data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

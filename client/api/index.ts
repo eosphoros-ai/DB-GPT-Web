@@ -1,5 +1,17 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import { ApiResponse } from './types/request.type';
+import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
+
+export type ResponseType<T = any> = {
+  data: T;
+  err_code: string | null;
+  err_msg: string | null;
+  success: boolean;
+};
+
+export type ApiResponse<T = any, D = any> = AxiosResponse<ResponseType<T>, D>;
+
+export type SuccessTuple<T = any, D = any> = [null, T, ResponseType<T>, ApiResponse<T, D>];
+
+export type FailedTuple = [Error | AxiosError, null, null, null];
 
 const ins = axios.create({
   baseURL: `${process.env.API_BASE_URL ?? ''}/api/v1`,
@@ -28,5 +40,3 @@ export const DELETE = <Params = any, Response = any, D = any>(url: string, param
 
 export * from './tools';
 export * from './request';
-export * from './types/request.type';
-export * from './types/schema.type';
