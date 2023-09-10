@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useMemo, useState } from 'react';
 import { apiInterceptors, getChatDialogueList } from '@/client/api';
 import { useSearchParams } from 'next/navigation';
 import { useRequest } from 'ahooks';
@@ -12,7 +12,6 @@ interface IChatContext {
   dialogueList?: GetChatDialogueListResponse;
   setIsContract: (val: boolean) => void;
   setIsMenuExpand: (val: boolean) => void;
-  setChatId: (val: string) => void;
   queryDialogueList: () => void;
   refreshDialogList: () => void;
   currentDialogue?: GetChatDialogueListResponse[0];
@@ -24,7 +23,6 @@ const ChatContext = createContext<IChatContext>({
   dialogueList: [],
   setIsContract: () => {},
   setIsMenuExpand: () => {},
-  setChatId: () => {},
   queryDialogueList: () => {},
   refreshDialogList: () => {},
 });
@@ -32,15 +30,9 @@ const ChatContext = createContext<IChatContext>({
 const ChatContextProvider = ({ children }: { children: React.ReactElement }) => {
   const searchParams = useSearchParams();
   const [isContract, setIsContract] = useState(false);
-  const urlScene = (searchParams && searchParams.get('scene')) || '';
-  const [scene] = useState<string>(urlScene);
-  const id = (searchParams && searchParams.get('id')) || '';
-  const [chatId, setChatId] = useState<string>(id);
+  const chatId = searchParams?.get('id') ?? '';
+  const scene = searchParams?.get('scene') ?? '';
   const [isMenuExpand, setIsMenuExpand] = useState<boolean>(scene !== 'chat_dashboard');
-
-  useEffect(() => {
-    setChatId(id);
-  }, [id]);
 
   const {
     run: queryDialogueList,
@@ -64,7 +56,6 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     dialogueList,
     setIsContract,
     setIsMenuExpand,
-    setChatId,
     queryDialogueList,
     refreshDialogList,
     currentDialogue,

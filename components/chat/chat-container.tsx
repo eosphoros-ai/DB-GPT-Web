@@ -4,13 +4,14 @@ import { Card, CardContent, Typography, Grid, Skeleton, AspectRatio, Box, aspect
 import { useRequest } from 'ahooks';
 import { sendGetRequest } from '@/utils/request';
 import useAgentChat from '@/hooks/use-agent-chat';
-import Completion from '@/components/completion';
+import Completion from '@/components/chat/completion';
 import { ChartData } from '@/types/chart';
-import LineChart from './chart/line-chart';
-import BarChart from './chart/bar-chart';
-import TableChart from './chart/table-chart';
+import LineChart from '../chart/line-chart';
+import BarChart from '../chart/bar-chart';
+import TableChart from '../chart/table-chart';
 import { apiInterceptors, getChatHistory, postChatModeParamsList } from '@/client/api';
 import { ChatContext } from '@/app/chat-context';
+import MuiLoading from '../common/loading';
 
 const ChartSkeleton = () => {
   return (
@@ -33,12 +34,15 @@ const ChartSkeleton = () => {
 };
 
 const ChatContainer = () => {
+  const [loading, setLoading] = useState(false);
   const [chartsData, setChartsData] = useState<Array<ChartData>>();
-  const { currentDialogue, refreshDialogList, scene, chatId } = useContext(ChatContext);
+  const { refreshDialogList, scene, chatId } = useContext(ChatContext);
 
   const { data: historyList = [], run: runHistoryList } = useRequest(
     async () => {
+      setLoading(true);
       const [, res] = await apiInterceptors(getChatHistory(chatId));
+      setLoading(false);
       return res ?? [];
     },
     {
@@ -115,81 +119,84 @@ const ChatContainer = () => {
   }, [chartsData]);
 
   return (
-    <div className="flex flex-1 overflow-hidden">
-      {chartsData && (
-        <div className="w-3/4">
-          <div className="flex flex-col gap-3 h-full">
-            {chartRows?.map((chartRow, index) => (
-              <div key={`chart_row_${index}`} className={`${chartRow?.type !== 'IndicatorValue' ? 'flex gap-3' : ''}`}>
-                {chartRow.charts.map((chart) => {
-                  if (chart.chart_type === 'IndicatorValue') {
-                    return (
-                      <div key={chart.chart_uid} className="flex flex-row gap-3">
-                        {chart.values.map((item) => (
-                          <div key={item.name} className="flex-1">
-                            <Card sx={{ background: 'transparent' }}>
-                              <CardContent className="justify-around">
-                                <Typography gutterBottom component="div">
-                                  {item.name}
-                                </Typography>
-                                <Typography>{item.value}</Typography>
-                              </CardContent>
-                            </Card>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  } else if (chart.chart_type === 'LineChart') {
-                    return <LineChart key={chart.chart_uid} chart={chart} />;
-                  } else if (chart.chart_type === 'BarChart') {
-                    return <BarChart key={chart.chart_uid} chart={chart} />;
-                  } else if (chart.chart_type === 'Table') {
-                    return <TableChart key={chart.chart_uid} chart={chart} />;
-                  }
-                })}
-              </div>
-            ))}
+    <>
+      <MuiLoading visible={loading} />
+      <div className="px-4 flex flex-1 overflow-hidden">
+        {chartsData && (
+          <div className="w-3/4">
+            <div className="flex flex-col gap-3 h-full">
+              {chartRows?.map((chartRow, index) => (
+                <div key={`chart_row_${index}`} className={`${chartRow?.type !== 'IndicatorValue' ? 'flex gap-3' : ''}`}>
+                  {chartRow.charts.map((chart) => {
+                    if (chart.chart_type === 'IndicatorValue') {
+                      return (
+                        <div key={chart.chart_uid} className="flex flex-row gap-3">
+                          {chart.values.map((item) => (
+                            <div key={item.name} className="flex-1">
+                              <Card sx={{ background: 'transparent' }}>
+                                <CardContent className="justify-around">
+                                  <Typography gutterBottom component="div">
+                                    {item.name}
+                                  </Typography>
+                                  <Typography>{item.value}</Typography>
+                                </CardContent>
+                              </Card>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    } else if (chart.chart_type === 'LineChart') {
+                      return <LineChart key={chart.chart_uid} chart={chart} />;
+                    } else if (chart.chart_type === 'BarChart') {
+                      return <BarChart key={chart.chart_uid} chart={chart} />;
+                    } else if (chart.chart_type === 'Table') {
+                      return <TableChart key={chart.chart_uid} chart={chart} />;
+                    }
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-      {/** skeleton */}
-      {!chartsData && scene === 'chat_dashboard' && (
-        <div className="w-3/4 p-6">
-          <div className="flex flex-col gap-3 h-full">
-            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-              <Grid xs={8}>
-                <Box className="h-full w-full" sx={{ display: 'flex', gap: 2 }}>
+        )}
+        {/** skeleton */}
+        {!chartsData && scene === 'chat_dashboard' && (
+          <div className="w-3/4 p-6">
+            <div className="flex flex-col gap-3 h-full">
+              <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+                <Grid xs={8}>
+                  <Box className="h-full w-full" sx={{ display: 'flex', gap: 2 }}>
+                    <ChartSkeleton />
+                  </Box>
+                </Grid>
+                <Grid xs={4}>
                   <ChartSkeleton />
-                </Box>
+                </Grid>
+                <Grid xs={4}>
+                  <ChartSkeleton />
+                </Grid>
+                <Grid xs={8}>
+                  <ChartSkeleton />
+                </Grid>
               </Grid>
-              <Grid xs={4}>
-                <ChartSkeleton />
-              </Grid>
-              <Grid xs={4}>
-                <ChartSkeleton />
-              </Grid>
-              <Grid xs={8}>
-                <ChartSkeleton />
-              </Grid>
-            </Grid>
+            </div>
           </div>
+        )}
+        {/** chat panel */}
+        <div className={`${scene === 'chat_dashboard' ? 'w-1/3' : 'w-full'} flex flex-1 flex-col h-full`}>
+          <Completion
+            clearIntialMessage={async () => {
+              await refreshDialogList();
+            }}
+            dbList={dbList?.data}
+            runDbList={runDbList}
+            onRefreshHistory={runHistoryList}
+            messages={history}
+            onSubmit={handleChatSubmit}
+            paramsObj={paramsObj}
+          />
         </div>
-      )}
-      {/** chat panel */}
-      <div className={`${scene === 'chat_dashboard' ? 'w-1/3' : 'w-full'} flex flex-1 flex-col h-full`}>
-        <Completion
-          clearIntialMessage={async () => {
-            await refreshDialogList();
-          }}
-          dbList={dbList?.data}
-          runDbList={runDbList}
-          onRefreshHistory={runHistoryList}
-          messages={history}
-          onSubmit={handleChatSubmit}
-          paramsObj={paramsObj}
-        />
       </div>
-    </div>
+    </>
   );
 };
 

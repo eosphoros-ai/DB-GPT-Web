@@ -1,9 +1,9 @@
 import type { AppProps } from 'next/app';
 import React, { useContext, useEffect, useRef } from 'react';
-import LeftSide from '@/components/left-side';
+import LeftSide from '@/components/layout/left-side';
 import { CssVarsProvider, ThemeProvider, useColorScheme } from '@mui/joy/styles';
 import { joyTheme } from '@/defaultTheme';
-import TopProgressBar from '@/components/top-progress-bar';
+import TopProgressBar from '@/components/layout/top-progress-bar';
 import { useTranslation } from 'react-i18next';
 import { ChatContext, ChatContextProvider } from '@/app/chat-context';
 import classNames from 'classnames';
@@ -31,7 +31,7 @@ function CssWrapper({ children }: { children: React.ReactElement }) {
   }, [i18n]);
 
   return (
-    <div ref={ref} className="h-full">
+    <div ref={ref}>
       <TopProgressBar />
       <ChatContextProvider>{children}</ChatContextProvider>
     </div>
@@ -39,27 +39,15 @@ function CssWrapper({ children }: { children: React.ReactElement }) {
 }
 
 function LayoutWrapper({ children }: { children: React.ReactNode }) {
-  const { isContract, isMenuExpand } = useContext(ChatContext);
+  const { isMenuExpand } = useContext(ChatContext);
 
   return (
     <>
-      <div
-        className={classNames(
-          'grid h-full w-full grid-cols-1 grid-rows-[auto,1fr] text-smd dark:text-gray-300 md:grid-rows-[1fr] transition-width duration-500',
-          {
-            'md:grid-cols-[280px,1fr]': isMenuExpand,
-            'md:grid-cols-[60px,1fr]': !isMenuExpand,
-          },
-        )}
-      >
-        <LeftSide />
-        <div
-          className={classNames('flex flex-col flex-1 relative overflow-hidden px-3', {
-            'w-[calc(100vw - 76px)]': isContract,
-          })}
-        >
-          {children}
+      <div className="flex w-screen h-screen overflow-hidden">
+        <div className={classNames('transition-[width]', isMenuExpand ? 'w-[240px]' : 'w-[80px]', 'hidden', 'md:block')}>
+          <LeftSide />
         </div>
+        <div className="flex flex-col flex-1 relative overflow-hidden">{children}</div>
       </div>
     </>
   );
@@ -70,11 +58,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ThemeProvider theme={joyTheme}>
       <CssVarsProvider theme={joyTheme} defaultMode="light">
         <CssWrapper>
-          <div className={`contents h-full`}>
-            <LayoutWrapper>
-              <Component {...pageProps} />
-            </LayoutWrapper>
-          </div>
+          <LayoutWrapper>
+            <Component {...pageProps} />
+          </LayoutWrapper>
         </CssWrapper>
       </CssVarsProvider>
     </ThemeProvider>

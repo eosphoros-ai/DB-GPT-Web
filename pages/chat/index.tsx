@@ -1,9 +1,11 @@
 'use client';
 import React, { useContext, useEffect } from 'react';
-import DbEditor from '@/components/db-editor';
-import ChatContainer from '@/components/chat-container';
-import ModeTab from '@/components/mode-tab';
+import ModeTab from '@/components/chat/mode-tab';
 import { ChatContext } from '@/app/chat-context';
+import dynamic from 'next/dynamic';
+
+const DbEditor = dynamic(() => import('@/components/chat/db-editor'), { ssr: false });
+const ChatContainer = dynamic(() => import('@/components/chat/chat-container'), { ssr: false });
 
 const Chat = () => {
   const { isContract, setIsContract, setIsMenuExpand, scene, chatId } = useContext(ChatContext);

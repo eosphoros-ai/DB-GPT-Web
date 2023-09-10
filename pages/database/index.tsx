@@ -8,6 +8,7 @@ import { apiInterceptors, getChatDbList, getChatDbSupportType, postChatDbDelete 
 import DBCard from '@/components/database/db-card';
 import { DeleteFilled, EditFilled, PlusOutlined } from '@ant-design/icons';
 import { DBOption, DBType, GetChatDbListResponse, GetChatDbSupportTypeResponse } from '@/types/db';
+import MuiLoading from '@/components/common/loading';
 
 type DBItem = GetChatDbListResponse[0];
 
@@ -115,32 +116,31 @@ function Database() {
 
   return (
     <div className="relative p-6 bg-[#FAFAFA] dark:bg-transparent min-h-full overflow-y-auto">
-      <Spin spinning={loading} className="dark:bg-black dark:bg-opacity-5">
-        <div className="px-1 mb-4">
-          <Button
-            type="primary"
-            className="flex items-center"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setModal({ open: true });
-            }}
-          >
-            Create
-          </Button>
-        </div>
-        <div className="flex flex-wrap">
-          {dbTypeList.map((item) => (
-            <Badge className="mr-4 mb-4" key={item.value} count={dbListByType[item.value].length}>
-              <DBCard
-                info={item}
-                onClick={() => {
-                  handleDbTypeClick(item);
-                }}
-              />
-            </Badge>
-          ))}
-        </div>
-      </Spin>
+      <MuiLoading visible={loading} />
+      <div className="px-1 mb-4">
+        <Button
+          type="primary"
+          className="flex items-center"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            setModal({ open: true });
+          }}
+        >
+          Create
+        </Button>
+      </div>
+      <div className="flex flex-wrap">
+        {dbTypeList.map((item) => (
+          <Badge className="mr-4 mb-4" key={item.value} count={dbListByType[item.value].length}>
+            <DBCard
+              info={item}
+              onClick={() => {
+                handleDbTypeClick(item);
+              }}
+            />
+          </Badge>
+        ))}
+      </div>
       <FormDialog
         open={modal.open}
         dbTypeList={dbTypeList}

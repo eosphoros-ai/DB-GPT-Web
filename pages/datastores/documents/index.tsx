@@ -28,7 +28,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import type { UploadProps } from 'antd';
 import { Upload, Pagination, Popover, message } from 'antd';
 import { sendSpacePostRequest, sendSpaceUploadPostRequest } from '@/utils/request';
-import SpaceParameter from '@/components/space-parameter';
+import SpaceParameter from '@/components/datastores/space-parameter';
 import { useTranslation } from 'react-i18next';
 
 const { Dragger } = Upload;

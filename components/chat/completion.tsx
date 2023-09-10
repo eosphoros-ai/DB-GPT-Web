@@ -5,8 +5,8 @@ import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
 import MonacoEditor from './monaco-editor';
-import ChatExcelTab from './chat/chat-excel';
-import ChatContent from './chat/chat-content';
+import ChatExcelTab from './chat-excel';
+import ChatContent from './chat-content';
 import { ChatContext } from '@/app/chat-context';
 import { IChatDialogueMessageSchema } from '@/types/chart';
 
@@ -137,7 +137,6 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, clea
               />
             );
           })}
-          {isLoading && <CircularProgress variant="soft" color="neutral" size="sm" sx={{ mx: 'auto', my: 2 }} />}
         </div>
       </div>
       <div className="relative after:absolute after:-top-8 after:h-8 after:w-full after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-[#212121]">
@@ -169,11 +168,7 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, clea
             disabled={scene === 'chat_excel' && !currentDialogue?.select_param}
             className="flex-1 h-12"
             variant="outlined"
-            endDecorator={
-              <IconButton type="submit" disabled={isLoading}>
-                <SendRoundedIcon />
-              </IconButton>
-            }
+            endDecorator={<IconButton type="submit">{isLoading ? <CircularProgress /> : <SendRoundedIcon />}</IconButton>}
             {...methods.register('query')}
           />
         </form>
