@@ -92,7 +92,6 @@ function DbEditorContent({ editorValue, chartData, tableData, handleChange }: IP
 
 function DbEditor() {
   const [expandedKeys, setExpandedKeys] = React.useState<React.Key[]>([]);
-  const [defaultExpandedKeys, setDefaultExpandedKeys] = React.useState<React.Key[]>([]);
   const [searchValue, setSearchValue] = React.useState('');
   const [currentRound, setCurrentRound] = React.useState<null | string | number>();
   const [autoExpandParent, setAutoExpandParent] = React.useState(true);
@@ -103,8 +102,8 @@ function DbEditor() {
   const [currentTabIndex, setCurrentTabIndex] = React.useState<string>();
 
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-  const scene = searchParams.get('scene');
+  const id = searchParams?.get('id');
+  const scene = searchParams?.get('scene');
 
   const { data: rounds, loading: roundsLoading } = useRequest(
     async () =>

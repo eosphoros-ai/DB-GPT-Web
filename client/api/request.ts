@@ -24,6 +24,9 @@ export const postChatDbAdd = (data: PostChatDbParams) => {
 export const getChatDialogueList = () => {
   return GET<null, GetChatDialogueListResponse>('/chat/dialogue/list');
 };
+export const getModelList = () => {
+  return GET<null, Array<string>>('/model/types');
+};
 export const postChatModeParamsList = (chatMode: string) => {
   return POST<null, Record<string, string>>(`/chat/mode/params/list?chat_mode=${chatMode}`);
 };

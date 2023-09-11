@@ -84,6 +84,7 @@ const resources = {
       Data_Source: 'Data Source',
       Close_Sidebar: 'Close Sidebar',
       Switch_Language: 'Switch Language',
+      choose_model: 'Please choose a model',
     },
   },
   zh: {
@@ -166,6 +167,7 @@ const resources = {
       Data_Source: '数据源',
       Close_Sidebar: '关闭侧边栏',
       Switch_Language: '切换语言',
+      choose_model: '请选择一个模型',
     },
   },
 };

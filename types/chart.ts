@@ -34,4 +34,9 @@ export type IChatDialogueMessageSchema = {
   context: string | {};
   order: number;
   time_stamp: number | string | null;
+  model_name: string;
 };
+
+export type ModelType = 'proxyllm' | (string & {});
+
+export type LLMOption = { label: string; icon: string };

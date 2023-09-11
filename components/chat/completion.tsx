@@ -5,14 +5,13 @@ import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
 import MonacoEditor from './monaco-editor';
-import ChatExcelTab from './chat-excel';
 import ChatContent from './chat-content';
 import { ChatContext } from '@/app/chat-context';
 import { IChatDialogueMessageSchema } from '@/types/chart';
+import Header from './header';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
-  onRefreshHistory?: () => void;
   onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
   paramsObj?: Record<string, string>;
   dbList?: Record<string, string | undefined | null | boolean>[];
@@ -24,12 +23,12 @@ type FormData = {
   query: string;
 };
 
-const Completion = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, clearIntialMessage }: Props) => {
+const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams && searchParams.get('initMessage');
   const spaceNameOriginal = searchParams && searchParams.get('spaceNameOriginal');
 
-  const { currentDialogue, scene } = useContext(ChatContext);
+  const { currentDialogue, scene, selectedModel } = useContext(ChatContext);
   const isChartChat = scene === 'chat_dashboard';
   const [isLoading, setIsLoading] = useState(false);
   const [currentParam, setCurrentParam] = useState<string>('');
@@ -114,12 +113,6 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, onRefreshHistory, clea
 
   return (
     <>
-      <ChatExcelTab
-        onComplete={() => {
-          clearIntialMessage?.();
-          onRefreshHistory?.();
-        }}
-      />
       <div ref={scrollableRef} className="flex flex-1 overflow-y-auto pb-8 w-full flex-col">
         <div className="flex items-center flex-1 flex-col text-sm leading-6 text-slate-900 dark:text-slate-300 sm:text-base sm:leading-7">
           {showMessages?.map((each, index) => {

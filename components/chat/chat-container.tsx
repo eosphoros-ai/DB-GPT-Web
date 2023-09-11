@@ -12,6 +12,7 @@ import TableChart from '../chart/table-chart';
 import { apiInterceptors, getChatHistory, postChatModeParamsList } from '@/client/api';
 import { ChatContext } from '@/app/chat-context';
 import MuiLoading from '../common/loading';
+import Header from './header';
 
 const ChartSkeleton = () => {
   return (
@@ -34,7 +35,8 @@ const ChartSkeleton = () => {
 };
 
 const ChatContainer = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [model, setModel] = useState<string>('');
   const [chartsData, setChartsData] = useState<Array<ChartData>>();
   const { refreshDialogList, scene, chatId } = useContext(ChatContext);
 
@@ -43,6 +45,9 @@ const ChatContainer = () => {
       setLoading(true);
       const [, res] = await apiInterceptors(getChatHistory(chatId));
       setLoading(false);
+      // use last view model_name as default model name
+      const lastView = (res || []).filter((i) => i.role === 'view').slice(-1)[0];
+      setModel(lastView.model_name);
       return res ?? [];
     },
     {
@@ -60,6 +65,7 @@ const ChatContainer = () => {
     queryBody: {
       conv_uid: chatId,
       chat_mode: scene || 'chat_normal',
+      model_name: model,
     },
     initHistory: historyList,
   });
@@ -120,6 +126,13 @@ const ChatContainer = () => {
 
   return (
     <>
+      <Header
+        selectedModel={model}
+        refreshHistory={runHistoryList}
+        modelChange={(newModel: string) => {
+          setModel(newModel);
+        }}
+      />
       <MuiLoading visible={loading} />
       <div className="px-4 flex flex-1 overflow-hidden">
         {chartsData && (
@@ -189,7 +202,6 @@ const ChatContainer = () => {
             }}
             dbList={dbList?.data}
             runDbList={runDbList}
-            onRefreshHistory={runHistoryList}
             messages={history}
             onSubmit={handleChatSubmit}
             paramsObj={paramsObj}

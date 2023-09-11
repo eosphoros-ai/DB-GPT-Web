@@ -1,5 +1,5 @@
 import { createContext, useMemo, useState } from 'react';
-import { apiInterceptors, getChatDialogueList } from '@/client/api';
+import { apiInterceptors, getChatDialogueList, getModelList } from '@/client/api';
 import { useSearchParams } from 'next/navigation';
 import { useRequest } from 'ahooks';
 import { GetChatDialogueListResponse } from '@/types/chart';
@@ -9,6 +9,7 @@ interface IChatContext {
   isMenuExpand?: boolean;
   scene: string;
   chatId: string;
+  modelList: Array<string>;
   dialogueList?: GetChatDialogueListResponse;
   setIsContract: (val: boolean) => void;
   setIsMenuExpand: (val: boolean) => void;
@@ -20,6 +21,7 @@ interface IChatContext {
 const ChatContext = createContext<IChatContext>({
   scene: '',
   chatId: '',
+  modelList: [],
   dialogueList: [],
   setIsContract: () => {},
   setIsMenuExpand: () => {},
@@ -47,12 +49,19 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
       manual: true,
     },
   );
+
+  const { data: modelList = ['proxyllm'] } = useRequest(async () => {
+    const [, res] = await apiInterceptors(getModelList());
+    return res ?? [];
+  });
+  // const modelList = ['proxyllm', 'chatglm'];
   const currentDialogue = useMemo(() => dialogueList.find((item: any) => item.conv_uid === chatId), [chatId, dialogueList]);
   const contextValue = {
     isContract,
     isMenuExpand,
     scene,
     chatId,
+    modelList,
     dialogueList,
     setIsContract,
     setIsMenuExpand,
