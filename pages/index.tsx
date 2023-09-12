@@ -47,6 +47,15 @@ const Home: NextPage = () => {
   return (
     <>
       <div className="mx-auto h-full justify-center flex max-w-3xl flex-col gap-8 px-5 pt-6">
+        <Box className="flex justify-center py-4">
+          <ModelSelector
+            size="lg"
+            selectedModel={model}
+            onChange={(newModel: string) => {
+              setModel(newModel);
+            }}
+          />
+        </Box>
         <div className="my-0 mx-auto">
           <Image
             src="/LOGO.png"
@@ -60,15 +69,6 @@ const Home: NextPage = () => {
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-3">
             <Divider className="text-[#878c93]">Quick Start</Divider>
-            <Box className="flex justify-center py-4">
-              <ModelSelector
-                size="lg"
-                selectedModel={model}
-                onChange={(newModel: string) => {
-                  setModel(newModel);
-                }}
-              />
-            </Box>
             <Box
               className="grid rounded-xl gap-2 lg:grid-cols-3 lg:gap-6"
               sx={{

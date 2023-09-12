@@ -86,12 +86,11 @@ function ModelSelector({ size, selectedModel, onChange }: Props) {
   return (
     <div
       className={classNames({
-        'w-44': size === 'sm' || size === 'md' || !size,
+        'w-48': size === 'sm' || size === 'md' || !size,
         'w-60': size === 'lg',
       })}
     >
       <Select
-        variant="solid"
         size={size || 'sm'}
         placeholder={t('choose_model')}
         value={selectedModel || ''}

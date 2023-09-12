@@ -92,7 +92,7 @@ function ExcelUpload({ convUid, model, chatMode, onComplete, ...props }: PropsWi
         <Button
           type="primary"
           loading={loading}
-          className="flex justify-center items-center"
+          className="flex justify-center items-center dark:text-white"
           disabled={!fileList.length}
           icon={<UploadOutlined />}
           onClick={onUpload}
