@@ -91,8 +91,7 @@ function ModelSelector({ size, selectedModel, onChange }: Props) {
       })}
     >
       <Select
-        color="success"
-        variant="soft"
+        variant="solid"
         size={size || 'sm'}
         placeholder={t('choose_model')}
         value={selectedModel || ''}
