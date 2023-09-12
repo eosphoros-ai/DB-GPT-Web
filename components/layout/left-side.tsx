@@ -21,7 +21,6 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import { sendPostRequest } from '@/utils/request';
 import Image from 'next/image';
 import classNames from 'classnames';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -31,6 +30,7 @@ import LanguageIcon from '@mui/icons-material/Language';
 import { useTranslation } from 'react-i18next';
 import { ChatContext } from '@/app/chat-context';
 import { GetChatDialogueListResponse } from '@/types/chart';
+import { apiInterceptors, delDialogue } from '@/client/api';
 
 const LeftSide = () => {
   const pathname = usePathname();
@@ -147,7 +147,7 @@ const LeftSide = () => {
                                   width: '276px',
                                   centered: true,
                                   async onOk() {
-                                    await sendPostRequest(`/v1/chat/dialogue/delete?con_uid=${dialogue.conv_uid}`);
+                                    await apiInterceptors(delDialogue(dialogue.conv_uid));
                                     await refreshDialogList();
                                     if (pathname === `/chat` && chatId === dialogue.conv_uid) {
                                       router.push('/');

@@ -148,7 +148,7 @@ const Documents = () => {
           <Button variant="outlined" onClick={() => setIsAddDocumentModalShow(true)} sx={{ marginRight: '20px' }}>
             + {t('Add_Datasource')}
           </Button>
-          <SpaceParameter spaceName={spaceName} />
+          <SpaceParameter spaceName={spaceName || ''} />
         </Stack>
       </Stack>
       {documents.length ? (

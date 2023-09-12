@@ -5,7 +5,6 @@ import { Button, Input, Box, buttonClasses, Divider } from '@/lib/mui';
 import IconButton from '@mui/joy/IconButton';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import { useForm } from 'react-hook-form';
-import { sendPostRequest } from '@/utils/request';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { NextPage } from 'next';

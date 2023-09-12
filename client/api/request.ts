@@ -62,3 +62,10 @@ export const postChatModeParamsFileLoad = ({
     ...config,
   });
 };
+
+/** menu */
+export const delDialogue = (conv_uid: string) => {
+  return POST<null, null>(`/chat/dialogue/delete?con_uid=${conv_uid}`);
+};
+
+/** knowledge */

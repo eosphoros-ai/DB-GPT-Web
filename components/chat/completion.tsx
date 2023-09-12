@@ -14,8 +14,6 @@ type Props = {
   messages: IChatDialogueMessageSchema[];
   onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
   paramsObj?: Record<string, string>;
-  dbList?: Record<string, string | undefined | null | boolean>[];
-  runDbList: () => void;
   clearInitMessage?: () => void;
 };
 

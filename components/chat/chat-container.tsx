@@ -2,7 +2,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, Typography, Grid, Skeleton, AspectRatio, Box, aspectRatioClasses } from '@/lib/mui';
 import { useRequest } from 'ahooks';
-import { sendGetRequest } from '@/utils/request';
 import useAgentChat from '@/hooks/use-agent-chat';
 import Completion from '@/components/chat/completion';
 import { ChartData } from '@/types/chart';
@@ -56,10 +55,6 @@ const ChatContainer = () => {
       refreshDeps: [chatId],
     },
   );
-
-  const { data: dbList, run: runDbList } = useRequest(async () => await sendGetRequest('/v1/chat/db/list'), {
-    ready: !!scene && !!['chat_with_db_execute', 'chat_with_db_qa'].includes(scene),
-  });
 
   const { history, handleChatSubmit } = useAgentChat({
     queryAgentURL: `/v1/chat/completions`,
@@ -201,8 +196,6 @@ const ChatContainer = () => {
             clearInitMessage={async () => {
               await refreshDialogList();
             }}
-            dbList={dbList?.data}
-            runDbList={runDbList}
             messages={history}
             onSubmit={handleChatSubmit}
             paramsObj={paramsObj}
