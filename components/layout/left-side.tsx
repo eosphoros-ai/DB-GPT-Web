@@ -86,7 +86,9 @@ const LeftSide = () => {
       <>
         <Box className="p-2 gap-2 flex flex-row justify-between items-center">
           <div className="flex items-center gap-3">
-            <Image src={logoPath} alt="DB-GPT" width={633} height={157} className="w-full max-w-full" unoptimized />
+            <Link href={'/'}>
+              <Image src={logoPath} alt="DB-GPT" width={633} height={157} className="w-full max-w-full" />
+            </Link>
           </div>
         </Box>
         <Box className="px-2">

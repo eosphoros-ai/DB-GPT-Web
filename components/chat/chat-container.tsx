@@ -13,6 +13,7 @@ import { apiInterceptors, getChatHistory, postChatModeParamsList } from '@/clien
 import { ChatContext } from '@/app/chat-context';
 import MuiLoading from '../common/loading';
 import Header from './header';
+import { useSearchParams } from 'next/navigation';
 
 const ChartSkeleton = () => {
   return (
@@ -35,8 +36,9 @@ const ChartSkeleton = () => {
 };
 
 const ChatContainer = () => {
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState<boolean>(false);
-  const [model, setModel] = useState<string>('');
+  const [model, setModel] = useState<string>(searchParams?.get('model') || '');
   const [chartsData, setChartsData] = useState<Array<ChartData>>();
   const { refreshDialogList, scene, chatId } = useContext(ChatContext);
 
@@ -47,7 +49,7 @@ const ChatContainer = () => {
       setLoading(false);
       // use last view model_name as default model name
       const lastView = (res || []).filter((i) => i.role === 'view').slice(-1)[0];
-      setModel(lastView.model_name);
+      lastView.model_name && setModel(lastView.model_name);
       return res ?? [];
     },
     {
@@ -202,6 +204,7 @@ const ChatContainer = () => {
             }}
             dbList={dbList?.data}
             runDbList={runDbList}
+            model={model}
             messages={history}
             onSubmit={handleChatSubmit}
             paramsObj={paramsObj}

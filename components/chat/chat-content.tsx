@@ -4,11 +4,13 @@ import { RobotOutlined, UserOutlined } from '@ant-design/icons';
 import Markdown, { MarkdownToJSX } from 'markdown-to-jsx';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { renderModelIcon } from './model-selector';
+import { IChatDialogueMessageSchema } from '@/types/chart';
 
 interface Props {
+  content: IChatDialogueMessageSchema;
   isChartChat?: boolean;
-  isRobbort?: boolean;
-  context: Record<string, any> | string;
+  model?: string;
   onLinkClick: () => void;
 }
 
@@ -58,15 +60,17 @@ const options: MarkdownToJSX.Options = {
   },
 };
 
-function ChatItem({ context, isChartChat, isRobbort, onLinkClick }: Props) {
+function ChatContent({ content, model, isChartChat, onLinkClick }: Props) {
+  const { context, model_name, role } = content;
+  const isRobot = role === 'view';
   return (
     <div
       className={`overflow-x-auto w-full lg:w-4/5 xl:w-3/4 mx-auto flex px-2 py-2 sm:px-4 sm:py-6 rounded-xl ${
-        isRobbort ? 'bg-slate-100 dark:bg-[#353539]' : ''
+        isRobot ? 'bg-slate-100 dark:bg-[#353539]' : ''
       }`}
     >
       <div className="mr-2 flex items-center justify-center h-7 w-7 rounded-full text-lg sm:mr-4">
-        {isRobbort ? <RobotOutlined /> : <UserOutlined />}
+        {isRobot ? renderModelIcon(model_name || model) || <RobotOutlined /> : <UserOutlined />}
       </div>
       <div className="flex-1 items-center text-md leading-7">
         {isChartChat && typeof context === 'object' && (
@@ -89,4 +93,4 @@ function ChatItem({ context, isChartChat, isRobbort, onLinkClick }: Props) {
   );
 }
 
-export default ChatItem;
+export default ChatContent;

@@ -19,13 +19,14 @@ function Header({ refreshHistory, modelChange, selectedModel }: Props) {
     <div className="w-full py-4 flex items-center justify-center border-b border-gray-100 gap-5">
       {/* excel */}
       <ChatExcel
+        model={selectedModel}
         onComplete={() => {
           refreshDialogList?.();
           refreshHistory?.();
         }}
       />
       {/* models selector */}
-      <ModelSelector selectedModel={selectedModel} onChange={modelChange} />
+      <ModelSelector size="sm" selectedModel={selectedModel} onChange={modelChange} />
       <ModeTab />
     </div>
   );

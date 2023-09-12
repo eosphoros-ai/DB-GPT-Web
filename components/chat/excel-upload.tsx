@@ -6,10 +6,11 @@ import { apiInterceptors, postChatModeParamsFileLoad } from '@/client/api';
 interface Props {
   convUid: string;
   chatMode: string;
+  model: string;
   onComplete?: () => void;
 }
 
-function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChildren<Props & UploadProps>) {
+function ExcelUpload({ convUid, model, chatMode, onComplete, ...props }: PropsWithChildren<Props & UploadProps>) {
   const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [percent, setPercent] = useState<number>();
@@ -39,6 +40,7 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
           convUid,
           chatMode,
           data: formData,
+          model_name: model,
           config: {
             /** timeout 1h */
             timeout: 1000 * 60 * 60,
@@ -62,8 +64,8 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
   };
 
   return (
-    <div className="w-full">
-      <div className="flex items-start">
+    <>
+      <div className="h-full flex items-start">
         <Tooltip placement="topLeft" title="Files cannot be changed after upload">
           <Upload
             disabled={loading}
@@ -105,7 +107,7 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
         </div>
       )}
       {typeof percent === 'number' && <Progress className="mb-0" percent={percent} size="small" status={uploadState} />}
-    </div>
+    </>
   );
 }
 

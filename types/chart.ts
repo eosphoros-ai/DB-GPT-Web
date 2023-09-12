@@ -17,6 +17,19 @@ export type ChartData = {
   values: Array<ChartValue>;
 };
 
+export type SceneResponse = {
+  chat_scene: string;
+  param_title: string;
+  scene_describe: string;
+  scene_name: string;
+  show_disable: boolean;
+};
+
+export type NewDialogueParam = {
+  chat_mode: string;
+  model?: string;
+};
+
 export type getChatHistoryResponse = IChatDialogueMessageSchema[];
 
 export type IChatDialogueSchema = {
@@ -31,12 +44,50 @@ export type GetChatDialogueListResponse = IChatDialogueSchema[];
 
 export type IChatDialogueMessageSchema = {
   role: 'human' | 'view' | 'system' | 'ai';
-  context: string | {};
+  context:
+    | string
+    | {
+        template_name: string;
+        template_introduce: string;
+      };
   order: number;
   time_stamp: number | string | null;
   model_name: string;
 };
 
-export type ModelType = 'proxyllm' | (string & {});
+export type ModelType =
+  | 'proxyllm'
+  | 'flan-t5-base'
+  | 'vicuna-13b'
+  | 'vicuna-7b'
+  | 'vicuna-13b-v1.5'
+  | 'vicuna-7b-v1.5'
+  | 'codegen2-1b'
+  | 'codet5p-2b'
+  | 'chatglm-6b-int4'
+  | 'chatglm-6b'
+  | 'chatglm2-6b'
+  | 'chatglm2-6b-int4'
+  | 'guanaco-33b-merged'
+  | 'falcon-40b'
+  | 'gorilla-7b'
+  | 'gptj-6b'
+  | 'proxyllm'
+  | 'chatgpt_proxyllm'
+  | 'bard_proxyllm'
+  | 'claude_proxyllm'
+  | 'wenxin_proxyllm'
+  | 'tongyi_proxyllm'
+  | 'zhipu_proxyllm'
+  | 'llama-2-7b'
+  | 'llama-2-13b'
+  | 'llama-2-70b'
+  | 'baichuan-7b'
+  | 'baichuan-13b'
+  | 'baichuan2-7b'
+  | 'baichuan2-13b'
+  | 'wizardlm-13b'
+  | 'llama-cpp'
+  | (string & {});
 
 export type LLMOption = { label: string; icon: string };

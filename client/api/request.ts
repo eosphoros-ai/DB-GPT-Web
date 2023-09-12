@@ -1,7 +1,16 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
 import { GetChatDbListResponse, GetChatDbSupportTypeResponse, PostChatDbParams } from '@/types/db';
-import { GetChatDialogueListResponse, getChatHistoryResponse } from '@/types/chart';
+import { GetChatDialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, getChatHistoryResponse } from '@/types/chart';
+
+/** App */
+export const postScenes = () => {
+  return POST<null, Array<SceneResponse>>('/chat/dialogue/scenes');
+};
+
+export const newDialogue = (data: NewDialogueParam) => {
+  return POST<NewDialogueParam, IChatDialogueSchema>('/chat/dialogue/new', data);
+};
 
 /** Database Page */
 export const getChatDbList = () => {
@@ -38,10 +47,12 @@ export const postChatModeParamsFileLoad = ({
   chatMode,
   data,
   config,
+  model_name,
 }: {
   convUid: string;
   chatMode: string;
   data: FormData;
+  model_name: string;
   config?: Omit<AxiosRequestConfig, 'headers'>;
 }) => {
   return POST<FormData, getChatHistoryResponse>(`/chat/mode/params/file/load?conv_uid=${convUid}&chat_mode=${chatMode}`, data, {

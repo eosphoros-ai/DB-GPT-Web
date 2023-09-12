@@ -8,11 +8,12 @@ import MonacoEditor from './monaco-editor';
 import ChatContent from './chat-content';
 import { ChatContext } from '@/app/chat-context';
 import { IChatDialogueMessageSchema } from '@/types/chart';
-import Header from './header';
+import { renderModelIcon } from './model-selector';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
   onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
+  model?: string;
   paramsObj?: Record<string, string>;
   dbList?: Record<string, string | undefined | null | boolean>[];
   runDbList: () => void;
@@ -23,7 +24,7 @@ type FormData = {
   query: string;
 };
 
-const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage }: Props) => {
+const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage, model }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams && searchParams.get('initMessage');
   const spaceNameOriginal = searchParams && searchParams.get('spaceNameOriginal');
@@ -115,17 +116,17 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage }: 
     <>
       <div ref={scrollableRef} className="flex flex-1 overflow-y-auto pb-8 w-full flex-col">
         <div className="flex items-center flex-1 flex-col text-sm leading-6 text-slate-900 dark:text-slate-300 sm:text-base sm:leading-7">
-          {showMessages?.map((each, index) => {
+          {showMessages?.map((content, index) => {
             return (
               <ChatContent
                 key={index}
-                context={each.context}
+                content={content}
+                model={model}
                 isChartChat={isChartChat}
-                isRobbort={each.role === 'view'}
                 onLinkClick={() => {
                   setJsonModalOpen(true);
                   setCurrentJsonIndex(index);
-                  setJsonValue(JSON.stringify(each?.context, null, 2));
+                  setJsonValue(JSON.stringify(content?.context, null, 2));
                 }}
               />
             );
@@ -134,14 +135,14 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage }: 
       </div>
       <div className="relative after:absolute after:-top-8 after:h-8 after:w-full after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-[#212121]">
         <form
-          className="flex w-full lg:w-4/5 xl:w-3/4 mx-auto py-2 sm:pt-6 sm:pb-10"
+          className="flex flex-wrap w-full lg:w-4/5 xl:w-3/4 mx-auto py-2 sm:pt-6 sm:pb-10"
           onSubmit={(e) => {
             e.stopPropagation();
             methods.handleSubmit(submit)(e);
           }}
         >
           {!!paramsOpts?.length && (
-            <div className="flex items-center max-w-[6rem] sm:max-w-[12rem] h-12 mr-2">
+            <div className="flex items-center max-w-[6rem] sm:max-w-[12rem] h-12 mr-2 mb-2">
               <Select
                 className="h-full w-full"
                 value={currentParam}
@@ -161,6 +162,7 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage }: 
             disabled={scene === 'chat_excel' && !currentDialogue?.select_param}
             className="flex-1 h-12"
             variant="outlined"
+            startDecorator={renderModelIcon(model || '')}
             endDecorator={<IconButton type="submit">{isLoading ? <CircularProgress /> : <SendRoundedIcon />}</IconButton>}
             {...methods.register('query')}
           />

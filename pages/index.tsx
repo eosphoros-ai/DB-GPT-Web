@@ -9,6 +9,8 @@ import { sendPostRequest } from '@/utils/request';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { NextPage } from 'next';
+import { apiInterceptors, newDialogue, postScenes } from '@/client/api';
+import ModelSelector from '@/components/chat/model-selector';
 
 type FormData = {
   query: string;
@@ -16,19 +18,25 @@ type FormData = {
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [model, setModel] = useState<string>('');
   const methods = useForm<FormData>();
-  const { data: scenesList } = useRequest(async () => await sendPostRequest('/v1/chat/dialogue/scenes'));
+  const { data: scenesList } = useRequest(async () => {
+    const [, res] = await apiInterceptors(postScenes());
+    return res ?? [];
+  });
 
   const submit = async ({ query }: FormData) => {
     try {
       setIsLoading(true);
       methods.reset();
-      const res = await sendPostRequest('/v1/chat/dialogue/new', {
-        chat_mode: 'chat_normal',
-      });
-      if (res?.success && res?.data?.conv_uid) {
-        router.push(`/chat?id=${res?.data?.conv_uid}&initMessage=${query}`);
+      const [, res] = await apiInterceptors(
+        newDialogue({
+          chat_mode: 'chat_normal',
+        }),
+      );
+      if (res?.conv_uid) {
+        router.push(`/chat?id=${res?.conv_uid}${model ? `&model=${model}` : ''}&initMessage=${query}`);
       }
     } catch (err) {
     } finally {
@@ -52,8 +60,17 @@ const Home: NextPage = () => {
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-3">
             <Divider className="text-[#878c93]">Quick Start</Divider>
+            <Box className="flex justify-center py-4">
+              <ModelSelector
+                size="lg"
+                selectedModel={model}
+                onChange={(newModel: string) => {
+                  setModel(newModel);
+                }}
+              />
+            </Box>
             <Box
-              className="grid pt-7 rounded-xl gap-2 lg:grid-cols-3 lg:gap-6"
+              className="grid rounded-xl gap-2 lg:grid-cols-3 lg:gap-6"
               sx={{
                 [`& .${buttonClasses.root}`]: {
                   color: 'var(--joy-palette-primary-solidColor)',
@@ -74,7 +91,7 @@ const Home: NextPage = () => {
                 },
               }}
             >
-              {scenesList?.data?.map((scene) => (
+              {scenesList?.map((scene) => (
                 <Button
                   key={scene['chat_scene']}
                   disabled={scene?.show_disable}
@@ -82,11 +99,13 @@ const Home: NextPage = () => {
                   variant="solid"
                   className="text-base rounded-none"
                   onClick={async () => {
-                    const res = await sendPostRequest('/v1/chat/dialogue/new', {
-                      chat_mode: scene['chat_scene'],
-                    });
-                    if (res?.success && res?.data?.conv_uid) {
-                      router.push(`/chat?id=${res?.data?.conv_uid}&scene=${scene['chat_scene']}`);
+                    const [, res] = await apiInterceptors(
+                      newDialogue({
+                        chat_mode: 'chat_normal',
+                      }),
+                    );
+                    if (res?.conv_uid) {
+                      router.push(`/chat?id=${res.conv_uid}${model ? `&model=${model}` : ''}&scene=${scene['chat_scene']}`);
                     }
                   }}
                 >

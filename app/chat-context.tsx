@@ -50,11 +50,10 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     },
   );
 
-  const { data: modelList = ['proxyllm'] } = useRequest(async () => {
+  const { data: modelList = [] } = useRequest(async () => {
     const [, res] = await apiInterceptors(getModelList());
     return res ?? [];
   });
-  // const modelList = ['proxyllm', 'chatglm'];
   const currentDialogue = useMemo(() => dialogueList.find((item: any) => item.conv_uid === chatId), [chatId, dialogueList]);
   const contextValue = {
     isContract,
