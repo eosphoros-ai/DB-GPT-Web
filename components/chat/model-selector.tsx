@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 
 interface Props {
   size: 'sm' | 'md' | 'lg';
-  selectedModel: string;
   onChange: (model: string) => void;
 }
 
@@ -65,9 +64,9 @@ export function renderModelIcon(model: string | undefined) {
   );
 }
 
-function ModelSelector({ size, selectedModel, onChange }: Props) {
+function ModelSelector({ size, onChange }: Props) {
   const { t } = useTranslation();
-  const { modelList } = useContext(ChatContext);
+  const { modelList, model } = useContext(ChatContext);
   if (!modelList || modelList.length <= 0) {
     return null;
   }
@@ -93,7 +92,7 @@ function ModelSelector({ size, selectedModel, onChange }: Props) {
       <Select
         size={size || 'sm'}
         placeholder={t('choose_model')}
-        value={selectedModel || ''}
+        value={model || ''}
         renderValue={renderValue}
         onChange={(_, newValue) => {
           newValue && onChange?.(newValue);

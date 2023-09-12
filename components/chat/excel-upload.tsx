@@ -1,20 +1,21 @@
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useContext, useState } from 'react';
 import { Upload, UploadProps, Button, message, UploadFile, Tooltip, Progress, ProgressProps } from 'antd';
 import { LinkOutlined, SelectOutlined, UploadOutlined } from '@ant-design/icons';
 import { apiInterceptors, postChatModeParamsFileLoad } from '@/client/api';
+import { ChatContext } from '@/app/chat-context';
 
 interface Props {
   convUid: string;
   chatMode: string;
-  model: string;
   onComplete?: () => void;
 }
 
-function ExcelUpload({ convUid, model, chatMode, onComplete, ...props }: PropsWithChildren<Props & UploadProps>) {
+function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChildren<Props & UploadProps>) {
   const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [percent, setPercent] = useState<number>();
   const [uploadState, setUploadState] = useState<ProgressProps['status']>();
+  const { model } = useContext(ChatContext);
 
   const onChange: UploadProps['onChange'] = async (info) => {
     if (!info) {

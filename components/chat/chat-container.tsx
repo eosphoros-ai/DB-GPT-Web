@@ -38,9 +38,8 @@ const ChartSkeleton = () => {
 const ChatContainer = () => {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState<boolean>(false);
-  const [model, setModel] = useState<string>(searchParams?.get('model') || '');
   const [chartsData, setChartsData] = useState<Array<ChartData>>();
-  const { refreshDialogList, scene, chatId } = useContext(ChatContext);
+  const { refreshDialogList, scene, chatId, model, setModel } = useContext(ChatContext);
 
   const { data: historyList = [], run: runHistoryList } = useRequest(
     async () => {
@@ -199,12 +198,11 @@ const ChatContainer = () => {
         {/** chat panel */}
         <div className={`${scene === 'chat_dashboard' ? 'w-1/3' : 'w-full'} flex flex-1 flex-col h-full`}>
           <Completion
-            clearIntialMessage={async () => {
+            clearInitMessage={async () => {
               await refreshDialogList();
             }}
             dbList={dbList?.data}
             runDbList={runDbList}
-            model={model}
             messages={history}
             onSubmit={handleChatSubmit}
             paramsObj={paramsObj}

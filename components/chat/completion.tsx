@@ -13,23 +13,22 @@ import { renderModelIcon } from './model-selector';
 type Props = {
   messages: IChatDialogueMessageSchema[];
   onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
-  model?: string;
   paramsObj?: Record<string, string>;
   dbList?: Record<string, string | undefined | null | boolean>[];
   runDbList: () => void;
-  clearIntialMessage?: () => void;
+  clearInitMessage?: () => void;
 };
 
 type FormData = {
   query: string;
 };
 
-const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage, model }: Props) => {
+const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams && searchParams.get('initMessage');
   const spaceNameOriginal = searchParams && searchParams.get('spaceNameOriginal');
 
-  const { currentDialogue, scene } = useContext(ChatContext);
+  const { currentDialogue, scene, model } = useContext(ChatContext);
   const isChartChat = scene === 'chat_dashboard';
   const [isLoading, setIsLoading] = useState(false);
   const [currentParam, setCurrentParam] = useState<string>('');
@@ -67,7 +66,7 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage, mo
     } catch (err) {
       console.log(err);
     } finally {
-      clearIntialMessage?.();
+      clearInitMessage?.();
     }
   };
 
@@ -90,13 +89,13 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage, mo
     if (initMessage && messages.length <= 0) {
       handleInitMessage();
     }
-  }, [initMessage, messages.length]);
+  }, [handleInitMessage, initMessage, messages.length]);
 
   useEffect(() => {
     if (paramsOpts?.length) {
       setCurrentParam(spaceNameOriginal || paramsOpts[0].value);
     }
-  }, [paramsOpts?.length]);
+  }, [paramsOpts, paramsOpts?.length, spaceNameOriginal]);
 
   useEffect(() => {
     if (isChartChat) {
@@ -121,7 +120,6 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage, mo
               <ChatContent
                 key={index}
                 content={content}
-                model={model}
                 isChartChat={isChartChat}
                 onLinkClick={() => {
                   setJsonModalOpen(true);

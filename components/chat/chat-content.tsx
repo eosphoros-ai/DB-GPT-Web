@@ -10,7 +10,6 @@ import { IChatDialogueMessageSchema } from '@/types/chart';
 interface Props {
   content: IChatDialogueMessageSchema;
   isChartChat?: boolean;
-  model?: string;
   onLinkClick: () => void;
 }
 
@@ -60,7 +59,7 @@ const options: MarkdownToJSX.Options = {
   },
 };
 
-function ChatContent({ content, model, isChartChat, onLinkClick }: Props) {
+function ChatContent({ content, isChartChat, onLinkClick }: Props) {
   const { context, model_name, role } = content;
   const isRobot = role === 'view';
   return (

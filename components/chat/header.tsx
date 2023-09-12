@@ -14,19 +14,18 @@ interface Props {
 }
 
 function Header({ refreshHistory, modelChange, selectedModel }: Props) {
-  const { refreshDialogList } = useContext(ChatContext);
+  const { refreshDialogList, model } = useContext(ChatContext);
   return (
     <div className="w-full py-4 flex items-center justify-center border-b border-gray-100 gap-5">
       {/* excel */}
       <ChatExcel
-        model={selectedModel}
         onComplete={() => {
           refreshDialogList?.();
           refreshHistory?.();
         }}
       />
       {/* models selector */}
-      <ModelSelector size="sm" selectedModel={selectedModel} onChange={modelChange} />
+      <ModelSelector size="sm" onChange={modelChange} />
       <ModeTab />
     </div>
   );

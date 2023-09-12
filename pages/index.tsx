@@ -1,6 +1,6 @@
 'use client';
 import { useRequest } from 'ahooks';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Button, Input, Box, buttonClasses, Divider } from '@/lib/mui';
 import IconButton from '@mui/joy/IconButton';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { NextPage } from 'next';
 import { apiInterceptors, newDialogue, postScenes } from '@/client/api';
 import ModelSelector from '@/components/chat/model-selector';
+import { ChatContext } from '@/app/chat-context';
 
 type FormData = {
   query: string;
@@ -19,7 +20,7 @@ type FormData = {
 const Home: NextPage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [model, setModel] = useState<string>('');
+  const { model, setModel } = useContext(ChatContext);
   const methods = useForm<FormData>();
   const { data: scenesList } = useRequest(async () => {
     const [, res] = await apiInterceptors(postScenes());

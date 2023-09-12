@@ -1,4 +1,4 @@
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import { apiInterceptors, getChatDialogueList, getModelList } from '@/client/api';
 import { useSearchParams } from 'next/navigation';
 import { useRequest } from 'ahooks';
@@ -9,7 +9,9 @@ interface IChatContext {
   isMenuExpand?: boolean;
   scene: string;
   chatId: string;
+  model: string;
   modelList: Array<string>;
+  setModel: (val: string) => void;
   dialogueList?: GetChatDialogueListResponse;
   setIsContract: (val: boolean) => void;
   setIsMenuExpand: (val: boolean) => void;
@@ -22,6 +24,8 @@ const ChatContext = createContext<IChatContext>({
   scene: '',
   chatId: '',
   modelList: [],
+  model: '',
+  setModel: () => {},
   dialogueList: [],
   setIsContract: () => {},
   setIsMenuExpand: () => {},
@@ -34,6 +38,7 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
   const [isContract, setIsContract] = useState(false);
   const chatId = searchParams?.get('id') ?? '';
   const scene = searchParams?.get('scene') ?? '';
+  const [model, setModel] = useState<string>('');
   const [isMenuExpand, setIsMenuExpand] = useState<boolean>(scene !== 'chat_dashboard');
 
   const {
@@ -54,6 +59,10 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     const [, res] = await apiInterceptors(getModelList());
     return res ?? [];
   });
+  useEffect(() => {
+    setModel(modelList[0]);
+  }, [modelList, modelList?.length]);
+
   const currentDialogue = useMemo(() => dialogueList.find((item: any) => item.conv_uid === chatId), [chatId, dialogueList]);
   const contextValue = {
     isContract,
@@ -61,6 +70,8 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     scene,
     chatId,
     modelList,
+    model,
+    setModel,
     dialogueList,
     setIsContract,
     setIsMenuExpand,
