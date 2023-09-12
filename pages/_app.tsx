@@ -9,7 +9,7 @@ import { ChatContext, ChatContextProvider } from '@/app/chat-context';
 import classNames from 'classnames';
 import '../styles/globals.css';
 import '../nprogress.css';
-import './i18n';
+import '../app/i18n';
 
 function CssWrapper({ children }: { children: React.ReactElement }) {
   const { i18n } = useTranslation();
