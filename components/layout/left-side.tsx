@@ -220,12 +220,12 @@ const LeftSide = () => {
                     window.localStorage.setItem('db_gpt_lng', language);
                   }}
                 >
-                  <Tooltip title="Switch Language">
+                  <Tooltip title="Language">
                     <ListItemDecorator className="text-2xl">
                       <LanguageIcon fontSize="small" />
                     </ListItemDecorator>
                   </Tooltip>
-                  <ListItemContent>{t('Switch_Language')}</ListItemContent>
+                  <ListItemContent>{t('language')}</ListItemContent>
                 </ListItemButton>
               </ListItem>
               <ListItem>
@@ -284,7 +284,7 @@ const LeftSide = () => {
                 setIsMenuExpand(true);
               }}
             >
-              <Tooltip title="Expand Sidebar">
+              <Tooltip title="Unfold">
                 <ListItemDecorator className="text-2xl">
                   <ExpandIcon className="transform rotate-90" fontSize="small" />
                 </ListItemDecorator>
