@@ -70,7 +70,7 @@ function ChatContent({ content, model, isChartChat, onLinkClick }: Props) {
       }`}
     >
       <div className="mr-2 flex items-center justify-center h-7 w-7 rounded-full text-lg sm:mr-4">
-        {isRobot ? renderModelIcon(model_name || model) || <RobotOutlined /> : <UserOutlined />}
+        {isRobot ? renderModelIcon(model_name) || <RobotOutlined /> : <UserOutlined />}
       </div>
       <div className="flex-1 items-center text-md leading-7">
         {isChartChat && typeof context === 'object' && (

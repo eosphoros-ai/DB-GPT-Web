@@ -40,7 +40,7 @@ function ExcelUpload({ convUid, model, chatMode, onComplete, ...props }: PropsWi
           convUid,
           chatMode,
           data: formData,
-          model_name: model,
+          model,
           config: {
             /** timeout 1h */
             timeout: 1000 * 60 * 60,

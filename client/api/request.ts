@@ -47,15 +47,15 @@ export const postChatModeParamsFileLoad = ({
   chatMode,
   data,
   config,
-  model_name,
+  model,
 }: {
   convUid: string;
   chatMode: string;
   data: FormData;
-  model_name: string;
+  model: string;
   config?: Omit<AxiosRequestConfig, 'headers'>;
 }) => {
-  return POST<FormData, getChatHistoryResponse>(`/chat/mode/params/file/load?conv_uid=${convUid}&chat_mode=${chatMode}`, data, {
+  return POST<FormData, getChatHistoryResponse>(`/chat/mode/params/file/load?conv_uid=${convUid}&chat_mode=${chatMode}&model_name=${model}`, data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
