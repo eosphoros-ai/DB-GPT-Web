@@ -28,7 +28,7 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearIntialMessage }: 
   const initMessage = searchParams && searchParams.get('initMessage');
   const spaceNameOriginal = searchParams && searchParams.get('spaceNameOriginal');
 
-  const { currentDialogue, scene, selectedModel } = useContext(ChatContext);
+  const { currentDialogue, scene } = useContext(ChatContext);
   const isChartChat = scene === 'chat_dashboard';
   const [isLoading, setIsLoading] = useState(false);
   const [currentParam, setCurrentParam] = useState<string>('');
