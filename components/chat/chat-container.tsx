@@ -47,7 +47,7 @@ const ChatContainer = () => {
       setLoading(false);
       // use last view model_name as default model name
       const lastView = (res || []).filter((i) => i.role === 'view').slice(-1)[0];
-      lastView.model_name && setModel(lastView.model_name);
+      lastView?.model_name && setModel(lastView.model_name);
       return res ?? [];
     },
     {
