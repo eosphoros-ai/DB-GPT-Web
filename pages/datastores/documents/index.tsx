@@ -105,8 +105,8 @@ const Documents = () => {
         setCurrent(data.data.page);
       }
     }
-    fetchDocuments();
-  }, []);
+    spaceName && fetchDocuments();
+  }, [spaceName]);
   return (
     <div className="p-4">
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginBottom: '20px' }}>
@@ -148,7 +148,7 @@ const Documents = () => {
           <Button variant="outlined" onClick={() => setIsAddDocumentModalShow(true)} sx={{ marginRight: '20px' }}>
             + {t('Add_Datasource')}
           </Button>
-          <SpaceParameter spaceName={spaceName || ''} />
+          {spaceName && <SpaceParameter spaceName={spaceName} />}
         </Stack>
       </Stack>
       {documents.length ? (
