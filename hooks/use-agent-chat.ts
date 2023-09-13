@@ -16,7 +16,7 @@ const useAgentChat = ({ queryAgentURL, channel, queryBody, initHistory = [] }: P
   const [state, setState] = useStateReducer({
     history: initHistory,
   });
-  const { refreshDialogList, chatId } = useContext(ChatContext);
+  const { refreshDialogList, chatId, model } = useContext(ChatContext);
   const ctrl = new AbortController();
 
   useEffect(() => {
@@ -105,7 +105,7 @@ const useAgentChat = ({ queryAgentURL, channel, queryBody, initHistory = [] }: P
               if (h?.[nextIndex]) {
                 h[nextIndex].context = `${event.data}`;
               } else {
-                h.push({ role: 'view', context: event.data });
+                h.push({ role: 'view', context: event.data, model_name: model });
               }
               setState({
                 history: h as any,
