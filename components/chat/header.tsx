@@ -17,6 +17,8 @@ function Header({ refreshHistory, modelChange, selectedModel }: Props) {
   const { refreshDialogList, model } = useContext(ChatContext);
   return (
     <div className="w-full py-4 flex items-center justify-center border-b border-gray-100 gap-5">
+      {/* models selector */}
+      <ModelSelector size="sm" onChange={modelChange} />
       {/* excel */}
       <ChatExcel
         onComplete={() => {
@@ -24,8 +26,6 @@ function Header({ refreshHistory, modelChange, selectedModel }: Props) {
           refreshHistory?.();
         }}
       />
-      {/* models selector */}
-      <ModelSelector size="sm" onChange={modelChange} />
       <ModeTab />
     </div>
   );

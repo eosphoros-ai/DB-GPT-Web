@@ -66,7 +66,7 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
 
   return (
     <>
-      <div className="h-full flex items-start">
+      <div className="flex items-start gap-2">
         <Tooltip placement="topLeft" title="Files cannot be changed after upload">
           <Upload
             disabled={loading}
@@ -100,14 +100,14 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
         >
           {loading ? (percent === 100 ? 'Analysis' : 'Uploading') : 'Upload'}
         </Button>
+        {!!fileList.length && (
+          <div className="mt-2 text-gray-500 text-sm flex items-center">
+            <LinkOutlined className="mr-2" />
+            <span>{fileList[0]?.name}</span>
+          </div>
+        )}
       </div>
-      {!!fileList.length && (
-        <div className="mt-2 text-gray-500 text-sm flex items-center">
-          <LinkOutlined className="mr-2" />
-          <span>{fileList[0]?.name}</span>
-        </div>
-      )}
-      {typeof percent === 'number' && <Progress className="mb-0" percent={percent} size="small" status={uploadState} />}
+      {typeof percent === 'number' && <Progress className="mb-0 absolute" percent={percent} size="small" status={uploadState} />}
     </>
   );
 }
