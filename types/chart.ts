@@ -30,7 +30,7 @@ export type NewDialogueParam = {
   model?: string;
 };
 
-export type getChatHistoryResponse = IChatDialogueMessageSchema[];
+export type ChatHistoryResponse = IChatDialogueMessageSchema[];
 
 export type IChatDialogueSchema = {
   conv_uid: string;
