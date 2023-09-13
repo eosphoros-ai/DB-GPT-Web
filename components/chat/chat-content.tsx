@@ -4,7 +4,7 @@ import { RobotOutlined, UserOutlined } from '@ant-design/icons';
 import Markdown, { MarkdownToJSX } from 'markdown-to-jsx';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { renderModelIcon } from './model-selector';
+import { renderModelIcon } from '@/components/chat/header/model-selector';
 import { IChatDialogueMessageSchema } from '@/types/chart';
 
 interface Props {

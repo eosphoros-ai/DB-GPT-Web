@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { NextPage } from 'next';
 import { apiInterceptors, newDialogue, postScenes } from '@/client/api';
-import ModelSelector from '@/components/chat/model-selector';
+import ModelSelector from '@/components/chat/header/model-selector';
 import { ChatContext } from '@/app/chat-context';
 
 type FormData = {
@@ -50,7 +50,6 @@ const Home: NextPage = () => {
         <Box className="flex justify-center py-4">
           <ModelSelector
             size="lg"
-            selectedModel={model}
             onChange={(newModel: string) => {
               setModel(newModel);
             }}

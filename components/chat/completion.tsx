@@ -8,7 +8,7 @@ import MonacoEditor from './monaco-editor';
 import ChatContent from './chat-content';
 import { ChatContext } from '@/app/chat-context';
 import { IChatDialogueMessageSchema } from '@/types/chart';
-import { renderModelIcon } from './model-selector';
+import { renderModelIcon } from '@/components/chat/header/model-selector';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
