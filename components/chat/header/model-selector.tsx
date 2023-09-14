@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 interface Props {
   size: 'sm' | 'md' | 'lg';
-  onChange: (model: string) => void;
+  onChange?: (model: string) => void;
 }
 
 const ICON_MAP: Record<ModelType, { label: string; icon: string }> = {
@@ -66,7 +66,7 @@ export function renderModelIcon(model: string | undefined) {
 
 function ModelSelector({ size, onChange }: Props) {
   const { t } = useTranslation();
-  const { modelList, model } = useContext(ChatContext);
+  const { modelList, model, scene } = useContext(ChatContext);
   if (!modelList || modelList.length <= 0) {
     return null;
   }

@@ -123,7 +123,6 @@ const ChatContainer = () => {
   return (
     <>
       <Header
-        selectedModel={model}
         refreshHistory={runHistoryList}
         modelChange={(newModel: string) => {
           setModel(newModel);

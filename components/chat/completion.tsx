@@ -156,7 +156,7 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
           )}
           <Input
             disabled={scene === 'chat_excel' && !currentDialogue?.select_param}
-            className="flex-1 h-12"
+            className="flex-1 h-12 min-w-min"
             variant="outlined"
             startDecorator={renderModelIcon(model || '')}
             endDecorator={<IconButton type="submit">{isLoading ? <CircularProgress /> : <SendRoundedIcon />}</IconButton>}
