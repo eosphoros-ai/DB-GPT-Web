@@ -47,6 +47,8 @@ const ICON_MAP: Record<ModelType, { label: string; icon: string }> = {
   'baichuan2-13b': { label: 'Baichuan2-13B-Chat', icon: '/models/baichuan.png' },
   'wizardlm-13b': { label: 'WizardLM-13B-V1.2', icon: '/models/wizardlm.png' },
   'llama-cpp': { label: 'ggml-model-q4_0.bin', icon: '/models/huggingface.svg' },
+  'internlm-7b': { label: 'internlm-chat-7b-v1_1', icon: '/models/internlm.png' },
+  'internlm-7b-8k': { label: 'internlm-chat-7b-8k', icon: '/models/internlm.png' },
 };
 
 export function renderModelIcon(model: string | undefined) {
