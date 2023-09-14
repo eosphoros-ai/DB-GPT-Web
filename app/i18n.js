@@ -82,8 +82,9 @@ const resources = {
       Edit: 'Edit',
       Database: 'Database',
       Data_Source: 'Data Source',
-      Close_Sidebar: 'Close Sidebar',
-      Switch_Language: 'Switch Language',
+      Close_Sidebar: 'Fold',
+      language: 'Language',
+      choose_model: 'Please choose a model',
     },
   },
   zh: {
@@ -164,8 +165,9 @@ const resources = {
       Edit: '编辑',
       Database: '数据库',
       Data_Source: '数据源',
-      Close_Sidebar: '关闭侧边栏',
-      Switch_Language: '切换语言',
+      Close_Sidebar: '收起',
+      language: '语言',
+      choose_model: '请选择一个模型',
     },
   },
 };

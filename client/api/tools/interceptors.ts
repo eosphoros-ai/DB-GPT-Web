@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { ApiResponse, FailedTuple, SuccessTuple } from '../types/request.type';
+import { ApiResponse, FailedTuple, SuccessTuple } from '../';
 import { message } from 'antd';
 
 /**

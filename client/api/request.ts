@@ -1,12 +1,16 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
-import {
-  GetChatDbListResponse,
-  GetChatDbSupportTypeResponse,
-  GetChatDialogueListResponse,
-  GetChatDialogueMessagesHistoryResponse,
-  PostChatDbParams,
-} from './types/schema.type';
+import { GetChatDbListResponse, GetChatDbSupportTypeResponse, PostChatDbParams } from '@/types/db';
+import { GetChatDialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chart';
+
+/** App */
+export const postScenes = () => {
+  return POST<null, Array<SceneResponse>>('/chat/dialogue/scenes');
+};
+
+export const newDialogue = (data: NewDialogueParam) => {
+  return POST<NewDialogueParam, IChatDialogueSchema>('/chat/dialogue/new', data);
+};
 
 /** Database Page */
 export const getChatDbList = () => {
@@ -29,27 +33,39 @@ export const postChatDbAdd = (data: PostChatDbParams) => {
 export const getChatDialogueList = () => {
   return GET<null, GetChatDialogueListResponse>('/chat/dialogue/list');
 };
+export const getModelList = () => {
+  return GET<null, Array<string>>('/model/types');
+};
 export const postChatModeParamsList = (chatMode: string) => {
   return POST<null, Record<string, string>>(`/chat/mode/params/list?chat_mode=${chatMode}`);
 };
-export const getChatDialogueMessagesHistory = (convId: string) => {
-  return GET<null, GetChatDialogueMessagesHistoryResponse>(`/chat/dialogue/messages/history?con_uid=${convId}`);
+export const getChatHistory = (convId: string) => {
+  return GET<null, ChatHistoryResponse>(`/chat/dialogue/messages/history?con_uid=${convId}`);
 };
 export const postChatModeParamsFileLoad = ({
   convUid,
   chatMode,
   data,
   config,
+  model,
 }: {
   convUid: string;
   chatMode: string;
   data: FormData;
+  model: string;
   config?: Omit<AxiosRequestConfig, 'headers'>;
 }) => {
-  return POST<FormData, GetChatDialogueMessagesHistoryResponse>(`/chat/mode/params/file/load?conv_uid=${convUid}&chat_mode=${chatMode}`, data, {
+  return POST<FormData, ChatHistoryResponse>(`/chat/mode/params/file/load?conv_uid=${convUid}&chat_mode=${chatMode}&model_name=${model}`, data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
     ...config,
   });
 };
+
+/** menu */
+export const delDialogue = (conv_uid: string) => {
+  return POST<null, null>(`/chat/dialogue/delete?con_uid=${conv_uid}`);
+};
+
+/** knowledge */
