@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Form, Input, InputNumber, Modal, Select, message } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
-import { apiInterceptors, postChatDbAdd, postChatDbEdit } from '@/client/api';
-import { DBOption, DBType, GetChatDbListResponse, PostChatDbParams } from '@/types/db';
+import { apiInterceptors, postDbAdd, postDbEdit } from '@/client/api';
+import { DBOption, DBType, DbListResponse, PostDbParams } from '@/types/db';
 import { isFileDb } from '@/pages/database';
 
-type DBItem = GetChatDbListResponse[0];
+type DBItem = DbListResponse[0];
 
 interface Props {
   dbTypeList: DBOption[];
@@ -49,7 +49,7 @@ function FormDialog({ open, choiceDBType, dbTypeList, editValue, dbNames, onClos
       message.error('The database already exists!');
       return;
     }
-    const data: PostChatDbParams = {
+    const data: PostDbParams = {
       db_host: fileDb ? undefined : db_host,
       db_port: fileDb ? undefined : db_port,
       file_path: fileDb ? db_path : undefined,
@@ -57,7 +57,7 @@ function FormDialog({ open, choiceDBType, dbTypeList, editValue, dbNames, onClos
     };
     setLoading(true);
     try {
-      const [err] = await apiInterceptors((editValue ? postChatDbEdit : postChatDbAdd)(data));
+      const [err] = await apiInterceptors((editValue ? postDbEdit : postDbAdd)(data));
       if (err) {
         message.error(err.message);
         return;

@@ -28,13 +28,13 @@ export type IChatDbSchema = {
   db_user: string;
 };
 
-export type GetChatDbListResponse = IChatDbSchema[];
+export type DbListResponse = IChatDbSchema[];
 
 export type IChatDbSupportTypeSchema = {
   db_type: DBType;
   is_file_db: boolean;
 };
 
-export type GetChatDbSupportTypeResponse = IChatDbSupportTypeSchema[];
+export type DbSupportTypeResponse = IChatDbSupportTypeSchema[];
 
-export type PostChatDbParams = Partial<GetChatDbListResponse[0] & { file_path: string }>;
+export type PostDbParams = Partial<DbListResponse[0] & { file_path: string }>;

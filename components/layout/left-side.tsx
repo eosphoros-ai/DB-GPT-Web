@@ -29,7 +29,7 @@ import ExpandIcon from '@mui/icons-material/Expand';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useTranslation } from 'react-i18next';
 import { ChatContext } from '@/app/chat-context';
-import { GetChatDialogueListResponse } from '@/types/chart';
+import { DialogueListResponse } from '@/types/chart';
 import { apiInterceptors, delDialogue } from '@/client/api';
 
 const LeftSide = () => {
@@ -115,7 +115,7 @@ const LeftSide = () => {
                   gap: '4px',
                 }}
               >
-                {(dialogueList || []).map((dialogue: GetChatDialogueListResponse[0]) => {
+                {(dialogueList || []).map((dialogue: DialogueListResponse[0]) => {
                   const isSelect = (pathname === `/chat` || pathname === '/chat/') && chatId === dialogue.conv_uid;
                   return (
                     <ListItem key={dialogue.conv_uid}>
