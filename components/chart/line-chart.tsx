@@ -5,10 +5,14 @@ import { Line } from '@antv/g2plot';
 
 export default function LineChart({ chart }: { chart: ChartData }) {
   const chartRef = useRef(null);
+  const chartInstanceRef = useRef<{ chart: Line | null }>({ chart: null });
 
   useEffect(() => {
     if (chartRef.current) {
-      const lineChart = new Line(chartRef.current, {
+      if (chartInstanceRef.current.chart) {
+        chartInstanceRef.current.chart.destroy();
+      }
+      chartInstanceRef.current.chart = new Line(chartRef.current, {
         data: chart.values,
         xField: 'name',
         yField: 'value',
@@ -30,7 +34,7 @@ export default function LineChart({ chart }: { chart: ChartData }) {
           },
         },
       });
-      lineChart.render();
+      chartInstanceRef.current.chart.render();
     }
   }, [chart.values]);
 

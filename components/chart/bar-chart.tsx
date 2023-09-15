@@ -5,9 +5,13 @@ import { useEffect, useRef } from 'react';
 
 export default function BarChart({ chart }: { key: string; chart: ChartData }) {
   const ref = useRef(null);
+  const chartInstanceRef = useRef<{ chart: Column | null }>({ chart: null });
   useEffect(() => {
     if (ref.current) {
-      const column = new Column(ref.current, {
+      if (chartInstanceRef.current.chart) {
+        chartInstanceRef.current.chart.destroy();
+      }
+      chartInstanceRef.current.chart = new Column(ref.current, {
         data: chart.values,
         xField: 'name',
         yField: 'value',
@@ -22,7 +26,7 @@ export default function BarChart({ chart }: { key: string; chart: ChartData }) {
           },
         },
       });
-      column.render();
+      chartInstanceRef.current.chart.render();
     }
   }, [chart.values]);
 
