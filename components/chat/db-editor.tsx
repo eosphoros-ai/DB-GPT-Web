@@ -169,7 +169,7 @@ function DbEditor() {
             setChartData(undefined);
           } else {
             setChartData({
-              type: res?.data?.chart_type,
+              chart_type: res?.data?.chart_type,
               values: res?.data?.chart_values,
               title: newEditorValue?.title,
               description: newEditorValue?.thoughts,

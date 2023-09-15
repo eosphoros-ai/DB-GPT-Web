@@ -43,7 +43,7 @@ function Chart({ chartsData }: Props) {
   return (
     <>
       {chartsData && (
-        <div className="w-3/4">
+        <div className="w-full">
           <div className="flex flex-col gap-3 h-full">
             {chartRows?.map((chartRow, index) => (
               <div key={`chart_row_${index}`} className={`${chartRow?.type !== 'IndicatorValue' ? 'flex gap-3' : ''}`}>
