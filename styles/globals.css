@@ -57,3 +57,7 @@ table tr td {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.dark :where(.css-dev-only-do-not-override-18iikkb).ant-tabs .ant-tabs-tab-btn {
+  color: white;
+}
