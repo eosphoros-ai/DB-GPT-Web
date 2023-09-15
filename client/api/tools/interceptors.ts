@@ -18,6 +18,8 @@ export const apiInterceptors = <T = any, D = any>(promise: Promise<ApiResponse<T
       }
       if (!data.success) {
         if (ignoreCodes && ignoreCodes !== '*' && data.err_code && ignoreCodes.includes(data.err_code)) {
+          return [null, data.data, data, response];
+        } else {
           message.error(data.err_msg);
           throw new Error(data.err_msg ?? '');
         }
