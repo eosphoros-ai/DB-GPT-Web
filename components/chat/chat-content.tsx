@@ -72,7 +72,7 @@ function ChatContent({ content, isChartChat, onLinkClick }: Props) {
         'lg:w-full xl:w-full pl-0': ['chat_with_db_execute', 'chat_dashboard'].includes(scene),
       })}
     >
-      <div className="mr-2 flex items-center justify-center h-7 w-7 rounded-full text-lg sm:mr-4">
+      <div className="mr-2 flex flex-shrink-0 items-center justify-center h-7 w-7 rounded-full text-lg sm:mr-4">
         {isRobot ? renderModelIcon(model_name) || <RobotOutlined /> : <UserOutlined />}
       </div>
       <div className="flex-1 items-center text-md leading-7">
