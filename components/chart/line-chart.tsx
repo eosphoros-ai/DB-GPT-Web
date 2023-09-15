@@ -1,13 +1,10 @@
-import { ChartData } from "@/types/chart";
-import { Card, CardContent, Typography } from "@mui/joy";
-import { Chart, LineAdvance } from "bizcharts";
+import { ChartData } from '@/types/chart';
+import { Card, CardContent, Typography } from '@mui/joy';
+import { Chart, LineAdvance } from 'bizcharts';
 
-export default function LineChart({ key, chart } : {
-  key: string
-  chart: ChartData
-}) {
+export default function LineChart({ chart }: { chart: ChartData }) {
   return (
-    <div className="flex-1 min-w-0" key={key}>
+    <div className="flex-1 min-w-0">
       <Card className="h-full" sx={{ background: 'transparent' }}>
         <CardContent className="h-full">
           <Typography gutterBottom component="div">
@@ -17,17 +14,8 @@ export default function LineChart({ key, chart } : {
             {chart.chart_desc}
           </Typography>
           <div className="h-[300px]">
-            <Chart
-              autoFit
-              data={chart.values}
-            >
-              <LineAdvance
-                shape="smooth"
-                point
-                area
-                position="name*value"
-                color="type"
-              />
+            <Chart autoFit data={chart.values}>
+              <LineAdvance shape="smooth" point area position="name*value" color="type" />
             </Chart>
           </div>
         </CardContent>

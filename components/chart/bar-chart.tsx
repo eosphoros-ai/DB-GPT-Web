@@ -1,13 +1,10 @@
-import { ChartData } from "@/types/chart";
-import { Card, CardContent, Typography } from "@mui/joy";
-import { Chart, Interval, Tooltip, getTheme } from "bizcharts";
+import { ChartData } from '@/types/chart';
+import { Card, CardContent, Typography } from '@mui/joy';
+import { Chart, Interval, Tooltip, getTheme } from 'bizcharts';
 
-export default function BarChart({ key, chart } : {
-  key: string
-  chart: ChartData
-}) {
+export default function BarChart({ chart }: { key: string; chart: ChartData }) {
   return (
-    <div className="flex-1 min-w-0" key={key}>
+    <div className="flex-1 min-w-0">
       <Card className="h-full" sx={{ background: 'transparent' }}>
         <CardContent className="h-full">
           <Typography gutterBottom component="div">
