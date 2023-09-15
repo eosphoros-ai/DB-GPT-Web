@@ -9,6 +9,7 @@ import ChatContent from './chat-content';
 import { ChatContext } from '@/app/chat-context';
 import { IChatDialogueMessageSchema } from '@/types/chart';
 import { renderModelIcon } from '@/components/chat/header/model-selector';
+import classNames from 'classnames';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
@@ -129,7 +130,14 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
           })}
         </div>
       </div>
-      <div className="relative after:absolute after:-top-8 after:h-8 after:w-full after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-[#212121]">
+      <div
+        className={classNames(
+          'relative after:absolute after:-top-8 after:h-8 after:w-full after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-[#212121]',
+          {
+            'cursor-not-allowed': scene === 'chat_excel' && !currentDialogue?.select_param,
+          },
+        )}
+      >
         <form
           className="flex flex-wrap w-full lg:w-4/5 xl:w-3/4 mx-auto py-2 sm:pt-6 sm:pb-10"
           onSubmit={(e) => {
