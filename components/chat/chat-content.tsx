@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useContext } from 'react';
 import { Link } from '@/lib/mui';
 import { RobotOutlined, UserOutlined } from '@ant-design/icons';
 import Markdown, { MarkdownToJSX } from 'markdown-to-jsx';
@@ -6,6 +6,8 @@ import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { renderModelIcon } from '@/components/chat/header/model-selector';
 import { IChatDialogueMessageSchema } from '@/types/chart';
+import classNames from 'classnames';
+import { ChatContext } from '@/app/chat-context';
 
 interface Props {
   content: IChatDialogueMessageSchema;
@@ -61,12 +63,14 @@ const options: MarkdownToJSX.Options = {
 
 function ChatContent({ content, isChartChat, onLinkClick }: Props) {
   const { context, model_name, role } = content;
+  const { scene } = useContext(ChatContext);
   const isRobot = role === 'view';
   return (
     <div
-      className={`overflow-x-auto w-full lg:w-4/5 xl:w-3/4 mx-auto flex px-2 py-2 sm:px-4 sm:py-6 rounded-xl ${
-        isRobot ? 'bg-slate-100 dark:bg-[#353539]' : ''
-      }`}
+      className={classNames('overflow-x-auto w-full flex px-2 sm:px-4 py-2 sm:py-6 rounded-xl', {
+        'bg-slate-100 dark:bg-[#353539]': isRobot,
+        'lg:w-full xl:w-full pl-0': ['chat_with_db_execute', 'chat_dashboard'].includes(scene),
+      })}
     >
       <div className="mr-2 flex items-center justify-center h-7 w-7 rounded-full text-lg sm:mr-4">
         {isRobot ? renderModelIcon(model_name) || <RobotOutlined /> : <UserOutlined />}

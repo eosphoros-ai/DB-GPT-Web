@@ -139,14 +139,18 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
         )}
       >
         <form
-          className="flex flex-wrap w-full lg:w-4/5 xl:w-3/4 mx-auto py-2 sm:pt-6 sm:pb-10"
+          className="flex flex-wrap w-full py-2 sm:pt-6 sm:pb-10"
           onSubmit={(e) => {
             e.stopPropagation();
             methods.handleSubmit(submit)(e);
           }}
         >
           {!!paramsOpts?.length && (
-            <div className="flex items-center max-w-[6rem] sm:max-w-[12rem] h-12 mr-2 mb-2">
+            <div
+              className={classNames('flex flex-grow items-center h-12 mb-2', {
+                'max-w-[6rem] sm:max-w-[12rem] mr-2': scene !== 'chat_dashboard',
+              })}
+            >
               <Select
                 className="h-full w-full"
                 value={currentParam}

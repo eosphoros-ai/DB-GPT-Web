@@ -10,6 +10,7 @@ import { ChatContext } from '@/app/chat-context';
 import MuiLoading from '../common/loading';
 import Header from './header';
 import Chart from '../chart';
+import classNames from 'classnames';
 
 const ChartSkeleton = () => {
   return (
@@ -121,7 +122,11 @@ const ChatContainer = () => {
           </div>
         )}
         {/** chat panel */}
-        <div className={`${scene === 'chat_dashboard' ? 'w-1/3' : 'w-full'} flex flex-1 flex-col h-full`}>
+        <div
+          className={classNames('flex flex-1 flex-col h-full px-8 w-full', {
+            'w-1/3 pl-4 px-0 py-0': scene === 'chat_dashboard',
+          })}
+        >
           <Completion
             clearInitMessage={async () => {
               await refreshDialogList();
