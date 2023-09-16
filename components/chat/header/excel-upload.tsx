@@ -12,6 +12,7 @@ interface Props {
 
 function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChildren<Props & UploadProps>) {
   const [loading, setLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [percent, setPercent] = useState<number>();
   const [uploadState, setUploadState] = useState<ProgressProps['status']>();
@@ -36,6 +37,7 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
     try {
       const formData = new FormData();
       formData.append('doc_file', fileList[0] as any);
+      messageApi.open({ content: `Uploading ${fileList[0].name}`, type: 'loading', duration: 0 });
       const [err] = await apiInterceptors(
         postChatModeParamsFileLoad({
           convUid,
@@ -61,12 +63,14 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
       message.error(e?.message || 'Upload Error');
     } finally {
       setLoading(false);
+      messageApi.destroy();
     }
   };
 
   return (
     <>
       <div className="flex items-start gap-2">
+        {contextHolder}
         <Tooltip placement="topLeft" title="Files cannot be changed after upload">
           <Upload
             disabled={loading}
@@ -107,7 +111,7 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
           </div>
         )}
       </div>
-      {typeof percent === 'number' && <Progress className="mb-0 absolute" percent={percent} size="small" status={uploadState} />}
+      {/* {typeof percent === 'number' && <Progress className="mb-0 absolute" percent={percent} size="small" status={uploadState} />} */}
     </>
   );
 }

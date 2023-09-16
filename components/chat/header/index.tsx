@@ -8,12 +8,11 @@ import ModelSelector from '@/components/chat/header/model-selector';
  * chat header
  */
 interface Props {
-  refreshHistory: () => void;
-  modelChange: (val: string) => void;
-  selectedModel: string;
+  refreshHistory?: () => void;
+  modelChange?: (val: string) => void;
 }
 
-function Header({ refreshHistory, modelChange, selectedModel }: Props) {
+function Header({ refreshHistory, modelChange }: Props) {
   const { refreshDialogList, model } = useContext(ChatContext);
   return (
     <div className="w-full py-4 flex items-center justify-center border-b border-gray-100 gap-5">

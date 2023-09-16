@@ -7,8 +7,9 @@ import type { DataNode } from 'antd/es/tree';
 import MonacoEditor from './monaco-editor';
 import { sendGetRequest, sendSpacePostRequest } from '@/utils/request';
 import { useSearchParams } from 'next/navigation';
-import ChartContainer from './chat-container';
 import { OnChange } from '@monaco-editor/react';
+import Header from './header';
+import Chart from '../chart';
 
 const { Search } = Input;
 
@@ -47,7 +48,7 @@ function DbEditorContent({ editorValue, chartData, tableData, handleChange }: IP
     if (!chartData) return <div></div>;
     return (
       <div className="flex-1 overflow-auto p-3" style={{ flexShrink: 0, overflow: 'hidden' }}>
-        <ChartContainer {...chartData} />
+        <Chart chartsData={[chartData]} />
       </div>
     );
   }, [chartData]);
@@ -168,7 +169,7 @@ function DbEditor() {
             setChartData(undefined);
           } else {
             setChartData({
-              type: res?.data?.chart_type,
+              chart_type: res?.data?.chart_type,
               values: res?.data?.chart_values,
               title: newEditorValue?.title,
               description: newEditorValue?.thoughts,
@@ -416,8 +417,9 @@ function DbEditor() {
 
   return (
     <div className="flex flex-col w-full h-full">
+      <Header />
       <div className="bg-[#f8f8f8] border-[var(--joy-palette-divider)] border-b border-solid flex items-center px-3 justify-between">
-        <div className="absolute right-4 top-2">
+        <div className="absolute right-4 top-6">
           <Button
             className="bg-[#1677ff] text-[#fff] hover:bg-[#1c558e] px-4 cursor-pointer"
             loading={runLoading || runChartsLoading}

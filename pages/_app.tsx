@@ -44,7 +44,7 @@ function LayoutWrapper({ children }: { children: React.ReactNode }) {
   return (
     <>
       <div className="flex w-screen h-screen overflow-hidden">
-        <div className={classNames('transition-[width]', isMenuExpand ? 'w-[240px]' : 'w-[80px]', 'hidden', 'md:block')}>
+        <div className={classNames('transition-[width]', isMenuExpand ? 'w-[240px]' : 'w-[60px]', 'hidden', 'md:block')}>
           <LeftSide />
         </div>
         <div className="flex flex-col flex-1 relative overflow-hidden">{children}</div>

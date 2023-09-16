@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 import { ApiResponse, FailedTuple, SuccessTuple } from '../';
-import { message } from 'antd';
+import { notification } from 'antd';
 
 /**
  * Response processing
@@ -17,8 +17,13 @@ export const apiInterceptors = <T = any, D = any>(promise: Promise<ApiResponse<T
         throw new Error('Network Error!');
       }
       if (!data.success) {
-        if (ignoreCodes && ignoreCodes !== '*' && data.err_code && ignoreCodes.includes(data.err_code)) {
-          message.error(data.err_msg);
+        if (ignoreCodes === '*' || data.err_code && ignoreCodes.includes(data.err_code)) {
+          return [null, data.data, data, response];
+        } else {
+          notification.error({
+            message: `Request error`,
+            description: data?.err_msg ?? '',
+          });
           throw new Error(data.err_msg ?? '');
         }
       }
