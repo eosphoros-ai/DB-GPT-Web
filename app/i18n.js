@@ -5,7 +5,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   en: {
     translation: {
-      Knowledge_Space: 'Knowledge Space',
+      Knowledge_Space: 'Knowledge',
       space: 'space',
       Vector: 'Vector',
       Owner: 'Owner',
@@ -88,7 +88,8 @@ const resources = {
       data_center_desc: 'DB-GPT also offers a user-friendly data center management interface for efficient data maintenance.',
       create_database: 'Create Database',
       create_knowledge: 'Create Knowledge',
-      path: 'Path'
+      path: 'Path',
+      model_manage: 'Models'
     },
   },
   zh: {
@@ -175,7 +176,8 @@ const resources = {
       data_center_desc: 'DB-GPT支持数据库交互和基于文档的对话，它还提供了一个用户友好的数据中心管理界面。',
       create_database: '创建数据库',
       create_knowledge: '创建知识库',
-      path: '路径'
+      path: '路径',
+      model_manage: '模型管理'
     },
   },
 };

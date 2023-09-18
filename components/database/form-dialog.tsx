@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { apiInterceptors, postDbAdd, postDbEdit } from '@/client/api';
 import { DBOption, DBType, DbListResponse, PostDbParams } from '@/types/db';
 import { isFileDb } from '@/pages/database';
+import { useTranslation } from 'react-i18next';
 
 type DBItem = DbListResponse[0];
 
@@ -19,7 +20,7 @@ interface Props {
 
 function FormDialog({ open, choiceDBType, dbTypeList, editValue, dbNames, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
-
+  const { t } = useTranslation();
   const [form] = Form.useForm<DBItem>();
   const dbType = Form.useWatch('db_type', form);
 
@@ -74,7 +75,7 @@ function FormDialog({ open, choiceDBType, dbTypeList, editValue, dbNames, onClos
   const lockDBType = useMemo(() => !!editValue || !!choiceDBType, [editValue, choiceDBType]);
 
   return (
-    <Modal open={open} width={400} title={editValue ? 'Edit DB Connect' : 'Create DB Connenct'} maskClosable={false} footer={null} onCancel={onClose}>
+    <Modal open={open} width={400} title={editValue ? t('Edit') : t('create_database')} maskClosable={false} footer={null} onCancel={onClose}>
       <Form form={form} className="pt-2" labelCol={{ span: 6 }} labelAlign="left" onFinish={onFinish}>
         <Form.Item name="db_type" label="DB Type" className="mb-3" rules={[{ required: true }]}>
           <Select aria-readonly={lockDBType} disabled={lockDBType} options={dbTypeList} />

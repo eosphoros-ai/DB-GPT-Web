@@ -3,7 +3,7 @@
  */
 
 import { ChatContext } from '@/app/chat-context';
-import { Select, Option, SelectOption, SelectPropsSizeOverrides } from '@/lib/mui';
+import { Select, Option, SelectOption } from '@/lib/mui';
 import { ModelType } from '@/types/chart';
 import classNames from 'classnames';
 import Image from 'next/image';
