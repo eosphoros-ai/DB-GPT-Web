@@ -81,10 +81,14 @@ const resources = {
       Remark: 'Remark',
       Edit: 'Edit',
       Database: 'Database',
-      Data_Source: 'Data Source',
+      Data_Source: 'Data Center',
       Close_Sidebar: 'Fold',
       language: 'Language',
       choose_model: 'Please choose a model',
+      data_center_desc: 'DB-GPT also offers a user-friendly data center management interface for efficient data maintenance.',
+      create_database: 'Create Database',
+      create_knowledge: 'Create Knowledge',
+      path: 'Path'
     },
   },
   zh: {
@@ -164,10 +168,14 @@ const resources = {
       Remark: '备注',
       Edit: '编辑',
       Database: '数据库',
-      Data_Source: '数据源',
+      Data_Source: '数据中心',
       Close_Sidebar: '收起',
       language: '语言',
       choose_model: '请选择一个模型',
+      data_center_desc: 'DB-GPT支持数据库交互和基于文档的对话，它还提供了一个用户友好的数据中心管理界面。',
+      create_database: '创建数据库',
+      create_knowledge: '创建知识库',
+      path: '路径'
     },
   },
 };
