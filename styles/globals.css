@@ -61,3 +61,6 @@ table tr td {
 .dark :where(.css-dev-only-do-not-override-18iikkb).ant-tabs .ant-tabs-tab-btn {
   color: white;
 }
+:where(.css-dev-only-do-not-override-18iikkb).ant-form-item .ant-form-item-label > label {
+  height: 36px;
+}

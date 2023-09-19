@@ -1,5 +1,5 @@
 import { createContext, useEffect, useMemo, useState } from 'react';
-import { apiInterceptors, getDialogueList, getModelList } from '@/client/api';
+import { apiInterceptors, getDialogueList, getUsableModels } from '@/client/api';
 import { useSearchParams } from 'next/navigation';
 import { useRequest } from 'ahooks';
 import { DialogueListResponse } from '@/types/chart';
@@ -56,7 +56,7 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
   );
 
   const { data: modelList = [] } = useRequest(async () => {
-    const [, res] = await apiInterceptors(getModelList());
+    const [, res] = await apiInterceptors(getUsableModels());
     return res ?? [];
   });
   useEffect(() => {

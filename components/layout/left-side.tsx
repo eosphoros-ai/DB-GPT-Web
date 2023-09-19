@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useMemo, useContext } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Modal } from 'antd';
 import {
@@ -27,6 +27,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import ExpandIcon from '@mui/icons-material/Expand';
 import LanguageIcon from '@mui/icons-material/Language';
+import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
 import { useTranslation } from 'react-i18next';
 import { ChatContext } from '@/app/chat-context';
 import { DialogueListResponse } from '@/types/chart';
@@ -35,7 +36,6 @@ import { apiInterceptors, delDialogue } from '@/client/api';
 const LeftSide = () => {
   const pathname = usePathname();
   const { t, i18n } = useTranslation();
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [logoPath, setLogoPath] = useState('/LOGO_1.png');
   const { dialogueList, chatId, queryDialogueList, refreshDialogList, isMenuExpand, setIsMenuExpand } = useContext(ChatContext);
@@ -55,6 +55,13 @@ const LeftSide = () => {
         icon: <Article fontSize="small" />,
         tooltip: 'Knowledge',
         active: pathname === '/datastores',
+      },
+      {
+        label: t('model_manage'),
+        route: '/models',
+        icon: <ModelTrainingIcon fontSize="small" />,
+        tooltip: 'Model',
+        active: pathname === '/models',
       },
     ];
   }, [pathname, i18n.language]);

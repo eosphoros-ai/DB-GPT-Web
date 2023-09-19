@@ -2,6 +2,7 @@ import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
 import { DbListResponse, DbSupportTypeResponse, PostDbParams } from '@/types/db';
 import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chart';
+import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
 
 /** App */
 export const postScenes = () => {
@@ -33,7 +34,7 @@ export const postDbAdd = (data: PostDbParams) => {
 export const getDialogueList = () => {
   return GET<null, DialogueListResponse>('/chat/dialogue/list');
 };
-export const getModelList = () => {
+export const getUsableModels = () => {
   return GET<null, Array<string>>('/model/types');
 };
 export const postChatModeParamsList = (chatMode: string) => {
@@ -69,3 +70,20 @@ export const delDialogue = (conv_uid: string) => {
 };
 
 /** knowledge */
+
+/** models */
+export const getModelList = () => {
+  return GET<null, Array<IModelData>>('/worker/model/list');
+};
+
+export const stopModel = (data: BaseModelParams) => {
+  return POST<BaseModelParams, boolean>('/worker/model/stop', data);
+};
+
+export const startModel = (data: StartModelParams) => {
+  return POST<StartModelParams, boolean>('/worker/model/start', data);
+};
+
+export const getSupportModels = () => {
+  return GET<null, Array<SupportModel>>('/worker/models/supports');
+};

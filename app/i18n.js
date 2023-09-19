@@ -89,7 +89,12 @@ const resources = {
       create_database: 'Create Database',
       create_knowledge: 'Create Knowledge',
       path: 'Path',
-      model_manage: 'Models'
+      model_manage: 'Models',
+      stop_model_success: 'Stop model success',
+      create_model: 'Create Model',
+      model_select_tips: 'Please select a model',
+      submit: 'Submit',
+      start_model_success: 'Start model success'
     },
   },
   zh: {
@@ -177,7 +182,12 @@ const resources = {
       create_database: '创建数据库',
       create_knowledge: '创建知识库',
       path: '路径',
-      model_manage: '模型管理'
+      model_manage: '模型管理',
+      stop_model_success: '模型停止成功',
+      create_model: '创建模型',
+      model_select_tips: '请选择一个模型',
+      submit: '提交',
+      start_model_success: '启动模型成功'
     },
   },
 };
