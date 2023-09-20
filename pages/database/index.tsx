@@ -31,6 +31,7 @@ const dbMapper: Record<DBType, { label: string; icon: string; desc: string }> = 
     icon: '/icons/postgresql.png',
     desc: 'Powerful open-source relational database with extensibility and SQL standards.',
   },
+  spark: { label: 'Spark', icon: '/icons/spark.png', desc: 'Unified engine for large-scale data analytics.' },
 };
 
 export function isFileDb(dbTypeList: DBOption[], dbType: DBType) {
