@@ -21,7 +21,9 @@ function ModelParams({ params }: { params: Array<SupportModelParams> | null }) {
       {params?.map((param: SupportModelParams) => (
         <Form.Item
           key={param.param_name}
-          label={<p className="whitespace-normal overflow-wrap-break-word">{param.description}</p>}
+          label={
+            <p className="whitespace-normal overflow-wrap-break-word">{param.description?.length > 20 ? param.param_name : param.description}</p>
+          }
           name={param.param_name}
           initialValue={param.default_value}
           valuePropName={param.param_type === 'bool' ? 'checked' : 'value'}

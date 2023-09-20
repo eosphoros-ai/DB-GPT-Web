@@ -35,7 +35,7 @@ function ModelCard({ info }: Props) {
     }
   }
   return (
-    <div className="relative flex flex-col py-4 px-4 w-1/2 rounded-lg justify-between text-black bg-white border-gray-200 border hover:shadow-md dark:border-gray-600 dark:bg-black dark:text-white dark:hover:border-white transition-all">
+    <div className="relative flex flex-col py-4 px-4 w-1/3 min-w-min rounded-lg justify-between text-black bg-white border-gray-200 border hover:shadow-md dark:border-gray-600 dark:bg-black dark:text-white dark:hover:border-white transition-all">
       <div className="flex items-center">
         <div className="flex flex-col">
           {info.healthy && (

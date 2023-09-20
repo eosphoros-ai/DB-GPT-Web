@@ -35,14 +35,19 @@ function Models() {
         <ModelCard info={item} key={item.model_name} />
       ))}
       <Modal
-        width={1000}
+        width={800}
         open={isModalOpen}
         title={t('create_model')}
         onCancel={() => {
           setIsModalOpen(false);
         }}
+        footer={null}
       >
-        <ModelForm />
+        <ModelForm
+          onCancel={() => {
+            setIsModalOpen(false);
+          }}
+        />
       </Modal>
     </div>
   );

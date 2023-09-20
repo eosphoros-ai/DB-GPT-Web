@@ -7,7 +7,7 @@ import { renderModelIcon } from '@/components/chat/header/model-selector';
 import ModelParams from './model-params';
 const { Option } = Select;
 
-function ModelForm() {
+function ModelForm({ onCancel }: { onCancel: () => void }) {
   const { t } = useTranslation();
   const [models, setModels] = useState<Array<SupportModel> | null>([]);
   const [selectedModel, setSelectedModel] = useState<SupportModel>();
@@ -49,7 +49,7 @@ function ModelForm() {
     <div className="">
       <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={onFinish}>
         <Form.Item label="Model" name="model" rules={[{ required: true, message: t('model_select_tips') }]}>
-          <Select onChange={handleChange}>
+          <Select showSearch onChange={handleChange}>
             {models?.map((model) => (
               <Option key={model.model} value={model.model} label={model.model} model={model}>
                 {renderModelIcon(model.model)}
@@ -65,11 +65,14 @@ function ModelForm() {
           </Select>
         </Form.Item>
         <ModelParams params={params} />
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <div className="flex justify-center">
           <Button type="primary" htmlType="submit">
             {t('submit')}
           </Button>
-        </Form.Item>
+          <Button className="ml-10" onClick={onCancel}>
+            Cancel
+          </Button>
+        </div>
       </Form>
     </div>
   );
