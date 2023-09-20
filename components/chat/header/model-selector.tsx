@@ -17,15 +17,16 @@ interface Props {
 
 const DEFAULT_ICON_URL = '/models/huggingface.svg';
 
-export function renderModelIcon(model: string | undefined) {
+export function renderModelIcon(model?: string | undefined, props?: { width: number; height: number }) {
   if (!model) {
     return null;
   }
+  const { width, height } = props || {};
   return (
     <Image
       className="rounded-full mr-2 border border-gray-200 object-contain bg-white inline-block"
-      width={24}
-      height={24}
+      width={width || 24}
+      height={height || 24}
       src={ICON_MAP[model]?.icon || DEFAULT_ICON_URL}
       alt="llm"
     />

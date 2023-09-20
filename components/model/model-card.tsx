@@ -7,6 +7,7 @@ import StopCircleIcon from '@mui/icons-material/StopCircle';
 import { Tooltip, message } from 'antd';
 import moment from 'moment';
 import { apiInterceptors, stopModel } from '@/client/api';
+import { renderModelIcon } from '../chat/header/model-selector';
 
 interface Props {
   info: IModelData;
@@ -51,14 +52,19 @@ function ModelCard({ info }: Props) {
           )}
           <Tooltip title="Stop Model">
             <StopCircleIcon
-              className="absolute right-4 top-16 text-3xl text-orange-600 cursor-pointer"
+              className="absolute right-4 bottom-4 text-3xl text-orange-600 cursor-pointer"
               onClick={() => {
                 stopTheModel(info);
               }}
             />
           </Tooltip>
-          <h1 className="text-lg font-semibold">{info.model_name}</h1>
-          <h3 className="text-sm text-gray-800 dark:text-gray-400">{info.model_type}</h3>
+          <div className="flex items-center">
+            {renderModelIcon(info.model_name, { width: 32, height: 32 })}
+            <p className="inline-block ml-2">
+              <h1 className="text-lg font-semibold">{info.model_name}</h1>
+              <h3 className="text-sm text-gray-800 dark:text-gray-400">{info.model_type}</h3>
+            </p>
+          </div>
           <div className="text-sm mt-2">
             <p className="font-semibold">Host:</p>
             <p className="text-gray-600">{info.host}</p>
