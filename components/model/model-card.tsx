@@ -25,8 +25,9 @@ function ModelCard({ info }: Props) {
       stopModel({
         host: info.host,
         port: info.port,
-        model_name: info.model_name,
+        model: info.model_name,
         model_type: info.model_type,
+        params: {},
       }),
     );
     setLoading(false);

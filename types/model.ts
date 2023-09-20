@@ -16,8 +16,9 @@ export type IModelData = {
 export type BaseModelParams = {
   host: string;
   port: number;
-  model_name: string;
+  model: string;
   model_type: string;
+  params: any;
 };
 
 export type ModelParams = {
