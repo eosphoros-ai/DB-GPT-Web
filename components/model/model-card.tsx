@@ -26,7 +26,7 @@ function ModelCard({ info }: Props) {
         host: info.host,
         port: info.port,
         model: info.model_name,
-        model_type: info.model_type,
+        worker_type: info.model_type,
         params: {},
       }),
     );

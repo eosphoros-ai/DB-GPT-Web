@@ -17,7 +17,7 @@ export type BaseModelParams = {
   host: string;
   port: number;
   model: string;
-  model_type: string;
+  worker_type: string;
   params: any;
 };
 
