@@ -42,6 +42,7 @@ function ModelForm({ onCancel }: { onCancel: () => void }) {
       }),
     );
     if (res === true) {
+      onCancel();
       return message.success(t('start_model_success'));
     }
   }
