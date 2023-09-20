@@ -15,6 +15,19 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
 
   async function getModels() {
     const [, res] = await apiInterceptors(getSupportModels());
+    if (res && res.length) {
+      setModels(
+        res.sort((a: SupportModel, b: SupportModel) => {
+          if (a.enabled && !b.enabled) {
+            return -1;
+          } else if (!a.enabled && b.enabled) {
+            return 1;
+          } else {
+            return a.model.localeCompare(b.model);
+          }
+        }),
+      );
+    }
     setModels(res);
   }
 
@@ -53,15 +66,17 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
         <Form.Item label="Model" name="model" rules={[{ required: true, message: t('model_select_tips') }]}>
           <Select showSearch onChange={handleChange}>
             {models?.map((model) => (
-              <Option key={model.model} value={model.model} label={model.model} model={model}>
+              <Option key={model.model} value={model.model} label={model.model} model={model} disabled={!model.enabled}>
                 {renderModelIcon(model.model)}
-                <Tooltip title={model.model}>
+                <Tooltip title={model.enabled ? model.model : t('download_model_tip')}>
                   <span>{model.model}</span>
                 </Tooltip>
-                <p className="inline-block absolute right-4">
-                  <span>{model.host}:</span>
-                  <span>{model.port}</span>
-                </p>
+                <Tooltip title={model.enabled ? `${model.host}:${model.port}` : t('download_model_tip')}>
+                  <p className="inline-block absolute right-4">
+                    <span>{model.host}:</span>
+                    <span>{model.port}</span>
+                  </p>
+                </Tooltip>
               </Option>
             ))}
           </Select>

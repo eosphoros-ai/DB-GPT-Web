@@ -37,7 +37,7 @@ function ModelCard({ info }: Props) {
     }
   }
   return (
-    <div className="relative flex flex-col py-4 px-4 w-1/3 min-w-min rounded-lg justify-between text-black bg-white border-gray-200 border hover:shadow-md dark:border-gray-600 dark:bg-black dark:text-white dark:hover:border-white transition-all">
+    <div className="relative flex flex-col py-4 px-4 sm:w-1/2 lg:w-1/3 min-w-min rounded-lg justify-between text-black bg-white border-gray-200 border hover:shadow-md dark:border-gray-600 dark:bg-black dark:text-white dark:hover:border-white transition-all">
       <div className="flex items-center">
         <div className="flex flex-col">
           {info.healthy && (
@@ -60,10 +60,10 @@ function ModelCard({ info }: Props) {
           </Tooltip>
           <div className="flex items-center">
             {renderModelIcon(info.model_name, { width: 32, height: 32 })}
-            <p className="inline-block ml-2">
-              <h1 className="text-lg font-semibold">{info.model_name}</h1>
+            <div className="inline-block ml-2">
+              <h3 className="text-lg font-semibold">{info.model_name}</h3>
               <h3 className="text-sm text-gray-800 dark:text-gray-400">{info.model_type}</h3>
-            </p>
+            </div>
           </div>
           <div className="text-sm mt-2">
             <p className="font-semibold">Host:</p>
