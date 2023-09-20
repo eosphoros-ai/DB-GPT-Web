@@ -17,7 +17,7 @@ export const apiInterceptors = <T = any, D = any>(promise: Promise<ApiResponse<T
         throw new Error('Network Error!');
       }
       if (!data.success) {
-        if (ignoreCodes === '*' || data.err_code && ignoreCodes.includes(data.err_code)) {
+        if (ignoreCodes === '*' || (data.err_code && ignoreCodes?.includes(data.err_code))) {
           return [null, data.data, data, response];
         } else {
           notification.error({
@@ -27,7 +27,11 @@ export const apiInterceptors = <T = any, D = any>(promise: Promise<ApiResponse<T
           throw new Error(data.err_msg ?? '');
         }
       }
-      return [null, data.data, data, response];
+      let res;
+      if (data.data[0]?.models) {
+        res = data.data[0].models.map((item) => Object.assign({}, item, { host: data.data[0].host, port: data.data[0].port }));
+      }
+      return [null, res || data.data, data, response];
     })
     .catch<FailedTuple>((err: Error | AxiosError) => {
       return [err, null, null, null];
