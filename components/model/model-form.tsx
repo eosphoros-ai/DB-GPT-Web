@@ -31,6 +31,7 @@ function ModelForm({ onCancel }: { onCancel: () => void }) {
     if (!selectedModel) {
       return;
     }
+    delete values.model;
     const [, res] = await apiInterceptors(
       startModel({
         host: selectedModel.host,
