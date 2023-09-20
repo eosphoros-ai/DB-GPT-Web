@@ -7,7 +7,7 @@ import { renderModelIcon } from '@/components/chat/header/model-selector';
 import ModelParams from './model-params';
 const { Option } = Select;
 
-function ModelForm({ onCancel }: { onCancel: () => void }) {
+function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: () => void }) {
   const { t } = useTranslation();
   const [models, setModels] = useState<Array<SupportModel> | null>([]);
   const [selectedModel, setSelectedModel] = useState<SupportModel>();
@@ -42,7 +42,7 @@ function ModelForm({ onCancel }: { onCancel: () => void }) {
       }),
     );
     if (res === true) {
-      onCancel();
+      onSuccess();
       return message.success(t('start_model_success'));
     }
   }

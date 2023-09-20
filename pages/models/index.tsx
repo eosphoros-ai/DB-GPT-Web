@@ -47,6 +47,10 @@ function Models() {
           onCancel={() => {
             setIsModalOpen(false);
           }}
+          onSuccess={() => {
+            setIsModalOpen(false);
+            getModels();
+          }}
         />
       </Modal>
     </div>
