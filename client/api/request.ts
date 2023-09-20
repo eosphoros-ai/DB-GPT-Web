@@ -85,5 +85,5 @@ export const startModel = (data: StartModelParams) => {
 };
 
 export const getSupportModels = () => {
-  return GET<null, Array<SupportModel>>('/worker/models/supports');
+  return GET<null, Array<SupportModel>>('/worker/model/params');
 };
