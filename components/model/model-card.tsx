@@ -42,12 +42,12 @@ function ModelCard({ info }: Props) {
         <div className="flex flex-col">
           {info.healthy && (
             <Tooltip title="Healthy">
-              <SentimentSatisfiedAltIcon className="absolute top-4 right-4 text-3xl text-green-600" />
+              <SentimentSatisfiedAltIcon className="absolute top-4 right-4 !text-3xl !text-green-600" />
             </Tooltip>
           )}
           {!info.healthy && (
             <Tooltip title="Unhealthy">
-              <SentimentVeryDissatisfiedIcon className="absolute top-4 right-4 text-3xl text-red-600" />
+              <SentimentVeryDissatisfiedIcon className="absolute top-4 right-4 !text-3xl !text-red-600" />
             </Tooltip>
           )}
           <Tooltip title="Stop Model">
