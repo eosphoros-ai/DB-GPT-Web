@@ -52,7 +52,7 @@ function ModelCard({ info }: Props) {
           )}
           <Tooltip title="Stop Model">
             <StopCircleIcon
-              className="absolute right-4 bottom-4 text-3xl text-orange-600 cursor-pointer"
+              className="absolute right-4 bottom-4 !text-3xl !text-orange-600 cursor-pointer"
               onClick={() => {
                 stopTheModel(info);
               }}
