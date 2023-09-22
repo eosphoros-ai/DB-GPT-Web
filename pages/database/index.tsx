@@ -4,18 +4,18 @@ import React, { useMemo, useState } from 'react';
 import { useAsyncEffect } from 'ahooks';
 import { Badge, Button, Card, Drawer, Empty, Modal, Spin, message } from 'antd';
 import FormDialog from '@/components/database/form-dialog';
-import { apiInterceptors, getChatDbList, getChatDbSupportType, postChatDbDelete } from '@/client/api';
+import { apiInterceptors, getDbList, getDbSupportType, postDbDelete } from '@/client/api';
 import DBCard from '@/components/database/db-card';
 import { DeleteFilled, EditFilled, PlusOutlined } from '@ant-design/icons';
-import { DBOption, DBType, GetChatDbListResponse, GetChatDbSupportTypeResponse } from '@/types/db';
+import { DBOption, DBType, DbListResponse, DbSupportTypeResponse } from '@/types/db';
 import MuiLoading from '@/components/common/loading';
 
-type DBItem = GetChatDbListResponse[0];
+type DBItem = DbListResponse[0];
 
 const dbMapper: Record<DBType, { label: string; icon: string; desc: string }> = {
-  mysql: { label: 'Mysql', icon: '/icons/mysql.png', desc: 'Fast, reliable, scalable open-source relational database management system.' },
+  mysql: { label: 'MySQL', icon: '/icons/mysql.png', desc: 'Fast, reliable, scalable open-source relational database management system.' },
   mssql: { label: 'MSSQL', icon: '/icons/mssql.png', desc: 'Powerful, scalable, secure relational database system by Microsoft.' },
-  duckdb: { label: 'Duckdb', icon: '/icons/duckdb.png', desc: 'In-memory analytical database with efficient query processing.' },
+  duckdb: { label: 'DuckDB', icon: '/icons/duckdb.png', desc: 'In-memory analytical database with efficient query processing.' },
   sqlite: { label: 'Sqlite', icon: '/icons/sqlite.png', desc: 'Lightweight embedded relational database with simplicity and portability.' },
   clickhouse: { label: 'ClickHouse', icon: '/icons/clickhouse.png', desc: 'Columnar database for high-performance analytics and real-time queries.' },
   oracle: { label: 'Oracle', icon: '/icons/oracle.png', desc: 'Robust, scalable, secure relational database widely used in enterprises.' },
@@ -27,10 +27,11 @@ const dbMapper: Record<DBType, { label: string; icon: string; desc: string }> = 
   cassandra: { label: 'Cassandra', icon: '/icons/cassandra.png', desc: 'Scalable, fault-tolerant distributed NoSQL database for large data.' },
   couchbase: { label: 'Couchbase', icon: '/icons/couchbase.png', desc: 'High-performance NoSQL document database with distributed architecture.' },
   postgresql: {
-    label: 'Postgresql',
+    label: 'PostgreSQL',
     icon: '/icons/postgresql.png',
     desc: 'Powerful open-source relational database with extensibility and SQL standards.',
   },
+  spark: { label: 'Spark', icon: '/icons/spark.png', desc: 'Unified engine for large-scale data analytics.' },
 };
 
 export function isFileDb(dbTypeList: DBOption[], dbType: DBType) {
@@ -38,20 +39,20 @@ export function isFileDb(dbTypeList: DBOption[], dbType: DBType) {
 }
 
 function Database() {
-  const [dbList, setDbList] = useState<GetChatDbListResponse>([]);
-  const [dbSupportList, setDbSupportList] = useState<GetChatDbSupportTypeResponse>([]);
+  const [dbList, setDbList] = useState<DbListResponse>([]);
+  const [dbSupportList, setDbSupportList] = useState<DbSupportTypeResponse>([]);
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<{ open: boolean; info?: DBItem; dbType?: DBType }>({ open: false });
-  const [draw, setDraw] = useState<{ open: boolean; dbList?: GetChatDbListResponse; name?: string; type?: DBType }>({ open: false });
+  const [draw, setDraw] = useState<{ open: boolean; dbList?: DbListResponse; name?: string; type?: DBType }>({ open: false });
 
   const getDbSupportList = async () => {
-    const [_, data] = await apiInterceptors(getChatDbSupportType());
+    const [_, data] = await apiInterceptors(getDbSupportType());
     setDbSupportList(data ?? []);
   };
 
-  const getDbList = async () => {
+  const refreshDbList = async () => {
     setLoading(true);
-    const [_, data] = await apiInterceptors(getChatDbList());
+    const [_, data] = await apiInterceptors(getDbList());
     setDbList(data ?? []);
     setLoading(false);
   };
@@ -78,14 +79,14 @@ function Database() {
       onOk() {
         return new Promise<void>(async (resolve, reject) => {
           try {
-            const [err] = await apiInterceptors(postChatDbDelete(item.db_name));
+            const [err] = await apiInterceptors(postDbDelete(item.db_name));
             if (err) {
               message.error(err.message);
               reject();
               return;
             }
             message.success('success');
-            getDbList();
+            refreshDbList();
             resolve();
           } catch (e: any) {
             message.error(e.message);
@@ -100,12 +101,12 @@ function Database() {
     const mapper = dbTypeList.reduce((acc, item) => {
       acc[item.value] = dbList.filter((dbConn) => dbConn.db_type === item.value);
       return acc;
-    }, {} as Record<DBType, GetChatDbListResponse>);
+    }, {} as Record<DBType, DbListResponse>);
     return mapper;
   }, [dbList, dbTypeList]);
 
   useAsyncEffect(async () => {
-    await getDbList();
+    await refreshDbList();
     await getDbSupportList();
   }, []);
 
@@ -115,7 +116,7 @@ function Database() {
   };
 
   return (
-    <div className="relative p-6 bg-[#FAFAFA] dark:bg-transparent min-h-full overflow-y-auto">
+    <div className="relative p-6 px-12 bg-[#FAFAFA] dark:bg-transparent min-h-full overflow-y-auto">
       <MuiLoading visible={loading} />
       <div className="px-1 mb-4">
         <Button
@@ -149,7 +150,7 @@ function Database() {
         dbNames={dbList.map((item) => item.db_name)}
         onSuccess={() => {
           setModal({ open: false });
-          getDbList();
+          refreshDbList();
         }}
         onClose={() => {
           setModal({ open: false });

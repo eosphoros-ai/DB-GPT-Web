@@ -1,7 +1,8 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
-import { GetChatDbListResponse, GetChatDbSupportTypeResponse, PostChatDbParams } from '@/types/db';
-import { GetChatDialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chart';
+import { DbListResponse, DbSupportTypeResponse, PostDbParams } from '@/types/db';
+import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chart';
+import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
 
 /** App */
 export const postScenes = () => {
@@ -13,27 +14,27 @@ export const newDialogue = (data: NewDialogueParam) => {
 };
 
 /** Database Page */
-export const getChatDbList = () => {
-  return GET<null, GetChatDbListResponse>('/chat/db/list');
+export const getDbList = () => {
+  return GET<null, DbListResponse>('/chat/db/list');
 };
-export const getChatDbSupportType = () => {
-  return GET<null, GetChatDbSupportTypeResponse>('/chat/db/support/type');
+export const getDbSupportType = () => {
+  return GET<null, DbSupportTypeResponse>('/chat/db/support/type');
 };
-export const postChatDbDelete = (dbName: string) => {
+export const postDbDelete = (dbName: string) => {
   return POST(`/chat/db/delete?db_name=${dbName}`, undefined);
 };
-export const postChatDbEdit = (data: PostChatDbParams) => {
-  return POST<PostChatDbParams, null>('/chat/db/edit', data);
+export const postDbEdit = (data: PostDbParams) => {
+  return POST<PostDbParams, null>('/chat/db/edit', data);
 };
-export const postChatDbAdd = (data: PostChatDbParams) => {
-  return POST<PostChatDbParams, null>('/chat/db/add', data);
+export const postDbAdd = (data: PostDbParams) => {
+  return POST<PostDbParams, null>('/chat/db/add', data);
 };
 
 /** Chat Page */
-export const getChatDialogueList = () => {
-  return GET<null, GetChatDialogueListResponse>('/chat/dialogue/list');
+export const getDialogueList = () => {
+  return GET<null, DialogueListResponse>('/chat/dialogue/list');
 };
-export const getModelList = () => {
+export const getUsableModels = () => {
   return GET<null, Array<string>>('/model/types');
 };
 export const postChatModeParamsList = (chatMode: string) => {
@@ -69,3 +70,20 @@ export const delDialogue = (conv_uid: string) => {
 };
 
 /** knowledge */
+
+/** models */
+export const getModelList = () => {
+  return GET<null, Array<IModelData>>('/worker/model/list');
+};
+
+export const stopModel = (data: BaseModelParams) => {
+  return POST<BaseModelParams, boolean>('/worker/model/stop', data);
+};
+
+export const startModel = (data: StartModelParams) => {
+  return POST<StartModelParams, boolean>('/worker/model/start', data);
+};
+
+export const getSupportModels = () => {
+  return GET<null, Array<SupportModel>>('/worker/model/params');
+};

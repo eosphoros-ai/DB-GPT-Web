@@ -1,8 +1,8 @@
 import { createContext, useEffect, useMemo, useState } from 'react';
-import { apiInterceptors, getChatDialogueList, getModelList } from '@/client/api';
+import { apiInterceptors, getDialogueList, getUsableModels } from '@/client/api';
 import { useSearchParams } from 'next/navigation';
 import { useRequest } from 'ahooks';
-import { GetChatDialogueListResponse } from '@/types/chart';
+import { DialogueListResponse } from '@/types/chart';
 
 interface IChatContext {
   isContract?: boolean;
@@ -12,12 +12,12 @@ interface IChatContext {
   model: string;
   modelList: Array<string>;
   setModel: (val: string) => void;
-  dialogueList?: GetChatDialogueListResponse;
+  dialogueList?: DialogueListResponse;
   setIsContract: (val: boolean) => void;
   setIsMenuExpand: (val: boolean) => void;
   queryDialogueList: () => void;
   refreshDialogList: () => void;
-  currentDialogue?: GetChatDialogueListResponse[0];
+  currentDialogue?: DialogueListResponse[0];
 }
 
 const ChatContext = createContext<IChatContext>({
@@ -47,7 +47,7 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     refresh: refreshDialogList,
   } = useRequest(
     async () => {
-      const [, res] = await apiInterceptors(getChatDialogueList());
+      const [, res] = await apiInterceptors(getDialogueList());
       return res ?? [];
     },
     {
@@ -56,7 +56,7 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
   );
 
   const { data: modelList = [] } = useRequest(async () => {
-    const [, res] = await apiInterceptors(getModelList());
+    const [, res] = await apiInterceptors(getUsableModels());
     return res ?? [];
   });
   useEffect(() => {

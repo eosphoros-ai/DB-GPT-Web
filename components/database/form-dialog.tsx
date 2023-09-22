@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Form, Input, InputNumber, Modal, Select, message } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
-import { apiInterceptors, postChatDbAdd, postChatDbEdit } from '@/client/api';
-import { DBOption, DBType, GetChatDbListResponse, PostChatDbParams } from '@/types/db';
+import { apiInterceptors, postDbAdd, postDbEdit } from '@/client/api';
+import { DBOption, DBType, DbListResponse, PostDbParams } from '@/types/db';
 import { isFileDb } from '@/pages/database';
+import { useTranslation } from 'react-i18next';
 
-type DBItem = GetChatDbListResponse[0];
+type DBItem = DbListResponse[0];
 
 interface Props {
   dbTypeList: DBOption[];
@@ -19,7 +20,7 @@ interface Props {
 
 function FormDialog({ open, choiceDBType, dbTypeList, editValue, dbNames, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
-
+  const { t } = useTranslation();
   const [form] = Form.useForm<DBItem>();
   const dbType = Form.useWatch('db_type', form);
 
@@ -49,7 +50,7 @@ function FormDialog({ open, choiceDBType, dbTypeList, editValue, dbNames, onClos
       message.error('The database already exists!');
       return;
     }
-    const data: PostChatDbParams = {
+    const data: PostDbParams = {
       db_host: fileDb ? undefined : db_host,
       db_port: fileDb ? undefined : db_port,
       file_path: fileDb ? db_path : undefined,
@@ -57,7 +58,7 @@ function FormDialog({ open, choiceDBType, dbTypeList, editValue, dbNames, onClos
     };
     setLoading(true);
     try {
-      const [err] = await apiInterceptors((editValue ? postChatDbEdit : postChatDbAdd)(data));
+      const [err] = await apiInterceptors((editValue ? postDbEdit : postDbAdd)(data));
       if (err) {
         message.error(err.message);
         return;
@@ -74,7 +75,7 @@ function FormDialog({ open, choiceDBType, dbTypeList, editValue, dbNames, onClos
   const lockDBType = useMemo(() => !!editValue || !!choiceDBType, [editValue, choiceDBType]);
 
   return (
-    <Modal open={open} width={400} title={editValue ? 'Edit DB Connect' : 'Create DB Connenct'} maskClosable={false} footer={null} onCancel={onClose}>
+    <Modal open={open} width={400} title={editValue ? t('Edit') : t('create_database')} maskClosable={false} footer={null} onCancel={onClose}>
       <Form form={form} className="pt-2" labelCol={{ span: 6 }} labelAlign="left" onFinish={onFinish}>
         <Form.Item name="db_type" label="DB Type" className="mb-3" rules={[{ required: true }]}>
           <Select aria-readonly={lockDBType} disabled={lockDBType} options={dbTypeList} />

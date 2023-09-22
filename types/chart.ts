@@ -40,7 +40,7 @@ export type IChatDialogueSchema = {
   select_param: string;
 };
 
-export type GetChatDialogueListResponse = IChatDialogueSchema[];
+export type DialogueListResponse = IChatDialogueSchema[];
 
 export type IChatDialogueMessageSchema = {
   role: 'human' | 'view' | 'system' | 'ai';

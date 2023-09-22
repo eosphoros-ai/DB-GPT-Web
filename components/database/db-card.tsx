@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { Tooltip } from 'antd';
 import { DBOption } from '@/types/db';
+import DBIcon from './db-icon';
 
 interface Props {
   info: DBOption;
@@ -21,7 +22,7 @@ function DBCard({ info, onClick }: Props) {
       onClick={handleClick}
     >
       <div className="flex items-center">
-        <img className="w-11 h-11 rounded-full mr-4 border border-gray-200 object-contain bg-white" src={info.icon} alt={info.label} />
+        <DBIcon src={info.icon} label={info.label} />
         <div className="flex flex-col">
           <h2 className="text-sm font-semibold">{info.label}</h2>
           {info.disabled && (
