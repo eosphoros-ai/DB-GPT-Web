@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRequest } from 'ahooks';
-import { Select, Option, Button, Table, Box, Typography, Tooltip } from '@/lib/mui';
+import { Select, Option, Table, Box, Typography, Tooltip } from '@/lib/mui';
+import { Button } from 'antd';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import { Input, Tree, Empty, Tabs } from 'antd';
 import type { DataNode } from 'antd/es/tree';
@@ -169,7 +170,7 @@ function DbEditor() {
             setChartData(undefined);
           } else {
             setChartData({
-              chart_type: res?.data?.chart_type,
+              type: res?.data?.chart_type,
               values: res?.data?.chart_values,
               title: newEditorValue?.title,
               description: newEditorValue?.thoughts,
@@ -418,44 +419,39 @@ function DbEditor() {
   return (
     <div className="flex flex-col w-full h-full">
       <Header />
-      <div className="bg-[#f8f8f8] border-[var(--joy-palette-divider)] border-b border-solid flex items-center px-3 justify-between">
-        <div className="absolute right-4 top-6">
-          <Button
-            className="bg-[#1677ff] text-[#fff] hover:bg-[#1c558e] px-4 cursor-pointer"
-            loading={runLoading || runChartsLoading}
-            size="sm"
-            onClick={async () => {
-              if (scene === 'chat_dashboard') {
-                runCharts();
-              } else {
-                runSql();
-              }
-            }}
-          >
-            Run
-          </Button>
-          <Button
-            variant="outlined"
-            size="sm"
-            className="ml-3 px-4 cursor-pointer"
-            loading={submitLoading || submitChartLoading}
-            onClick={async () => {
-              if (scene === 'chat_dashboard') {
-                await submitChart();
-              } else {
-                await submitSql();
-              }
-            }}
-          >
-            Save
-          </Button>
-        </div>
-      </div>
-      <div className="flex flex-1 overflow-auto">
+      <div className="relative flex flex-1 overflow-auto">
         <div
           className="text h-full border-[var(--joy-palette-divider)] border-r border-solid p-3 max-h-full overflow-auto"
           style={{ width: '300px' }}
         >
+          <div className="absolute right-4 top-2 z-10">
+            <Button
+              className="mr-2"
+              type="primary"
+              loading={runLoading || runChartsLoading}
+              onClick={async () => {
+                if (scene === 'chat_dashboard') {
+                  runCharts();
+                } else {
+                  runSql();
+                }
+              }}
+            >
+              Run
+            </Button>
+            <Button
+              loading={submitLoading || submitChartLoading}
+              onClick={async () => {
+                if (scene === 'chat_dashboard') {
+                  await submitChart();
+                } else {
+                  await submitSql();
+                }
+              }}
+            >
+              Save
+            </Button>
+          </div>
           <div className="flex items-center py-3">
             <Select
               className="h-4 min-w-[240px]"

@@ -11,7 +11,6 @@ export default function TableChart({ chart }: { key: string; chart: ChartData })
           <Typography gutterBottom component="div">
             {chart.chart_name}
           </Typography>
-          ·
           <Typography gutterBottom level="body3">
             {chart.chart_desc}
           </Typography>

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Form, Input, InputNumber, Modal, Select, message } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
-import { apiInterceptors, postDbAdd, postDbEdit } from '@/client/api';
+import { apiInterceptors, postDbAdd, postDbEdit, postDbTestConnect } from '@/client/api';
 import { DBOption, DBType, DbListResponse, PostDbParams } from '@/types/db';
 import { isFileDb } from '@/pages/database';
 import { useTranslation } from 'react-i18next';
@@ -58,6 +58,8 @@ function FormDialog({ open, choiceDBType, dbTypeList, editValue, dbNames, onClos
     };
     setLoading(true);
     try {
+      const [testErr] = await apiInterceptors(postDbTestConnect(data));
+      if (testErr) return;
       const [err] = await apiInterceptors((editValue ? postDbEdit : postDbAdd)(data));
       if (err) {
         message.error(err.message);

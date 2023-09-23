@@ -1,4 +1,4 @@
-'use client';
+import { STORAGE_LANG_KEY } from '@/constant';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -83,6 +83,7 @@ const resources = {
       Database: 'Database',
       Data_Source: 'Data Center',
       Close_Sidebar: 'Fold',
+      Show_Sidebar: 'UnFold',
       language: 'Language',
       choose_model: 'Please choose a model',
       data_center_desc: 'DB-GPT also offers a user-friendly data center management interface for efficient data maintenance.',
@@ -177,6 +178,7 @@ const resources = {
       Database: '数据库',
       Data_Source: '数据中心',
       Close_Sidebar: '收起',
+      Show_Sidebar: '展开',
       language: '语言',
       choose_model: '请选择一个模型',
       data_center_desc: 'DB-GPT支持数据库交互和基于文档的对话，它还提供了一个用户友好的数据中心管理界面。',

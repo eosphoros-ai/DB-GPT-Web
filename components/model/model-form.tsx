@@ -69,7 +69,7 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
               <Option key={model.model} value={model.model} label={model.model} model={model} disabled={!model.enabled}>
                 {renderModelIcon(model.model)}
                 <Tooltip title={model.enabled ? model.model : t('download_model_tip')}>
-                  <span>{model.model}</span>
+                  <span className="ml-2">{model.model}</span>
                 </Tooltip>
                 <Tooltip title={model.enabled ? `${model.host}:${model.port}` : t('download_model_tip')}>
                   <p className="inline-block absolute right-4">

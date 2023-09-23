@@ -1,47 +1,57 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
 import { DbListResponse, DbSupportTypeResponse, PostDbParams } from '@/types/db';
-import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chart';
+import { IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse, DialogueListResponse } from '@/types/chart';
 import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
+import {
+  GetEditorSQLRoundRequest,
+  GetEditorySqlParams,
+  PostEditorChartRunParams,
+  PostEditorChartRunResponse,
+  PostEditorSQLRunParams,
+  PostSQLEditorSubmitParams,
+} from '@/types/editor';
 
 /** App */
 export const postScenes = () => {
-  return POST<null, Array<SceneResponse>>('/chat/dialogue/scenes');
+  return POST<null, Array<SceneResponse>>('/api/v1/chat/dialogue/scenes');
 };
-
 export const newDialogue = (data: NewDialogueParam) => {
-  return POST<NewDialogueParam, IChatDialogueSchema>('/chat/dialogue/new', data);
+  return POST<NewDialogueParam, IChatDialogueSchema>('/api/v1/chat/dialogue/new', data);
 };
 
 /** Database Page */
 export const getDbList = () => {
-  return GET<null, DbListResponse>('/chat/db/list');
+  return GET<null, DbListResponse>('/api/v1/chat/db/list');
 };
 export const getDbSupportType = () => {
-  return GET<null, DbSupportTypeResponse>('/chat/db/support/type');
+  return GET<null, DbSupportTypeResponse>('/api/v1/chat/db/support/type');
 };
 export const postDbDelete = (dbName: string) => {
   return POST(`/chat/db/delete?db_name=${dbName}`, undefined);
 };
 export const postDbEdit = (data: PostDbParams) => {
-  return POST<PostDbParams, null>('/chat/db/edit', data);
+  return POST<PostDbParams, null>('/api/v1/chat/db/edit', data);
 };
 export const postDbAdd = (data: PostDbParams) => {
-  return POST<PostDbParams, null>('/chat/db/add', data);
+  return POST<PostDbParams, null>('/api/v1/chat/db/add', data);
+};
+export const postDbTestConnect = (data: PostDbParams) => {
+  return POST<PostDbParams, null>('/api/v1/chat/db/test/connect', data);
 };
 
 /** Chat Page */
 export const getDialogueList = () => {
-  return GET<null, DialogueListResponse>('/chat/dialogue/list');
+  return GET<null, DialogueListResponse>('/api/v1/chat/dialogue/list');
 };
 export const getUsableModels = () => {
-  return GET<null, Array<string>>('/model/types');
+  return GET<null, Array<string>>('/api/v1/model/types');
 };
 export const postChatModeParamsList = (chatMode: string) => {
-  return POST<null, Record<string, string>>(`/chat/mode/params/list?chat_mode=${chatMode}`);
+  return POST<null, Record<string, string>>(`/api/v1/chat/mode/params/list?chat_mode=${chatMode}`);
 };
 export const getChatHistory = (convId: string) => {
-  return GET<null, ChatHistoryResponse>(`/chat/dialogue/messages/history?con_uid=${convId}`);
+  return GET<null, ChatHistoryResponse>(`/api/v1/chat/dialogue/messages/history?con_uid=${convId}`);
 };
 export const postChatModeParamsFileLoad = ({
   convUid,
@@ -56,34 +66,55 @@ export const postChatModeParamsFileLoad = ({
   model: string;
   config?: Omit<AxiosRequestConfig, 'headers'>;
 }) => {
-  return POST<FormData, ChatHistoryResponse>(`/chat/mode/params/file/load?conv_uid=${convUid}&chat_mode=${chatMode}&model_name=${model}`, data, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
+  return POST<FormData, ChatHistoryResponse>(
+    `/api/v1/chat/mode/params/file/load?conv_uid=${convUid}&chat_mode=${chatMode}&model_name=${model}`,
+    data,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      ...config,
     },
-    ...config,
-  });
+  );
 };
 
-/** menu */
+/** Menu */
 export const delDialogue = (conv_uid: string) => {
-  return POST<null, null>(`/chat/dialogue/delete?con_uid=${conv_uid}`);
+  return POST(`/api/v1/chat/dialogue/delete?con_uid=${conv_uid}`);
+};
+
+/** Editor */
+export const getEditorSqlRounds = (id: string) => {
+  return GET<null, GetEditorSQLRoundRequest>(`/api/v1/editor/sql/rounds?con_uid=${id}`);
+};
+export const postEditorSqlRun = (data: PostEditorSQLRunParams) => {
+  return POST<PostEditorSQLRunParams>(`/api/v1/editor/sql/run`, data);
+};
+export const postEditorChartRun = (data: PostEditorChartRunParams) => {
+  return POST<PostEditorChartRunParams, PostEditorChartRunResponse>(`/api/v1/editor/chart/run`, data);
+};
+export const postSqlEditorSubmit = (data: PostSQLEditorSubmitParams) => {
+  return POST<PostSQLEditorSubmitParams>(`/api/v1/sql/editor/submit`, data);
+};
+export const getEditorSql = (id: string, round: string | number) => {
+  return POST<GetEditorySqlParams, string | Array<any>>('/api/v1/editor/sql', { con_uid: id, round });
 };
 
 /** knowledge */
 
 /** models */
 export const getModelList = () => {
-  return GET<null, Array<IModelData>>('/worker/model/list');
+  return GET<null, Array<IModelData>>('/api/v1/worker/model/list');
 };
 
 export const stopModel = (data: BaseModelParams) => {
-  return POST<BaseModelParams, boolean>('/worker/model/stop', data);
+  return POST<BaseModelParams, boolean>('/api/v1/worker/model/stop', data);
 };
 
 export const startModel = (data: StartModelParams) => {
-  return POST<StartModelParams, boolean>('/worker/model/start', data);
+  return POST<StartModelParams, boolean>('/api/v1/worker/model/start', data);
 };
 
 export const getSupportModels = () => {
-  return GET<null, Array<SupportModel>>('/worker/model/params');
+  return GET<null, Array<SupportModel>>('/api/v1/worker/model/params');
 };
