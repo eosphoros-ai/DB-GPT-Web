@@ -38,3 +38,13 @@ export type IChatDbSupportTypeSchema = {
 export type DbSupportTypeResponse = IChatDbSupportTypeSchema[];
 
 export type PostDbParams = Partial<DbListResponse[0] & { file_path: string }>;
+
+export type ChatFeedBackSchema = {
+  conv_uid: string;
+  conv_index: number;
+  question: string;
+  knowledge_space: string;
+  score: number;
+  ques_type: string;
+  messages: string;
+}

@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
-import { DbListResponse, DbSupportTypeResponse, PostDbParams } from '@/types/db';
+import { DbListResponse, DbSupportTypeResponse, PostDbParams, ChatFeedBackSchema } from '@/types/db';
 import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chart';
 import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
 
@@ -39,6 +39,9 @@ export const getUsableModels = () => {
 };
 export const postChatModeParamsList = (chatMode: string) => {
   return POST<null, Record<string, string>>(`/chat/mode/params/list?chat_mode=${chatMode}`);
+};
+export const postChatModeParamsInfoList = (chatMode: string) => {
+  return POST<null, Record<string, string>>(`/chat/mode/params/info?chat_mode=${chatMode}`);
 };
 export const getChatHistory = (convId: string) => {
   return GET<null, ChatHistoryResponse>(`/chat/dialogue/messages/history?con_uid=${convId}`);
@@ -87,3 +90,27 @@ export const startModel = (data: StartModelParams) => {
 export const getSupportModels = () => {
   return GET<null, Array<SupportModel>>('/worker/model/params');
 };
+
+/** chat feedback **/
+export const getChatFeedBackSelect = () => {
+  return GET<null, Record<string, string>>(`/feedback/select`, undefined);
+};
+export const getChatFeedBackItme = (conv_uid: string, conv_index: number) => {
+  return GET<null, Record<string, string>>(`/feedback/find?conv_uid=${conv_uid}&conv_index=${conv_index}`, undefined);
+};
+export const postChatFeedBackForm = ({
+  data,
+  config
+}: {
+  data: ChatFeedBackSchema;
+  config?: Omit<AxiosRequestConfig, 'headers'>;
+}) => {
+  return POST<ChatFeedBackSchema, any>(`/feedback/commit`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...config,
+  });
+};
+
+

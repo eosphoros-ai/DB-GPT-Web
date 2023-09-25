@@ -27,6 +27,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import ExpandIcon from '@mui/icons-material/Expand';
 import LanguageIcon from '@mui/icons-material/Language';
+import ChatIcon from '@mui/icons-material/Chat';
 import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
 import { useTranslation } from 'react-i18next';
 import { ChatContext } from '@/app/chat-context';
@@ -43,24 +44,31 @@ const LeftSide = () => {
   const menus = useMemo(() => {
     return [
       {
+        label: t('Prompt'),
+        route: '/prompt',
+        icon: <ChatIcon fontSize="small" />,
+        tooltip: t('Prompt'),
+        active: pathname === '/prompt',
+      },
+      {
         label: t('Data_Source'),
         route: '/database',
         icon: <DatasetIcon fontSize="small" />,
-        tooltip: 'Database',
+        tooltip: t('Data_Source'),
         active: pathname === '/database',
       },
       {
         label: t('Knowledge_Space'),
         route: '/datastores',
         icon: <Article fontSize="small" />,
-        tooltip: 'Knowledge',
+        tooltip: t('Knowledge_Space'),
         active: pathname === '/datastores',
       },
       {
         label: t('model_manage'),
         route: '/models',
         icon: <ModelTrainingIcon fontSize="small" />,
-        tooltip: 'Model',
+        tooltip: t('model_manage'),
         active: pathname === '/models',
       },
     ];
@@ -72,6 +80,12 @@ const LeftSide = () => {
     } else {
       setMode('light');
     }
+  }
+
+  const handleChangeLanguage = () => {
+    const language = i18n.language === 'en' ? 'zh' : 'en';
+    i18n.changeLanguage(language);
+    window.localStorage.setItem('db_gpt_lng', language);
   }
 
   useEffect(() => {
@@ -91,14 +105,14 @@ const LeftSide = () => {
   function expandMenu() {
     return (
       <>
-        <Box className="p-2 gap-2 flex flex-row justify-between items-center">
+      <Box className="p-2 gap-2 flex flex-row justify-between items-center">
           <div className="flex items-center gap-3">
             <Link href={'/'}>
               <Image src={logoPath} alt="DB-GPT" width={633} height={157} className="w-full max-w-full" />
             </Link>
           </div>
         </Box>
-        <Box className="px-2">
+        <Box className="p-2">
           <Link href={`/`}>
             <Button
               color="primary"
@@ -212,7 +226,7 @@ const LeftSide = () => {
               </ListItem>
               <ListItem>
                 <ListItemButton className="h-10" onClick={handleChangeTheme}>
-                  <Tooltip title="Theme">
+                  <Tooltip title={t('Theme')}>
                     <ListItemDecorator>{mode === 'dark' ? <DarkModeIcon fontSize="small" /> : <WbSunnyIcon fontSize="small" />}</ListItemDecorator>
                   </Tooltip>
                   <ListItemContent>{t('Theme')}</ListItemContent>
@@ -221,13 +235,9 @@ const LeftSide = () => {
               <ListItem>
                 <ListItemButton
                   className="h-10"
-                  onClick={() => {
-                    const language = i18n.language === 'en' ? 'zh' : 'en';
-                    i18n.changeLanguage(language);
-                    window.localStorage.setItem('db_gpt_lng', language);
-                  }}
+                  onClick={handleChangeLanguage}
                 >
-                  <Tooltip title="Language">
+                  <Tooltip title={t('language')}>
                     <ListItemDecorator className="text-2xl">
                       <LanguageIcon fontSize="small" />
                     </ListItemDecorator>
@@ -242,7 +252,7 @@ const LeftSide = () => {
                     setIsMenuExpand(false);
                   }}
                 >
-                  <Tooltip title="Close Sidebar">
+                  <Tooltip title={t("Close_Sidebar")}>
                     <ListItemDecorator className="text-2xl">
                       <ExpandIcon className="transform rotate-90" fontSize="small" />
                     </ListItemDecorator>
@@ -278,9 +288,18 @@ const LeftSide = () => {
           ))}
           <ListItem>
             <ListItemButton onClick={handleChangeTheme}>
-              <Tooltip title="Theme">
+              <Tooltip title={t("Theme")}>
                 <ListItemDecorator className="text-2xl">
                   {mode === 'dark' ? <DarkModeIcon fontSize="small" /> : <WbSunnyIcon fontSize="small" />}
+                </ListItemDecorator>
+              </Tooltip>
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton onClick={handleChangeLanguage}>
+              <Tooltip title={t("language")}>
+                <ListItemDecorator className="text-2xl">
+                  <LanguageIcon fontSize="small" />
                 </ListItemDecorator>
               </Tooltip>
             </ListItemButton>
@@ -291,7 +310,7 @@ const LeftSide = () => {
                 setIsMenuExpand(true);
               }}
             >
-              <Tooltip title="Unfold">
+              <Tooltip title={t("Open_Sidebar")}>
                 <ListItemDecorator className="text-2xl">
                   <ExpandIcon className="transform rotate-90" fontSize="small" />
                 </ListItemDecorator>

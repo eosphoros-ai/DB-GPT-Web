@@ -1,20 +1,25 @@
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { CircularProgress, IconButton, Input, Select, Option, Modal, ModalDialog, Button } from '@/lib/mui';
+import { CircularProgress, IconButton, Textarea, Typography, Select, Option, Modal, ModalDialog, Button, Box, RadioGroup, Radio } from '@/lib/mui';
+import { message, Tooltip as AntdTooltip } from 'antd';
 import { useState, useRef, useEffect, useMemo, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
 import MonacoEditor from './monaco-editor';
 import ChatContent from './chat-content';
+import ChatFeedback from './chat-feedback';
 import { ChatContext } from '@/app/chat-context';
 import { IChatDialogueMessageSchema } from '@/types/chart';
 import { renderModelIcon } from '@/components/chat/header/model-selector';
+import PromptBot from '@/components/common/prompt-bot';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import classNames from 'classnames';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
   onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
   paramsObj?: Record<string, string>;
+  paramsInfoObj?: Record<string, string>;
   clearInitMessage?: () => void;
 };
 
@@ -22,7 +27,7 @@ type FormData = {
   query: string;
 };
 
-const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Props) => {
+const Completion = ({ messages, onSubmit, paramsObj = {}, paramsInfoObj = {}, clearInitMessage }: Props) => {
   const searchParams = useSearchParams();
   const initMessage = searchParams && searchParams.get('initMessage');
   const spaceNameOriginal = searchParams && searchParams.get('spaceNameOriginal');
@@ -55,6 +60,15 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
     }
   };
 
+  const { watch, setValue, formState: { errors } } = methods
+  const queryLen = watch('query')?.length
+  const excessMax = queryLen > 4000
+
+  const submitSelectedPrompt = (prompt: string) => {
+    const curQuery = watch('query')
+    setValue('query', curQuery + prompt)
+  }
+
   const handleInitMessage = async () => {
     try {
       const searchParamsTemp = new URLSearchParams(window.location.search);
@@ -78,6 +92,16 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
     }
     return res;
   };
+
+  const onCopyContext = async (context: any) => {
+    const pureStr = context?.replace(/\trelations:.*/g, '');
+    if (pureStr) {
+      await navigator.clipboard.writeText(pureStr);
+      message.success('内容已复制到剪贴板');
+    } else {
+      message.warning('没有内容可以复制');
+    }
+  }
 
   useEffect(() => {
     if (!scrollableRef.current) return;
@@ -116,6 +140,7 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
         <div className="flex items-center flex-1 flex-col text-sm leading-6 text-slate-900 dark:text-slate-300 sm:text-base sm:leading-7">
           {showMessages?.map((content, index) => {
             return (
+              <Box sx={{width: '100%'}} key={index}>
               <ChatContent
                 key={index}
                 content={content}
@@ -126,6 +151,22 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
                   setJsonValue(JSON.stringify(content?.context, null, 2));
                 }}
               />
+              {content.role === 'view' ?
+                <div className={"overflow-x-auto w-full lg:w-4/5 xl:w-3/4 mx-auto flex justify-end rounded-xl"}>
+                  <AntdTooltip title={'复制'}>
+                    <Button
+                      onClick={() => onCopyContext(content?.context)}
+                      slots={{ root: IconButton }}
+                      slotProps={{ root: { variant: 'plain', color: 'primary' } }}
+                      sx={{ borderRadius: 40 }}
+                    >
+                      <ContentCopyIcon />
+                    </Button>
+                  </AntdTooltip>
+                  <ChatFeedback conv_index={Math.ceil((index+1) / 2)} question={showMessages?.filter(e => e?.role === 'human' && e?.order === content.order)[0]?.context} knowledge_space={currentParam}/>
+                </div>
+               : void 0}
+              </Box>
             );
           })}
         </div>
@@ -159,24 +200,43 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
                 }}
               >
                 {paramsOpts.map((item) => (
-                  <Option key={item.key} value={item.value}>
-                    {item.key}
-                  </Option>
+                  <AntdTooltip title={paramsInfoObj?.[item.key]} key={'tp-' + item.key} variant='solid' placement='right'>
+                    <Option key={item.key} value={item.value}>
+                      {item.key}
+                    </Option>
+                  </AntdTooltip>
                 ))}
               </Select>
             </div>
           )}
-          <Input
+          <Textarea
             disabled={scene === 'chat_excel' && !currentDialogue?.select_param}
-            className="flex-1 h-12 min-w-min"
+            className="flex-1"
             style={{ minWidth: 'min-content' }}
             variant="outlined"
+            maxRows={3}
+            error={excessMax}
             startDecorator={renderModelIcon(model || '')}
-            endDecorator={<IconButton type="submit">{isLoading ? <CircularProgress /> : <SendRoundedIcon />}</IconButton>}
+            endDecorator={
+              <div className="flex-1 flex justify-between items-center">
+                <Typography color="neutral">
+                  <Typography color={excessMax ? "danger" : "neutral"}>{queryLen}</Typography> / 4000
+                </Typography>
+                <IconButton type="submit" disabled={isLoading}>
+                  <SendRoundedIcon />
+                </IconButton>
+              </div>
+            }
             {...methods.register('query')}
+            {...(errors.query || excessMax) && (
+              <Typography color="danger">
+                {errors.query?.message || 'String must contain at most 4000 character(s)'}
+              </Typography>
+            )}
           />
         </form>
       </div>
+      <PromptBot submit={submitSelectedPrompt} />
       <Modal
         open={jsonModalOpen}
         onClose={() => {
