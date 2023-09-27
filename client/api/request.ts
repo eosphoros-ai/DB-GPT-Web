@@ -11,6 +11,7 @@ import {
   PostEditorSQLRunParams,
   PostSQLEditorSubmitParams,
 } from '@/types/editor';
+import { PostAgentHubUpdateParams, PostAgentQueryParams, PostAgentPluginResponse, PostAgentMyPluginResponse } from '@/types/agent';
 
 /** App */
 export const postScenes = () => {
@@ -117,4 +118,30 @@ export const startModel = (data: StartModelParams) => {
 
 export const getSupportModels = () => {
   return GET<null, Array<SupportModel>>('/api/v1/worker/model/params');
+};
+
+/** Agent */
+export const postAgentQuery = (data: PostAgentQueryParams) => {
+  return POST<PostAgentQueryParams, PostAgentPluginResponse>('/api/v1/agent/query', data);
+};
+export const postAgentHubUpdate = (data: PostAgentHubUpdateParams) => {
+  return POST<PostAgentHubUpdateParams>('/api/v1/agent/hub/update', data);
+};
+export const postAgentMy = (user?: string) => {
+  return POST<undefined, PostAgentMyPluginResponse>('/api/v1/agent/my', undefined, { params: { user } });
+};
+export const postAgentInstall = (pluginName: string, user?: string) => {
+  return POST('/api/v1/agent/install', undefined, { params: { plugin_name: pluginName, user }, timeout: 60000 });
+};
+export const postAgentUninstall = (pluginName: string, user?: string) => {
+  return POST('/api/v1/agent/uninstall', undefined, { params: { plugin_name: pluginName, user }, timeout: 60000 });
+};
+export const postAgentUpload = (user = '', data: FormData, config?: Omit<AxiosRequestConfig, 'headers'>) => {
+  return POST<FormData>('/api/v1/agent/upload', data, {
+    params: { user },
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    ...config,
+  });
 };

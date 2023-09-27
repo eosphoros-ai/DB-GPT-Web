@@ -96,7 +96,10 @@ const resources = {
       model_select_tips: 'Please select a model',
       submit: 'Submit',
       start_model_success: 'Start model success',
-      download_model_tip: 'Please download model first.'
+      download_model_tip: 'Please download model first.',
+      Plusgins: 'Plusgins',
+      try_again: 'Try again',
+      no_data: 'No data',
     },
   },
   zh: {
@@ -191,7 +194,10 @@ const resources = {
       model_select_tips: '请选择一个模型',
       submit: '提交',
       start_model_success: '启动模型成功',
-      download_model_tip: '请先下载模型！'
+      download_model_tip: '请先下载模型！',
+      Plusgins: '插件列表',
+      try_again: '刷新重试',
+      no_data: '暂无数据',
     },
   },
 };
@@ -203,5 +209,7 @@ i18n.use(initReactI18next).init({
     escapeValue: false,
   },
 });
+
+export type I18nKeyMapper = (typeof resources)['en']['translation'];
 
 export default i18n;

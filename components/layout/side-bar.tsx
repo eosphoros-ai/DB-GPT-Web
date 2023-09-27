@@ -17,6 +17,7 @@ import Icon, {
   CopyOutlined,
   MenuOutlined,
   SettingOutlined,
+  BuildOutlined,
 } from '@ant-design/icons';
 import { Modal, message, Tooltip, Dropdown } from 'antd';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
@@ -82,6 +83,12 @@ function SideBar() {
         name: t('model_manage'),
         path: '/models',
         icon: <Icon component={ModelSvg} />,
+      },
+      {
+        key: 'agent',
+        name: t('Plusgins'),
+        path: '/agent',
+        icon: <BuildOutlined />,
       },
     ];
     return items;
