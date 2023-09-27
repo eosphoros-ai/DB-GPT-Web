@@ -1,14 +1,13 @@
-import { useState, useMemo } from 'react'
-import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
-import type { MenuProps } from 'antd'
-import { Menu, Table, Space, message, Button, Tooltip } from 'antd'
-import PromptModal from '@/components/prompt/prompt-modal'
-import { PlusOutlined } from '@ant-design/icons'
-import GroupsIcon from '@mui/icons-material/Groups'
-import PersonIcon from '@mui/icons-material/Person'
-import { useRequest } from 'ahooks'
-import { sendSpacePostRequest } from '@/utils/request'
-import { useUserInfo } from '@/store/useUserInfo'
+import { useState, useMemo } from 'react';
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
+import type { MenuProps } from 'antd';
+import { Menu, Table, Space, message, Button, Tooltip } from 'antd';
+import PromptModal from '@/components/prompt/prompt-modal';
+import { PlusOutlined } from '@ant-design/icons';
+import GroupsIcon from '@mui/icons-material/Groups';
+import PersonIcon from '@mui/icons-material/Person';
+import { useRequest } from 'ahooks';
+import { sendSpacePostRequest } from '@/utils/request';
 
 const items: MenuProps['items'] = [
   {
@@ -21,9 +20,9 @@ const items: MenuProps['items'] = [
     key: 'private',
     icon: <PersonIcon />,
   },
-]
+];
 
-const getColumns = (current: string, mutate: Function): ColumnsType<any> => ([
+const getColumns = (current: string, mutate: Function): ColumnsType<any> => [
   {
     title: '名称',
     dataIndex: 'prompt_name',
@@ -59,13 +58,12 @@ const getColumns = (current: string, mutate: Function): ColumnsType<any> => ([
           <a>编辑</a>
         </PromptModal>
       </Space>
-    )
+    ),
   },
-])
+];
 
 const Prompt = () => {
-  const userInfo: any = useUserInfo()
-  const [current, setCurrent] = useState('common')
+  const [current, setCurrent] = useState('common');
   const [tableParams, setTableParams] = useState<any>({
     pagination: {
       current: 1,
@@ -74,78 +72,82 @@ const Prompt = () => {
       showQuickJumper: true,
       showTotal: (total: number, range: Array<number>) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
     },
-  })
+  });
 
-  const { data, loading, run, mutate } = useRequest((params = tableParams, prompt_type = current) => {
-    const body = {
-      user_name: userInfo.loginName,
-      prompt_type,
-      ...params.pagination,
-    }
-    return sendSpacePostRequest('/prompt/list', body)
-  }, {
-    onSuccess: (res: any) => {
-      setTableParams((prevParams: any) => ({
-        ...prevParams,
-        pagination: {
-          ...prevParams.pagination,
-          total: res?.totalCount || res?.data?.length,
-        },
-      }))
+  const { data, loading, run, mutate } = useRequest(
+    (params = tableParams, prompt_type = current) => {
+      const body = {
+        prompt_type,
+        ...params.pagination,
+      };
+      return sendSpacePostRequest('/prompt/list', body);
     },
-    onError: (err) => {
-      message.error(err?.message)
+    {
+      onSuccess: (res: any) => {
+        setTableParams((prevParams: any) => ({
+          ...prevParams,
+          pagination: {
+            ...prevParams.pagination,
+            total: res?.totalCount || res?.data?.length,
+          },
+        }));
+      },
+      onError: (err) => {
+        message.error(err?.message);
+      },
     },
-  })
+  );
 
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-  ) => {
+  const handleTableChange = (pagination: TablePaginationConfig) => {
     const params: any = {
       ...tableParams,
       pagination: {
         ...tableParams.pagination,
         ...pagination,
       },
-    }
-    setTableParams(params)
-    run(params, current)
-  }
+    };
+    setTableParams(params);
+    run(params, current);
+  };
 
-  const columns = useMemo(() => getColumns(current, mutate), [current, mutate])
+  const columns = useMemo(() => getColumns(current, mutate), [current, mutate]);
 
   const onClick: MenuProps['onClick'] = (e) => {
-    const type = e.key
-    setCurrent(type)
-    run(tableParams, type)
-  }
+    const type = e.key;
+    setCurrent(type);
+    run(tableParams, type);
+  };
 
   return (
     <div>
       <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
-      <div className='px-6 py-4'>
-        <div className='flex flex-row-reverse mb-4'>
+      <div className="px-6 py-4">
+        <div className="flex flex-row-reverse mb-4">
           <PromptModal prompt_type={current} mutate={mutate} setTableParams={setTableParams} pageSize={tableParams.pagination.pageSize}>
-            <Button className='flex items-center'>
-              <PlusOutlined />新增 Prompts
+            <Button className="flex items-center">
+              <PlusOutlined />
+              新增 Prompts
             </Button>
           </PromptModal>
-          {current === 'common' && <Button className='mr-2 flex items-center' disabled>
-            <PlusOutlined />新增 Prompts 模版
-          </Button>}
+          {current === 'common' && (
+            <Button className="mr-2 flex items-center" disabled>
+              <PlusOutlined />
+              新增 Prompts 模版
+            </Button>
+          )}
         </div>
         <Table
           columns={columns}
           dataSource={data?.data}
           loading={loading}
-          rowKey={record => record.prompt_name}
+          rowKey={(record) => record.prompt_name}
           pagination={tableParams.pagination}
           onChange={handleTableChange}
           scroll={{ y: 600 }}
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Prompt
+export default Prompt;
