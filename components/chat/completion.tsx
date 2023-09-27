@@ -15,6 +15,7 @@ import PromptBot from '@/components/common/prompt-bot';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
+import copy from 'copy-to-clipboard';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
@@ -92,15 +93,22 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, paramsInfoObj = {}, cl
     return res;
   };
 
+  const [messageApi, contextHolder] = message.useMessage();
   const onCopyContext = async (context: any) => {
     const pureStr = context?.replace(/\trelations:.*/g, '');
-    if (pureStr) {
-      await navigator.clipboard.writeText(pureStr);
-      message.success(t('Copy_to_clipboard'));
-    } else {
-      message.warning(t('Copy_nothing'));
+    const result = copy(pureStr);
+    if(result) {
+      if(pureStr) {
+        messageApi.open({ type: 'success', content: t('Copy_success'), });
+      }
+      else {
+        messageApi.open({ type: 'warning', content: t('Copy_nothing'), });
+      }
     }
-  };
+    else {
+      messageApi.open({ type: 'error', content: t('Copry_error'), });
+    }
+  }
 
   useEffect(() => {
     if (!scrollableRef.current) return;
@@ -135,6 +143,7 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, paramsInfoObj = {}, cl
 
   return (
     <>
+      {contextHolder}
       <div ref={scrollableRef} className="flex flex-1 overflow-y-auto pb-8 w-full flex-col">
         <div className="flex items-center flex-1 flex-col text-sm leading-6 text-slate-900 dark:text-slate-300 sm:text-base sm:leading-7">
           {showMessages?.map((content, index) => {
