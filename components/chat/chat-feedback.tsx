@@ -1,25 +1,11 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import MenuButton from '@mui/joy/MenuButton';
-import Button from '@mui/joy/Button';
-import Menu from '@mui/joy/Menu';
-import MenuItem from '@mui/joy/MenuItem';
-import Dropdown from '@mui/joy/Dropdown';
-import Box from '@mui/joy/Box';
-import Grid from '@mui/joy/Grid';
-import IconButton from '@mui/joy/IconButton';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import CloseRounded from '@mui/icons-material/CloseRounded';
-import Slider from '@mui/joy/Slider';
-import Select from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
-import Textarea from '@mui/joy/Textarea';
-import Typography from '@mui/joy/Typography';
-import { styled } from '@mui/joy/styles';
-import Sheet from '@mui/joy/Sheet';
+import React, { useState, useRef, useCallback, useEffect, useContext } from 'react';
+import {MoreHoriz, CloseRounded} from '@mui/icons-material';
+import {MenuButton, Button, Menu, MenuItem, Dropdown, Box, Grid, IconButton, Slider, Select, Option, Textarea, Typography, styled, Sheet} from '@mui/joy';
 import { message, Tooltip } from 'antd';
-import { useSearchParams } from 'next/navigation';
 import { apiInterceptors, getChatFeedBackSelect, getChatFeedBackItme, postChatFeedBackForm } from '@/client/api';
+import { ChatContext } from '@/app/chat-context';
 import { ChatFeedBackSchema } from '@/types/db';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   conv_index: number;
@@ -28,8 +14,8 @@ type Props = {
 };
 
 const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
-  const searchParams = useSearchParams();
-  const chatId = searchParams?.get('id') ?? '';
+  const { t } = useTranslation();
+  const { chatId } = useContext(ChatContext)
   const [ques_type, setQuesType] = useState('');
   const [score, setScore] = useState(4);
   const [text, setText] = useState('');
@@ -76,12 +62,12 @@ const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
   ];
   function valueText(value: number) {
     return {
-      0: "渣渣",
-      1: "没理解",
-      2: "答不了",
-      3: "答错了",
-      4: "较啰嗦",
-      5: "真棒"
+      0: t('Lowest'),
+      1: t('Missed'),
+      2: t('Lost'),
+      3: t('Incorrect'),
+      4: t('Verbose'),
+      5: t('Best')
     }[value];
   }
   const Item = styled(Sheet)(({ theme }) => ({
@@ -120,13 +106,13 @@ const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
   return (
     <Dropdown onOpenChange={handleOpenChange}>
       {contextHolder}
-      <Tooltip title={'评分'}>
+      <Tooltip title={t('Rating')}>
         <MenuButton
           slots={{ root: IconButton }}
           slotProps={{ root: { variant: 'plain', color: 'primary' } }}
           sx={{ borderRadius: 40 }}
         >
-          <MoreHorizIcon />
+          <MoreHoriz />
         </MenuButton>
       </Tooltip>
       <Menu>
@@ -143,7 +129,7 @@ const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
           <form onSubmit={handleSubmit}>
             <Grid container spacing={0.5} columns={13} sx={{ flexGrow: 1 }}>
               <Grid xs={3}>
-                <Item>问答类别</Item>
+                <Item>{t('Q_A_Category')}</Item>
               </Grid>
               <Grid xs={10}>
                 <Select
@@ -186,16 +172,11 @@ const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
                   <Tooltip title={
                     <Box>
                       <div>
-                        <p>0: 无结果</p>
-                        <p>1: 有结果，但是在文不对题，没有理解问题</p>
-                        <p>2: 有结果，理解了问题，但是提示回答不了这个问题</p>
-                        <p>3: 有结果，理解了问题，并做出回答，但是回答的结果错误</p>
-                        <p>4: 有结果，理解了问题，回答结果正确，但是比较啰嗦，缺乏总结</p>
-                        <p>5: 有结果，理解了问题，回答结果正确，推理正确，并给出了总结，言简意赅</p>
+                        {t('feed_back_desc')}
                       </div>
                     </Box>
                   } variant="solid" placement="left">
-                    回答评分
+                    {t('Q_A_Rating')}
                   </Tooltip>
                 </Item>
               </Grid>
@@ -215,21 +196,21 @@ const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
               </Grid>
               <Grid xs={13}>
                 <Textarea
-                  placeholder="请输入详细信息..."
+                  placeholder={t('Please_input_the_text')}
                   value={text}
                   onChange={(event) => setText(event.target.value)}
                   minRows={2}
                   maxRows={4}
                   endDecorator={
                     <Typography level="body-xs" sx={{ ml: 'auto' }}>
-                      共计输入 {text.length} 字
+                     {t('input_count') + text.length + t('input_unit')}
                     </Typography>
                   }
                   sx={{ width: '100%', fontSize: 14 }}
                 />
               </Grid>
               <Grid xs={13}>
-                <Button type="submit" variant="outlined" sx={{ width: '100%', height: '100%' }}>提交</Button>
+                <Button type="submit" variant="outlined" sx={{ width: '100%', height: '100%' }}>{t('submit')}</Button>
               </Grid>
             </Grid>
           </form>

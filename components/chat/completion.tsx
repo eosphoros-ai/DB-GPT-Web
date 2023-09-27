@@ -1,5 +1,5 @@
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { CircularProgress, IconButton, Textarea, Typography, Select, Option, Modal, ModalDialog, Button, Box, RadioGroup, Radio } from '@/lib/mui';
+import { CircularProgress, IconButton, Input, Typography, Select, Option, Modal, ModalDialog, Button, Box, RadioGroup, Radio } from '@/lib/mui';
 import { message, Tooltip as AntdTooltip } from 'antd';
 import { useState, useRef, useEffect, useMemo, useContext } from 'react';
 import { useForm } from 'react-hook-form';
@@ -14,6 +14,7 @@ import { renderModelIcon } from '@/components/chat/header/model-selector';
 import PromptBot from '@/components/common/prompt-bot';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
@@ -28,6 +29,7 @@ type FormData = {
 };
 
 const Completion = ({ messages, onSubmit, paramsObj = {}, paramsInfoObj = {}, clearInitMessage }: Props) => {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const initMessage = searchParams && searchParams.get('initMessage');
   const spaceNameOriginal = searchParams && searchParams.get('spaceNameOriginal');
@@ -61,13 +63,10 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, paramsInfoObj = {}, cl
   };
 
   const { watch, setValue, formState: { errors } } = methods
-  const queryLen = watch('query')?.length
-  const excessMax = queryLen > 4000
-
   const submitSelectedPrompt = (prompt: string) => {
-    const curQuery = watch('query')
-    setValue('query', curQuery + prompt)
-  }
+    const curQuery = watch('query');
+    setValue('query', curQuery + prompt);
+  };
 
   const handleInitMessage = async () => {
     try {
@@ -97,11 +96,11 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, paramsInfoObj = {}, cl
     const pureStr = context?.replace(/\trelations:.*/g, '');
     if (pureStr) {
       await navigator.clipboard.writeText(pureStr);
-      message.success('内容已复制到剪贴板');
+      message.success(t('Copy_to_clipboard'));
     } else {
-      message.warning('没有内容可以复制');
+      message.warning(t('Copy_nothing'));
     }
-  }
+  };
 
   useEffect(() => {
     if (!scrollableRef.current) return;
@@ -140,32 +139,38 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, paramsInfoObj = {}, cl
         <div className="flex items-center flex-1 flex-col text-sm leading-6 text-slate-900 dark:text-slate-300 sm:text-base sm:leading-7">
           {showMessages?.map((content, index) => {
             return (
-              <Box sx={{width: '100%'}} key={index}>
-              <ChatContent
-                key={index}
-                content={content}
-                isChartChat={isChartChat}
-                onLinkClick={() => {
-                  setJsonModalOpen(true);
-                  setCurrentJsonIndex(index);
-                  setJsonValue(JSON.stringify(content?.context, null, 2));
-                }}
-              />
-              {content.role === 'view' ?
-                <div className={"overflow-x-auto w-full lg:w-4/5 xl:w-3/4 mx-auto flex justify-end rounded-xl"}>
-                  <AntdTooltip title={'复制'}>
-                    <Button
-                      onClick={() => onCopyContext(content?.context)}
-                      slots={{ root: IconButton }}
-                      slotProps={{ root: { variant: 'plain', color: 'primary' } }}
-                      sx={{ borderRadius: 40 }}
-                    >
-                      <ContentCopyIcon />
-                    </Button>
-                  </AntdTooltip>
-                  <ChatFeedback conv_index={Math.ceil((index+1) / 2)} question={showMessages?.filter(e => e?.role === 'human' && e?.order === content.order)[0]?.context} knowledge_space={currentParam}/>
-                </div>
-               : void 0}
+              <Box sx={{ width: '100%' }} key={index}>
+                <ChatContent
+                  key={index}
+                  content={content}
+                  isChartChat={isChartChat}
+                  onLinkClick={() => {
+                    setJsonModalOpen(true);
+                    setCurrentJsonIndex(index);
+                    setJsonValue(JSON.stringify(content?.context, null, 2));
+                  }}
+                />
+                {content.role === 'view' ? (
+                  <div className={'overflow-x-auto w-full lg:w-4/5 xl:w-3/4 mx-auto flex justify-end rounded-xl'}>
+                    <AntdTooltip title={t('Copy')}>
+                      <Button
+                        onClick={() => onCopyContext(content?.context)}
+                        slots={{ root: IconButton }}
+                        slotProps={{ root: { variant: 'plain', color: 'primary' } }}
+                        sx={{ borderRadius: 40 }}
+                      >
+                        <ContentCopyIcon />
+                      </Button>
+                    </AntdTooltip>
+                    <ChatFeedback
+                      conv_index={Math.ceil((index + 1) / 2)}
+                      question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
+                      knowledge_space={currentParam}
+                    />
+                  </div>
+                ) : (
+                  void 0
+                )}
               </Box>
             );
           })}
@@ -200,7 +205,7 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, paramsInfoObj = {}, cl
                 }}
               >
                 {paramsOpts.map((item) => (
-                  <AntdTooltip title={paramsInfoObj?.[item.key]} key={'tp-' + item.key} variant='solid' placement='right'>
+                  <AntdTooltip title={paramsInfoObj?.[item.key]} key={'tp-' + item.key} variant="solid" placement="right">
                     <Option key={item.key} value={item.value}>
                       {item.key}
                     </Option>
@@ -209,30 +214,14 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, paramsInfoObj = {}, cl
               </Select>
             </div>
           )}
-          <Textarea
+          <Input
             disabled={scene === 'chat_excel' && !currentDialogue?.select_param}
-            className="flex-1"
+            className="flex-1 h-12 min-w-min"
             style={{ minWidth: 'min-content' }}
             variant="outlined"
-            maxRows={3}
-            error={excessMax}
             startDecorator={renderModelIcon(model || '')}
-            endDecorator={
-              <div className="flex-1 flex justify-between items-center">
-                <Typography color="neutral">
-                  <Typography color={excessMax ? "danger" : "neutral"}>{queryLen}</Typography> / 4000
-                </Typography>
-                <IconButton type="submit" disabled={isLoading}>
-                  <SendRoundedIcon />
-                </IconButton>
-              </div>
-            }
+            endDecorator={<IconButton type="submit">{isLoading ? <CircularProgress /> : <SendRoundedIcon />}</IconButton>}
             {...methods.register('query')}
-            {...(errors.query || excessMax) && (
-              <Typography color="danger">
-                {errors.query?.message || 'String must contain at most 4000 character(s)'}
-              </Typography>
-            )}
           />
         </form>
       </div>

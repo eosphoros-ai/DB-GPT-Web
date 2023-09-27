@@ -1,7 +1,7 @@
 'use client';
 import { useRequest } from 'ahooks';
 import { useContext, useState } from 'react';
-import { Button, Textarea, Box, buttonClasses, Divider, Typography } from '@/lib/mui';
+import { Button, Input, Box, buttonClasses, Divider, Typography } from '@/lib/mui';
 import IconButton from '@mui/joy/IconButton';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import { useForm } from 'react-hook-form';
@@ -26,9 +26,6 @@ const Home: NextPage = () => {
     const [, res] = await apiInterceptors(postScenes());
     return res ?? [];
   });
-
-  const queryLen = methods.watch('query')?.length
-  const excessMax = queryLen > 4000
 
   const submitSelectedPrompt = (prompt: string) => {
     const curQuery = methods.watch('query')
@@ -143,29 +140,17 @@ const Home: NextPage = () => {
               methods.handleSubmit(submit)(e);
             }}
           >
-            <Textarea
-              className="w-full"
-              maxRows={3}
-              error={excessMax}
+            <Input
+              sx={{ width: '100%' }}
               variant="outlined"
               placeholder="Ask anything"
               endDecorator={
-                <div className="flex-1 flex justify-between items-center">
-                  <Typography color="neutral">
-                    <Typography color={excessMax ? "danger" : "neutral"}>{queryLen}</Typography> / 4000
-                  </Typography>
-                  <IconButton type="submit" disabled={isLoading}>
-                    <SendRoundedIcon />
-                  </IconButton>
-                </div>
+                <IconButton type="submit" disabled={isLoading}>
+                  <SendRoundedIcon />
+                </IconButton>
               }
               {...methods.register('query')}
             />
-            {(methods.formState.errors.query || excessMax) && (
-              <Typography color="danger">
-                {methods.formState.errors.query?.message || 'String must contain at most 4000 character(s)'}
-              </Typography>
-            )}
           </form>
         </div>
       </div>

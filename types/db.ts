@@ -48,3 +48,15 @@ export type ChatFeedBackSchema = {
   ques_type: string;
   messages: string;
 }
+
+export type PromptProps = {
+  id: number;
+  chat_scene: string;
+  sub_chat_scene: string;
+  prompt_type: string;
+  content: string;
+  user_name: string;
+  prompt_name: string;
+  gmt_created: string;
+  gmt_modified: string;
+};

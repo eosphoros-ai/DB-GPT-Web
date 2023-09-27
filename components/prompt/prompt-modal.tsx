@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { Modal, Form, Select, Input, Spin, Button, message } from 'antd';
 import { sendSpacePostRequest } from '@/utils/request';
+import { useTranslation } from 'react-i18next';
+
 
 const PromptModal = ({ children, prompt_type, item, mutate, setTableParams, pageSize }: any) => {
+  const { t } = useTranslation();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -25,7 +28,7 @@ const PromptModal = ({ children, prompt_type, item, mutate, setTableParams, page
       const params = { prompt_type, ...values };
       setLoading(true);
       if (item) {
-        // 编辑
+        // edit
         const res: any = await sendSpacePostRequest('/prompt/update', params);
         if (res.success) {
           mutate(({ data }: any) => {
@@ -36,7 +39,7 @@ const PromptModal = ({ children, prompt_type, item, mutate, setTableParams, page
               }),
             };
           });
-          message.success('编辑成功');
+          message.success(t('Edit_Success'));
           setLoading(false);
           setShow(false);
         } else {
@@ -44,7 +47,7 @@ const PromptModal = ({ children, prompt_type, item, mutate, setTableParams, page
           message.error(res?.err_msg);
         }
       } else {
-        // 新增
+        // add new
         const res: any = await sendSpacePostRequest('/prompt/add', params);
         if (res.success) {
           mutate(({ data }: any) => {
@@ -60,7 +63,7 @@ const PromptModal = ({ children, prompt_type, item, mutate, setTableParams, page
               total: prevParams.pagination.total + 1,
             },
           }));
-          message.success('新增成功');
+          message.success(t('Add_Success'));
           setLoading(false);
           setShow(false);
         } else {
@@ -71,7 +74,7 @@ const PromptModal = ({ children, prompt_type, item, mutate, setTableParams, page
     } catch (error) {
       setLoading(false);
       console.error(error);
-      message.error('出错了');
+      message.error(t('Error_Message'));
     }
   };
 
@@ -80,32 +83,32 @@ const PromptModal = ({ children, prompt_type, item, mutate, setTableParams, page
       <div className="inline-block" onClick={onOpenModal}>
         {children}
       </div>
-      <Modal title={item ? '编辑 Prompts' : '新建 Prompts'} open={show} onCancel={handleCancel} footer={null}>
+      <Modal title={item ? t('Edit')+' Prompts' : t('Add') + ' Prompts'} open={show} onCancel={handleCancel} footer={null}>
         <Spin spinning={loading}>
           <Form form={form} name={`prompt-item-${item?.prompt_name || 'new'}`} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onFinish={submit}>
-            <Form.Item name="chat_scene" label="场景" rules={[{ required: true, message: '请输入场景' }]}>
+            <Form.Item name="chat_scene" label={t('Prompt_Info_Scene')} rules={[{ required: true, message: t('Please_Input') + t('Prompt_Info_Scene') }]}>
               <Input />
             </Form.Item>
-            <Form.Item name="sub_chat_scene" label="次级场景" rules={[{ required: true, message: '请输入次级场景' }]}>
+            <Form.Item name="sub_chat_scene" label={t('Prompt_Info_Sub_Scene')} rules={[{ required: true, message: t('Please_Input') + t('Prompt_Info_Sub_Scene') }]}>
               <Input />
             </Form.Item>
-            <Form.Item name="prompt_name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
+            <Form.Item name="prompt_name" label={t('Prompt_Info_Name')} rules={[{ required: true, message: t('Please_Input') + t('Prompt_Info_Name') }]}>
               <Input disabled={!!item} />
             </Form.Item>
-            <Form.Item name="content" label="内容" rules={[{ required: true, message: '请输入内容' }]}>
+            <Form.Item name="content" label={t('Prompt_Info_Content')} rules={[{ required: true, message: t('Please_Input') + t('Prompt_Info_Content') }]}>
               <Input.TextArea rows={6} />
             </Form.Item>
             <Form.Item
               wrapperCol={{
-                offset: 17,
-                span: 7,
+                offset: 15,
+                span: 10,
               }}
             >
               <Button onClick={handleCancel} className="mr-2">
-                取消
+                {t('cancel')}
               </Button>
               <Button type="primary" htmlType="submit">
-                提交
+                {t('submit')}
               </Button>
             </Form.Item>
           </Form>

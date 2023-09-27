@@ -8,67 +8,72 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import PersonIcon from '@mui/icons-material/Person';
 import { useRequest } from 'ahooks';
 import { sendSpacePostRequest } from '@/utils/request';
+import { PromptProps } from '@/types/db'
+import { useTranslation } from 'react-i18next';
 
-const items: MenuProps['items'] = [
-  {
-    label: '公共 Prompts',
-    key: 'common',
-    icon: <GroupsIcon />,
-  },
-  {
-    label: '私有 Prompts',
-    key: 'private',
-    icon: <PersonIcon />,
-  },
-];
-
-const getColumns = (current: string, mutate: Function): ColumnsType<any> => [
-  {
-    title: '名称',
-    dataIndex: 'prompt_name',
-    key: 'prompt_name',
-  },
-  {
-    title: '场景',
-    dataIndex: 'chat_scene',
-    key: 'chat_scene',
-  },
-  {
-    title: '次级场景',
-    dataIndex: 'sub_chat_scene',
-    key: 'sub_chat_scene',
-  },
-  {
-    title: '内容',
-    dataIndex: 'content',
-    key: 'content',
-    render: (content) => (
-      <Tooltip placement="topLeft" title={content}>
-        {content}
-      </Tooltip>
-    ),
-  },
-  {
-    title: '操作',
-    dataIndex: 'operate',
-    key: 'operate',
-    render: (_, record) => (
-      <Space size="middle">
-        <PromptModal prompt_type={current} item={record} mutate={mutate}>
-          <a>编辑</a>
-        </PromptModal>
-      </Space>
-    ),
-  },
-];
 
 const Prompt = () => {
+  const { t } = useTranslation();
+
+  const items: MenuProps['items'] = [
+    {
+      label: t('Public') + ' Prompts',
+      key: 'common',
+      icon: <GroupsIcon />,
+    },
+    {
+      label: t('Private') + ' Prompts',
+      key: 'private',
+      icon: <PersonIcon />,
+    },
+  ];
+
+  const getColumns = (current: string, mutate: Function): ColumnsType<PromptProps> => [
+    {
+      title: t('Prompt_Info_Name'),
+      dataIndex: 'prompt_name',
+      key: 'prompt_name',
+    },
+    {
+      title: t('Prompt_Info_Scene'),
+      dataIndex: 'chat_scene',
+      key: 'chat_scene',
+    },
+    {
+      title: t('Prompt_Info_Sub_Scene'),
+      dataIndex: 'sub_chat_scene',
+      key: 'sub_chat_scene',
+    },
+    {
+      title: t('Prompt_Info_Content'),
+      dataIndex: 'content',
+      key: 'content',
+      render: (content) => (
+        <Tooltip placement="topLeft" title={content}>
+          {content}
+        </Tooltip>
+      ),
+    },
+    {
+      title: t('Operation'),
+      dataIndex: 'operate',
+      key: 'operate',
+      render: (_, record) => (
+        <Space size="middle">
+          <PromptModal prompt_type={current} item={record} mutate={mutate}>
+            <a>{t('Edit')}</a>
+          </PromptModal>
+        </Space>
+      ),
+    },
+  ];
+
   const [current, setCurrent] = useState('common');
   const [tableParams, setTableParams] = useState<any>({
     pagination: {
       current: 1,
-      pageSize: 1000, // 需要用到分页时改为10
-      hideOnSinglePage: true, // 单页时隐藏分页器
+      pageSize: 1000, // When pagination is needed, change it to 10.
+      hideOnSinglePage: true, // Hide the paginator when it's a single page.
       showQuickJumper: true,
       showTotal: (total: number, range: Array<number>) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
     },
@@ -126,13 +131,13 @@ const Prompt = () => {
           <PromptModal prompt_type={current} mutate={mutate} setTableParams={setTableParams} pageSize={tableParams.pagination.pageSize}>
             <Button className="flex items-center">
               <PlusOutlined />
-              新增 Prompts
+              {t('Add')} Prompts
             </Button>
           </PromptModal>
           {current === 'common' && (
             <Button className="mr-2 flex items-center" disabled>
               <PlusOutlined />
-              新增 Prompts 模版
+              {t('Add')} Prompts {t('template')}
             </Button>
           )}
         </div>

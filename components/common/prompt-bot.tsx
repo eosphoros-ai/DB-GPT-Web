@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { List, FloatButton, Popover, Tooltip, Form, message, Select } from 'antd';
 import { useRequest } from 'ahooks';
 import { sendSpacePostRequest } from '@/utils/request';
+import { useTranslation } from 'react-i18next';
 
 type SelectTableProps = {
   data: any;
@@ -11,6 +12,7 @@ type SelectTableProps = {
 };
 
 const SelectTable: React.FC<SelectTableProps> = ({ data, loading, submit, close }) => {
+  const { t } = useTranslation();
   const handleClick = (content: string) => () => {
     submit(content);
     close();
@@ -33,7 +35,7 @@ const SelectTable: React.FC<SelectTableProps> = ({ data, loading, submit, close 
               <List.Item.Meta
                 style={{ cursor: 'copy' }}
                 title={item.prompt_name}
-                description={`场景：${item.chat_scene}，次级场景：${item.sub_chat_scene}`}
+                description={t('Prompt_Info_Scene') + `：${item.chat_scene}，` + t('Prompt_Info_Sub_Scene') + `：${item.sub_chat_scene}`}
               />
             </Tooltip>
           </List.Item>
@@ -48,6 +50,7 @@ type PromptBotProps = {
 };
 
 const PromptBot: React.FC<PromptBotProps> = ({ submit }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState('common');
 
@@ -81,18 +84,18 @@ const PromptBot: React.FC<PromptBotProps> = ({ submit }) => {
   return (
     <Popover
       title={
-        <Form.Item label="Prompt 类型">
+        <Form.Item label={"Prompt " + t('Type')}>
           <Select
             style={{ width: 130 }}
             value={current}
             onChange={handleChange}
             options={[
               {
-                label: '公共 Prompts',
+                label: t('Public') + ' Prompts',
                 value: 'common',
               },
               {
-                label: '私有 Prompts',
+                label: t('Private') + ' Prompts',
                 value: 'private',
               },
             ]}
@@ -105,7 +108,7 @@ const PromptBot: React.FC<PromptBotProps> = ({ submit }) => {
       open={open}
       onOpenChange={handleOpenChange}
     >
-      <Tooltip title={'点击选择 Prompt'}>
+      <Tooltip title={t('Click_Select') +' Prompt'}>
         <FloatButton />
       </Tooltip>
     </Popover>
