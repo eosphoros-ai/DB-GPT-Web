@@ -1,0 +1,7 @@
+.collapse-container {
+  width: 26rem;
+}
+
+.collapse-container > .ant-card-body {
+  padding: 0;
+}
