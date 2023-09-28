@@ -5,7 +5,7 @@ import { useRequest } from 'ahooks';
 import useAgentChat from '@/hooks/use-agent-chat';
 import Completion from '@/components/chat/completion';
 import { ChartData } from '@/types/chart';
-import { apiInterceptors, getChatHistory, postChatModeParamsList } from '@/client/api';
+import { apiInterceptors, getChatHistory, postChatModeParamsList, postChatModeParamsInfoList } from '@/client/api';
 import { ChatContext } from '@/app/chat-context';
 import MuiLoading from '../common/loading';
 import Header from './header';
@@ -74,6 +74,17 @@ const ChatContainer = () => {
     },
   );
 
+  const { data: paramsInfoObj = {} } = useRequest(
+    async () => {
+      const [, res] = await apiInterceptors(postChatModeParamsInfoList(scene as string))
+      return res ?? {};
+    },
+    {
+      ready: !!scene,
+      refreshDeps: [chatId, scene]
+    }
+  );
+
   useEffect(() => {
     if (!history || history.length < 1) {
       return;
@@ -134,6 +145,7 @@ const ChatContainer = () => {
             messages={history}
             onSubmit={handleChatSubmit}
             paramsObj={paramsObj}
+            paramsInfoObj={paramsInfoObj}
           />
         </div>
       </div>

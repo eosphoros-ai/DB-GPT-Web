@@ -1,20 +1,27 @@
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { CircularProgress, IconButton, Input, Select, Option, Modal, ModalDialog, Button } from '@/lib/mui';
+import { CircularProgress, IconButton, Input, Typography, Select, Option, Modal, ModalDialog, Button, Box, RadioGroup, Radio } from '@/lib/mui';
+import { message, Tooltip as AntdTooltip } from 'antd';
 import { useState, useRef, useEffect, useMemo, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'next/navigation';
 import lodash from 'lodash';
 import MonacoEditor from './monaco-editor';
 import ChatContent from './chat-content';
+import ChatFeedback from './chat-feedback';
 import { ChatContext } from '@/app/chat-context';
 import { IChatDialogueMessageSchema } from '@/types/chart';
 import { renderModelIcon } from '@/components/chat/header/model-selector';
+import PromptBot from '@/components/common/prompt-bot';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
+import copy from 'copy-to-clipboard';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
   onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
   paramsObj?: Record<string, string>;
+  paramsInfoObj?: Record<string, string>;
   clearInitMessage?: () => void;
 };
 
@@ -22,7 +29,8 @@ type FormData = {
   query: string;
 };
 
-const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Props) => {
+const Completion = ({ messages, onSubmit, paramsObj = {}, paramsInfoObj = {}, clearInitMessage }: Props) => {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const initMessage = searchParams && searchParams.get('initMessage');
   const spaceNameOriginal = searchParams && searchParams.get('spaceNameOriginal');
@@ -55,6 +63,12 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
     }
   };
 
+  const { watch, setValue, formState: { errors } } = methods
+  const submitSelectedPrompt = (prompt: string) => {
+    const curQuery = watch('query');
+    setValue('query', curQuery + prompt);
+  };
+
   const handleInitMessage = async () => {
     try {
       const searchParamsTemp = new URLSearchParams(window.location.search);
@@ -78,6 +92,23 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
     }
     return res;
   };
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const onCopyContext = async (context: any) => {
+    const pureStr = context?.replace(/\trelations:.*/g, '');
+    const result = copy(pureStr);
+    if(result) {
+      if(pureStr) {
+        messageApi.open({ type: 'success', content: t('Copy_success'), });
+      }
+      else {
+        messageApi.open({ type: 'warning', content: t('Copy_nothing'), });
+      }
+    }
+    else {
+      messageApi.open({ type: 'error', content: t('Copry_error'), });
+    }
+  }
 
   useEffect(() => {
     if (!scrollableRef.current) return;
@@ -112,20 +143,44 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
 
   return (
     <>
+      {contextHolder}
       <div ref={scrollableRef} className="flex flex-1 overflow-y-auto pb-8 w-full flex-col">
         <div className="flex items-center flex-1 flex-col text-sm leading-6 text-slate-900 dark:text-slate-300 sm:text-base sm:leading-7">
           {showMessages?.map((content, index) => {
             return (
-              <ChatContent
-                key={index}
-                content={content}
-                isChartChat={isChartChat}
-                onLinkClick={() => {
-                  setJsonModalOpen(true);
-                  setCurrentJsonIndex(index);
-                  setJsonValue(JSON.stringify(content?.context, null, 2));
-                }}
-              />
+              <Box sx={{ width: '100%' }} key={index}>
+                <ChatContent
+                  key={index}
+                  content={content}
+                  isChartChat={isChartChat}
+                  onLinkClick={() => {
+                    setJsonModalOpen(true);
+                    setCurrentJsonIndex(index);
+                    setJsonValue(JSON.stringify(content?.context, null, 2));
+                  }}
+                />
+                {content.role === 'view' ? (
+                  <div className={'overflow-x-auto w-full lg:w-4/5 xl:w-3/4 mx-auto flex justify-end rounded-xl'}>
+                    <AntdTooltip title={t('Copy')}>
+                      <Button
+                        onClick={() => onCopyContext(content?.context)}
+                        slots={{ root: IconButton }}
+                        slotProps={{ root: { variant: 'plain', color: 'primary' } }}
+                        sx={{ borderRadius: 40 }}
+                      >
+                        <ContentCopyIcon />
+                      </Button>
+                    </AntdTooltip>
+                    <ChatFeedback
+                      conv_index={Math.ceil((index + 1) / 2)}
+                      question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
+                      knowledge_space={currentParam}
+                    />
+                  </div>
+                ) : (
+                  void 0
+                )}
+              </Box>
             );
           })}
         </div>
@@ -159,9 +214,11 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
                 }}
               >
                 {paramsOpts.map((item) => (
-                  <Option key={item.key} value={item.value}>
-                    {item.key}
-                  </Option>
+                  <AntdTooltip title={paramsInfoObj?.[item.key]} key={'tp-' + item.key} variant="solid" placement="right">
+                    <Option key={item.key} value={item.value}>
+                      {item.key}
+                    </Option>
+                  </AntdTooltip>
                 ))}
               </Select>
             </div>
@@ -177,6 +234,7 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
           />
         </form>
       </div>
+      <PromptBot submit={submitSelectedPrompt} />
       <Modal
         open={jsonModalOpen}
         onClose={() => {

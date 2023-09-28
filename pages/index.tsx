@@ -1,7 +1,7 @@
 'use client';
 import { useRequest } from 'ahooks';
 import { useContext, useState } from 'react';
-import { Button, Input, Box, buttonClasses, Divider } from '@/lib/mui';
+import { Button, Input, Box, buttonClasses, Divider, Typography } from '@/lib/mui';
 import IconButton from '@mui/joy/IconButton';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import { useForm } from 'react-hook-form';
@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { NextPage } from 'next';
 import { apiInterceptors, newDialogue, postScenes } from '@/client/api';
 import ModelSelector from '@/components/chat/header/model-selector';
+import PromptBot from '@/components/common/prompt-bot';
 import { ChatContext } from '@/app/chat-context';
 
 type FormData = {
@@ -25,6 +26,11 @@ const Home: NextPage = () => {
     const [, res] = await apiInterceptors(postScenes());
     return res ?? [];
   });
+
+  const submitSelectedPrompt = (prompt: string) => {
+    const curQuery = methods.watch('query')
+    methods.setValue('query', curQuery + prompt)
+  }
 
   const submit = async ({ query }: FormData) => {
     try {
@@ -121,13 +127,14 @@ const Home: NextPage = () => {
               width: '100%',
               position: 'relative',
               display: 'flex',
+              flexDirection: 'column',
               marginTop: 'auto',
               overflow: 'visible',
               background: 'none',
               justifyContent: 'center',
               marginLeft: 'auto',
               marginRight: 'auto',
-              height: '52px',
+              height: 'auto',
             }}
             onSubmit={(e) => {
               methods.handleSubmit(submit)(e);
@@ -147,6 +154,7 @@ const Home: NextPage = () => {
           </form>
         </div>
       </div>
+      <PromptBot submit={submitSelectedPrompt} />
     </>
   );
 };

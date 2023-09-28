@@ -1,5 +1,5 @@
 import { Fragment, useContext } from 'react';
-import { Link } from '@/lib/mui';
+import { Link, Stack, Chip } from '@/lib/mui';
 import { RobotOutlined, UserOutlined } from '@ant-design/icons';
 import Markdown, { MarkdownToJSX } from 'markdown-to-jsx';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -65,6 +65,10 @@ function ChatContent({ content, isChartChat, onLinkClick }: Props) {
   const { context, model_name, role } = content;
   const { scene } = useContext(ChatContext);
   const isRobot = role === 'view';
+
+  const dataArray = typeof context === 'string' ? context.split('\trelations:') : [context];
+  const context_msg = dataArray[0];
+  const relation = (dataArray.length > 1 && typeof dataArray[1] === 'string' ? dataArray[1] : null)?.split(',');
   return (
     <div
       className={classNames('overflow-x-auto w-full flex px-2 sm:px-4 py-2 sm:py-6 rounded-xl', {
@@ -90,7 +94,16 @@ function ChatContent({ content, isChartChat, onLinkClick }: Props) {
             </Link>
           </>
         )}
-        {typeof context === 'string' && <Markdown options={options}>{context.replaceAll('\\n', '\n')}</Markdown>}
+        {typeof context === 'string' && <Markdown options={options}>{context_msg.replaceAll('\\n', '\n')}</Markdown>}
+        {typeof relation === 'object' && relation?.length > 0 && (
+          <Stack sx={{ mt: 1 }} direction="row" spacing={1} useFlexGap flexWrap="wrap">
+            {relation?.map((rr) => (
+              <Chip key={rr} sx={{ borderColor: '#4393E4' }} variant="outlined" size="sm">
+                {rr}
+              </Chip>
+            ))}
+          </Stack>
+        )}
       </div>
     </div>
   );
