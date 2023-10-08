@@ -7,7 +7,6 @@ const page_size = 20;
 
 const ChunkListModal = (props: any) => {
   const { chunkModal = {}, setChunkModal } = props;
-  console.log(1111, chunkModal);
 
   const { spaceName = '', id: documentId = '' } = chunkModal;
   const [chunkList, setChunkList] = useState<any>([]);

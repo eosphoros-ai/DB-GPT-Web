@@ -340,6 +340,7 @@ const SpaceParameterModal = ({ spaceName, isParameterModalShow, setIsParameterMo
         >
           <Button
             variant="outlined"
+            className="mr-3"
             onClick={() => {
               sendSpacePostRequest(`/knowledge/${spaceName.name}/argument/save`, {
                 argument: JSON.stringify(newSpaceArguments),
@@ -354,6 +355,15 @@ const SpaceParameterModal = ({ spaceName, isParameterModalShow, setIsParameterMo
             }}
           >
             {t('Submit')}
+          </Button>
+          <Button
+            variant="outlined"
+            color="danger"
+            onClick={() => {
+              setIsParameterModalShow(false);
+            }}
+          >
+            关闭
           </Button>
         </Stack>
       </Sheet>

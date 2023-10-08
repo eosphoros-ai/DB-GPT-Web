@@ -1,53 +1,80 @@
-import React from 'react';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import React, { useState } from 'react';
+import { Popover, ConfigProvider, Button } from 'antd';
+import { useRouter } from 'next/router';
+import { DeleteTwoTone, MessageTwoTone } from '@ant-design/icons';
+import { IKnowLedge } from '@/types/knowledge';
 import ContentPasteSearchOutlinedIcon from '@mui/icons-material/ContentPasteSearchOutlined';
+import { sendSpacePostRequest } from '@/utils/request';
+import CollapseContainer from '../collapse-container';
 import './index.css';
 
-interface IKnowledge {
-  name: string;
-  vector_type: string;
-  docs: string | number;
-  owner: string;
-}
-
 interface IProps {
+  className?: string;
   index?: number;
-  item?: IKnowledge;
+  item: IKnowLedge;
   t?: any;
-  handleCardClick: () => void;
   handleDeleteClick: (e: any, item: any) => void;
 }
 
 export default function StoresCard(props: IProps) {
-  const { index, item, t, handleCardClick, handleDeleteClick } = props;
+  const router = useRouter();
+  const { item, t, handleDeleteClick, className } = props;
+
+  const handleChat = async (e: any) => {
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+    const res = await sendSpacePostRequest('/api/v1/chat/dialogue/new', {
+      chat_mode: 'chat_knowledge',
+    });
+
+    if (res?.success && res?.data?.conv_uid) {
+      router.push(`/chat?id=${res?.data?.conv_uid}&scene=chat_knowledge&spaceNameOriginal=${item?.name}`);
+    }
+  };
+
   return (
-    <>
-      <div onClick={handleCardClick} className="text-lg font-bold text-black mx-4 mb-1 mt-6">
-        <ContentPasteSearchOutlinedIcon className="mr-[5px] text-[#2AA3FF]" />
-        {item?.name}
-      </div>
-      <div className="flex mb-6">
-        <div className="mx-8">
-          <div className="text-[#2AA3FF]">{item?.vector_type}</div>
-          <div className="text-xs text-black">{t('Vector')}</div>
+    <ConfigProvider
+      theme={{
+        components: {
+          Popover: {
+            zIndexPopup: 90,
+          },
+        },
+      }}
+    >
+      <Popover className={className} placement="bottom" trigger="click" content={<CollapseContainer knowledge={item} />}>
+        <div className="flex justify-between mx-6 mt-3">
+          <div className="text-lg font-bold text-black ">
+            <ContentPasteSearchOutlinedIcon className="mr-[5px] text-[#2AA3FF]" />
+            <span className="text-[#2AA3FF]">{item?.name}</span>
+          </div>
+          <DeleteTwoTone
+            onClick={(e) => {
+              handleDeleteClick(e, item);
+            }}
+            style={{ fontSize: '20px' }}
+            twoToneColor="#CD2029"
+            className="text-3xl"
+          />
         </div>
-        <div className="mx-8">
-          <div className="text-[#2AA3FF]">{item?.owner}</div>
-          <div className="text-xs text-black">{t('Owner')}</div>
+        <div className="flex flex-col justify-between p-6 pt-2">
+          <div className="flex">
+            <div>{t('Owner')}</div>:&nbsp;<div>{item?.owner}</div>
+          </div>
+          <div className="flex">
+            <div>{t('Description')}</div>:&nbsp;<div>{item?.desc}</div>
+          </div>
+
+          <div className="flex">
+            <div>{t('Docs')}</div>:&nbsp;<div className="">{item?.docs || 0}</div>
+          </div>
         </div>
-        <div className="mx-8">
-          <div className="text-[#2AA3FF]">{item?.docs || 0}</div>
-          <div className="text-xs text-black">{t('Docs')}</div>
+        <div className="flex justify-center pb-4">
+          <Button size="middle" onClick={handleChat} className="mr-2" shape="round" icon={<MessageTwoTone />}>
+            {t('Chat')}
+          </Button>
         </div>
-      </div>
-      <div
-        className="absolute right-2.5 top-2.5 text-[#CD2029]"
-        onClick={(e) => {
-          handleDeleteClick(e, item);
-        }}
-      >
-        <DeleteOutlineIcon className="text-3xl" />
-      </div>
-    </>
+      </Popover>
+    </ConfigProvider>
   );
 }

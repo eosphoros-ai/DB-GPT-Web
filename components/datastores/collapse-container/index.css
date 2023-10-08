@@ -5,3 +5,10 @@
 .collapse-container > .ant-card-body {
   padding: 0;
 }
+
+.collapse-container {
+  width: 80vw;
+}
+:where(.css-dev-only-do-not-override-l3wwlt).ant-divider-horizontal {
+  margin: 1rem 0;
+}

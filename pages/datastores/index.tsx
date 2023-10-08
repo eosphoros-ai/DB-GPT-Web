@@ -1,20 +1,15 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PlusOutlined } from '@ant-design/icons';
-import { Stack, Box } from '@/lib/mui';
-import { Button, Card, Collapse, ConfigProvider } from 'antd';
+import { Button, Collapse } from 'antd';
 import { sendSpacePostRequest } from '@/utils/request';
 import StoresCard from '@/components/datastores/stores-card';
 import AddKnowledgeModal from '@/components/datastores/add-knowledge-modal';
 import DelKnowledgeModel from '@/components/datastores/del-knowledge-model';
 import DocumentsDraw from '@/components/datastores/documents-draw';
 import { IKnowLedge } from '@/types/knowledge';
-import CollapseContainer from '@/components/datastores/collapse-container';
-
-const { Panel } = Collapse;
 
 const Index = () => {
   const { t } = useTranslation();
@@ -50,15 +45,8 @@ const Index = () => {
   };
 
   return (
-    <Box className="bg-[#FAFAFA] dark:bg-[#212121] w-full h-full">
-      <Box
-        className="page-body p-6 px-12 h-[90%] overflow-auto"
-        sx={{
-          '&::-webkit-scrollbar': {
-            display: 'none',
-          },
-        }}
-      >
+    <div className="bg-[#FAFAFA] dark:bg-[#212121] w-full h-full">
+      <div className="page-body p-6 px-12 h-[90%] overflow-auto">
         <Button
           type="primary"
           className="flex items-center"
@@ -69,44 +57,18 @@ const Index = () => {
         >
           Create
         </Button>
-        <ConfigProvider theme={{ components: { Collapse: { headerPadding: 0, contentBg: 'blue', headerBg: 'blue' } } }}>
-          <Collapse
-            destroyInactivePanel
-            ghost
-            bordered={false}
-            accordion={true}
-            className="mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-5"
-          >
-            {knowledgeSpaceList.map((item: IKnowLedge, index: number) => (
-              <Panel
-                className="bg-[#FFFFFF] dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full"
-                collapsible="header"
-                showArrow={false}
-                header={
-                  <StoresCard
-                    item={item}
-                    t={t}
-                    handleCardClick={() => {
-                      const isActive = ~activeKey.findIndex((value) => value === index);
-
-                      if (isActive) {
-                        setActiveKey([]);
-                      } else {
-                        setActiveKey([index]);
-                      }
-                      handleCardClick(item);
-                    }}
-                    handleDeleteClick={handleDeleteClick}
-                  />
-                }
-                key={index}
-              >
-                <CollapseContainer knowledge={item} />
-              </Panel>
-            ))}
-          </Collapse>
-        </ConfigProvider>
-      </Box>
+        <div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-5">
+          {knowledgeSpaceList.map((item: IKnowLedge, index: number) => (
+            <StoresCard
+              className="dark:hover:border-white transition-all hover:shadow-md bg-[#FFFFFF] dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full"
+              key={index}
+              item={item}
+              t={t}
+              handleDeleteClick={handleDeleteClick}
+            />
+          ))}
+        </div>
+      </div>
 
       <AddKnowledgeModal
         setKnowledgeSpaceList={setKnowledgeSpaceList}
@@ -121,7 +83,7 @@ const Index = () => {
         knowledgeSpaceToDelete={knowledgeSpaceToDelete}
       />
       <DocumentsDraw setDraw={setDraw} draw={draw} />
-    </Box>
+    </div>
   );
 };
 

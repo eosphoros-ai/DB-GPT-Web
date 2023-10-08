@@ -18,6 +18,7 @@ import {
 } from '@/lib/mui';
 import { Upload, Pagination, Popover, message } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
+import type { UploadProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import { sendSpacePostRequest, sendSpaceUploadPostRequest } from '@/utils/request';
@@ -25,7 +26,7 @@ import { sendSpacePostRequest, sendSpaceUploadPostRequest } from '@/utils/reques
 const { Dragger } = Upload;
 const page_size = 20;
 export default function AddDocumentModal(props: any) {
-  const { isAddDocumentModalShow, setIsAddDocumentModalShow, knowLedge } = props;
+  const { isAddDocumentModalShow, setIsAddDocumentModalShow, knowLedge, setDocuments } = props;
   const { t } = useTranslation();
   const [documentName, setDocumentName] = useState<any>('');
   const [documentType, setDocumentType] = useState<string>('');
@@ -34,10 +35,10 @@ export default function AddDocumentModal(props: any) {
   const [webPageUrl, setWebPageUrl] = useState<string>('');
   const [synchChecked, setSynchChecked] = useState<boolean>(true);
   const [text, setText] = useState<string>('');
-  const [documents, setDocuments] = useState<any>([]);
   const [current, setCurrent] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
   const [originFileObj, setOriginFileObj] = useState<any>(null);
+
   const documentTypeList = [
     {
       type: 'text',
@@ -55,6 +56,20 @@ export default function AddDocumentModal(props: any) {
       subTitle: t('Upload_a_document'),
     },
   ];
+  const draggerProps: UploadProps = {
+    name: 'file',
+    multiple: false,
+    beforeUpload: () => false,
+    onChange(info) {
+      if (info.fileList.length === 0) {
+        setOriginFileObj(null);
+        setDocumentName('');
+        return;
+      }
+      setOriginFileObj(info.file);
+      setDocumentName(info.file.name);
+    },
+  };
   const stepsOfAddingDocument = [t('Choose_a_Datasource_type'), t('Setup_the_Datasource')];
   const Item = styled(Sheet)(({ theme }) => ({
     width: '50%',
@@ -143,7 +158,7 @@ export default function AddDocumentModal(props: any) {
                 </>
               ) : documentType === 'file' ? (
                 <>
-                  <Dragger {...props}>
+                  <Dragger {...draggerProps}>
                     <p className="ant-upload-drag-icon">
                       <InboxOutlined />
                     </p>
@@ -218,6 +233,7 @@ export default function AddDocumentModal(props: any) {
                     }
                   } else if (documentType === 'file') {
                     if (!originFileObj) {
+                      console.log(1111);
                       message.error(t('Please_select_a_file'));
                       return;
                     }

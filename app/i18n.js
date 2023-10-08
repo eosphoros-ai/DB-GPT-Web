@@ -9,7 +9,7 @@ const resources = {
       space: 'space',
       Vector: 'Vector',
       Owner: 'Owner',
-      Docs: 'Docs',
+      Docs: 'Count',
       Knowledge_Space_Config: 'Knowledge Space Config',
       Choose_a_Datasource_type: 'Choose a Datasource type',
       Setup_the_Datasource: 'Setup the Datasource',
@@ -95,7 +95,7 @@ const resources = {
       model_select_tips: 'Please select a model',
       submit: 'Submit',
       start_model_success: 'Start model success',
-      download_model_tip: 'Please download model first.'
+      download_model_tip: 'Please download model first.',
     },
   },
   zh: {
@@ -189,7 +189,7 @@ const resources = {
       model_select_tips: '请选择一个模型',
       submit: '提交',
       start_model_success: '启动模型成功',
-      download_model_tip: '请先下载模型！'
+      download_model_tip: '请先下载模型！',
     },
   },
 };
