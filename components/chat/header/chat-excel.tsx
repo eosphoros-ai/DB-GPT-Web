@@ -15,11 +15,13 @@ function ChatExcel({ onComplete }: Props) {
   return (
     <div className="max-w-md h-full relative">
       {currentDialogue ? (
-        <div className="flex overflow-hidden rounded">
-          <div className="flex items-center justify-center px-3 py-2 bg-gray-600">
+        <div className="flex h-8 overflow-hidden rounded">
+          <div className="flex items-center justify-center px-2 bg-gray-600 text-lg">
             <LinkOutlined className="text-white" />
           </div>
-          <div className="bg-gray-100 px-3 py-2 text-xs rounded-tr rounded-br dark:text-gray-800 truncate">{currentDialogue.select_param}</div>
+          <div className="flex items-center justify-center px-3 bg-gray-100 text-xs rounded-tr rounded-br dark:text-gray-800 truncate">
+            {currentDialogue.select_param}
+          </div>
         </div>
       ) : (
         <ExcelUpload convUid={chatId} chatMode={scene} onComplete={onComplete} />

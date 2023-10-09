@@ -1,7 +1,10 @@
-import Editor, { OnChange } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
+import Editor, { OnChange, loader } from '@monaco-editor/react';
 import classNames from 'classnames';
 import { useMemo } from 'react';
 import { format } from 'sql-formatter';
+
+loader.config({ monaco });
 
 interface MonacoEditorProps {
   className?: string;
@@ -22,6 +25,7 @@ export default function MonacoEditor({ className, value, language = 'mysql', onC
     }
     return format(value);
   }, [value, thoughts]);
+
   return (
     <Editor
       className={classNames(className)}

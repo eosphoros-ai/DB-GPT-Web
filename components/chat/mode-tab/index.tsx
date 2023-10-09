@@ -6,41 +6,35 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import './index.css';
 import { useContext } from 'react';
 import { ChatContext } from '@/app/chat-context';
+import { Radio } from 'antd';
+import Icon, { AppstoreFilled } from '@ant-design/icons';
+import StarsSvg from '@/icons/stars-svg';
 
 export default function ModeTab() {
   const { isContract, setIsContract, scene } = useContext(ChatContext);
   const isShow = scene && ['chat_with_db_execute', 'chat_dashboard'].includes(scene as string);
+
   if (!isShow) {
     return null;
   }
+
   return (
-    <div className="leading-[3rem] text-right h-12 flex justify-center">
-      <div className="flex items-center cursor-pointer">
-        <div
-          className={`relative w-56 h-10 mx-auto p-2 flex justify-center items-center bg-[#ece9e0] rounded-3xl model-tab dark:text-violet-600 z-10 ${
-            isContract ? 'editor-tab' : ''
-          }`}
-        >
-          <div
-            className="z-10 w-[50%] text-center cursor-pointer"
-            onClick={() => {
-              setIsContract(false);
-            }}
-          >
-            <span>Preview</span>
-            <AutoAwesomeIcon className="ml-1" />
-          </div>
-          <div
-            className="z-10 w-[50%] text-center cursor-pointer"
-            onClick={() => {
-              setIsContract(true);
-            }}
-          >
-            <span>Editor</span>
-            <DashboardIcon className="ml-1" />
-          </div>
-        </div>
-      </div>
-    </div>
+    <Radio.Group
+      value={isContract}
+      defaultValue={true}
+      buttonStyle="solid"
+      onChange={() => {
+        setIsContract(!isContract);
+      }}
+    >
+      <Radio.Button value={false}>
+        <Icon component={StarsSvg} className="mr-1" />
+        Preview
+      </Radio.Button>
+      <Radio.Button value={true}>
+        <AppstoreFilled className="mr-1" />
+        Editor
+      </Radio.Button>
+    </Radio.Group>
   );
 }

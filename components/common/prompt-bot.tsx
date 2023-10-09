@@ -84,7 +84,7 @@ const PromptBot: React.FC<PromptBotProps> = ({ submit }) => {
   return (
     <Popover
       title={
-        <Form.Item label={"Prompt " + t('Type')}>
+        <Form.Item label={'Prompt ' + t('Type')}>
           <Select
             style={{ width: 130 }}
             value={current}
@@ -108,8 +108,8 @@ const PromptBot: React.FC<PromptBotProps> = ({ submit }) => {
       open={open}
       onOpenChange={handleOpenChange}
     >
-      <Tooltip title={t('Click_Select') +' Prompt'}>
-        <FloatButton />
+      <Tooltip title={t('Click_Select') + ' Prompt'}>
+        <FloatButton className="bottom-32" />
       </Tooltip>
     </Popover>
   );

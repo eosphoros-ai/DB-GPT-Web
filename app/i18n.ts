@@ -1,4 +1,4 @@
-'use client';
+import { STORAGE_LANG_KEY } from '@/constant';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -83,6 +83,7 @@ const resources = {
       Database: 'Database',
       Data_Source: 'Data Center',
       Close_Sidebar: 'Fold',
+      Show_Sidebar: 'UnFold',
       language: 'Language',
       choose_model: 'Please choose a model',
       data_center_desc: 'DB-GPT also offers a user-friendly data center management interface for efficient data maintenance.',
@@ -96,7 +97,6 @@ const resources = {
       submit: 'Submit',
       start_model_success: 'Start model success',
       download_model_tip: 'Please download model first.',
-      Prompt: 'Prompt',
       Open_Sidebar: 'Unfold',
       cancel: 'Cancel',
       Edit_Success: 'Edit Success',
@@ -119,7 +119,8 @@ const resources = {
       Rating: 'Rating',
       Q_A_Category: 'Q&A Category',
       Q_A_Rating: 'Q&A Rating',
-      feed_back_desc: '0: No results\n' +
+      feed_back_desc:
+        '0: No results\n' +
         '1: Results exist, but they are irrelevant, the question is not understood\n' +
         '2: Results exist, the question is understood, but it indicates that the question cannot be answered\n' +
         '3: Results exist, the question is understood, and an answer is given, but the answer is incorrect\n' +
@@ -132,6 +133,7 @@ const resources = {
       Copy_nothing: 'Content copied is empty',
       Copry_error: 'Copy failed',
       Click_Select: 'Click&Select',
+      Quick_Start: 'Quick Start',
     },
   },
   zh: {
@@ -197,7 +199,6 @@ const resources = {
       The_size_of_the_data_chunks: '处理中使用的数据块的大小',
       chunk_overlap: '块重叠',
       The_amount_of_overlap: '相邻数据块之间的重叠量',
-      Prompt: '迅速的',
       scene: '场景',
       A_contextual_parameter: '用于定义使用提示的设置或环境的上下文参数',
       template: '模板',
@@ -213,6 +214,7 @@ const resources = {
       Database: '数据库',
       Data_Source: '数据中心',
       Close_Sidebar: '收起',
+      Show_Sidebar: '展开',
       language: '语言',
       choose_model: '请选择一个模型',
       data_center_desc: 'DB-GPT支持数据库交互和基于文档的对话，它还提供了一个用户友好的数据中心管理界面。',
@@ -249,7 +251,8 @@ const resources = {
       Rating: '评分',
       Q_A_Category: '问答类别',
       Q_A_Rating: '问答评分',
-      feed_back_desc: '0: 无结果\n' +
+      feed_back_desc:
+        '0: 无结果\n' +
         '1: 有结果，但是在文不对题，没有理解问题\n' +
         '2: 有结果，理解了问题，但是提示回答不了这个问题\n' +
         '3: 有结果，理解了问题，并做出回答，但是回答的结果错误\n' +
@@ -262,6 +265,7 @@ const resources = {
       Copy_nothing: '内容复制为空',
       Copry_error: '复制失败',
       Click_Select: '点击选择',
+      Quick_Start: '快速开始',
     },
   },
 };
