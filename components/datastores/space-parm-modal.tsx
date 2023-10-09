@@ -332,7 +332,6 @@ const SpaceParameterModal = ({ spaceName, isParameterModalShow, setIsParameterMo
         <Tabs defaultActiveKey="Embedding" items={items} />
         <Stack
           direction="row"
-          justifyContent="flex-start"
           sx={{
             marginTop: '20px',
             marginBottom: '20px',
@@ -340,7 +339,7 @@ const SpaceParameterModal = ({ spaceName, isParameterModalShow, setIsParameterMo
         >
           <Button
             variant="outlined"
-            className="mr-3"
+            style={{ marginRight: '10px' }}
             onClick={() => {
               sendSpacePostRequest(`/knowledge/${spaceName.name}/argument/save`, {
                 argument: JSON.stringify(newSpaceArguments),
@@ -358,7 +357,6 @@ const SpaceParameterModal = ({ spaceName, isParameterModalShow, setIsParameterMo
           </Button>
           <Button
             variant="outlined"
-            color="danger"
             onClick={() => {
               setIsParameterModalShow(false);
             }}
