@@ -44,12 +44,7 @@ export type DialogueListResponse = IChatDialogueSchema[];
 
 export type IChatDialogueMessageSchema = {
   role: 'human' | 'view' | 'system' | 'ai';
-  context:
-    | string
-    | {
-        template_name: string;
-        template_introduce: string;
-      };
+  context: string;
   order: number;
   time_stamp: number | string | null;
   model_name: string;

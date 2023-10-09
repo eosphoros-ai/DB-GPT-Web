@@ -1,133 +1,155 @@
-import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { CircularProgress, IconButton, Input, Select, Option, Modal, ModalDialog, Button } from '@/lib/mui';
 import { useState, useRef, useEffect, useMemo, useContext } from 'react';
-import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'next/navigation';
-import lodash from 'lodash';
 import MonacoEditor from './monaco-editor';
 import ChatContent from './chat-content';
+import ChatFeedback from './chat-feedback';
 import { ChatContext } from '@/app/chat-context';
 import { IChatDialogueMessageSchema } from '@/types/chart';
-import { renderModelIcon } from '@/components/chat/header/model-selector';
 import classNames from 'classnames';
+import { Empty, Modal, message, Tooltip } from 'antd';
+import { renderModelIcon } from './header/model-selector';
+import loadsh from 'lodash';
+import copy from 'copy-to-clipboard';
+import { useTranslation } from 'react-i18next';
+import CompletionInput from '../common/completion-input';
+import { useAsyncEffect } from 'ahooks';
+import { STORAGE_INIT_MESSAGE_KET } from '@/constant';
+import { Button, IconButton } from '@/lib/mui';
+import { CopyOutlined } from '@ant-design/icons';
+import { getInitMessage } from '@/utils';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
-  onSubmit: (message: string, otherQueryBody?: any) => Promise<any>;
-  paramsObj?: Record<string, string>;
-  clearInitMessage?: () => void;
+  onSubmit: (message: string, otherQueryBody?: Record<string, any>) => Promise<void>;
 };
 
-type FormData = {
-  query: string;
-};
-
-const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Props) => {
+const Completion = ({ messages, onSubmit }: Props) => {
+  const { dbParam, currentDialogue, scene, model, refreshDialogList, chatId } = useContext(ChatContext);
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
-  const initMessage = searchParams && searchParams.get('initMessage');
-  const spaceNameOriginal = searchParams && searchParams.get('spaceNameOriginal');
 
-  const { currentDialogue, scene, model } = useContext(ChatContext);
-  const isChartChat = scene === 'chat_dashboard';
+  const spaceNameOriginal = (searchParams && searchParams.get('spaceNameOriginal')) ?? '';
+
   const [isLoading, setIsLoading] = useState(false);
-  const [currentParam, setCurrentParam] = useState<string>('');
   const [jsonModalOpen, setJsonModalOpen] = useState(false);
-  const [currentJsonIndex, setCurrentJsonIndex] = useState<number>();
   const [showMessages, setShowMessages] = useState(messages);
-  const [jsonValue, setJsonValue] = useState('');
+  const [jsonValue, setJsonValue] = useState<string>('');
 
   const scrollableRef = useRef<HTMLDivElement>(null);
 
-  const paramsOpts = useMemo(() => Object.entries(paramsObj).map(([k, v]) => ({ key: k, value: v })), [paramsObj]);
+  const isChartChat = useMemo(() => scene === 'chat_dashboard', [scene]);
 
-  const methods = useForm<FormData>();
-
-  const submit = async ({ query }: FormData) => {
+  const handleChat = async (message: string) => {
+    if (isLoading || !message.trim()) return;
     try {
       setIsLoading(true);
-      methods.reset();
-      await onSubmit(query, {
-        select_param: scene === 'chat_excel' ? currentDialogue?.select_param : paramsObj[currentParam],
+      await onSubmit(message, {
+        select_param: scene === 'chat_excel' ? currentDialogue?.select_param : spaceNameOriginal || dbParam,
       });
-    } catch (err) {
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInitMessage = async () => {
-    try {
-      const searchParamsTemp = new URLSearchParams(window.location.search);
-      const initMessage = searchParamsTemp.get('initMessage');
-      searchParamsTemp.delete('initMessage');
-      window.history?.replaceState(null, '', `?${searchParamsTemp.toString()}`);
-      await submit({ query: initMessage as string });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      clearInitMessage?.();
-    }
-  };
-
   const handleJson2Obj = (jsonStr: string) => {
-    let res = jsonStr;
     try {
-      res = JSON.parse(jsonStr);
+      return JSON.parse(jsonStr);
     } catch (e) {
-      console.log(e);
+      return jsonStr;
     }
-    return res;
   };
 
-  useEffect(() => {
-    if (!scrollableRef.current) return;
-    scrollableRef.current.scrollTo(0, scrollableRef.current.scrollHeight);
-  }, [messages?.length]);
+  const [messageApi, contextHolder] = message.useMessage();
 
-  useEffect(() => {
-    if (initMessage && messages.length <= 0) {
-      handleInitMessage();
+  const onCopyContext = async (context: any) => {
+    const pureStr = context?.replace(/\trelations:.*/g, '');
+    const result = copy(pureStr);
+    if (result) {
+      if (pureStr) {
+        messageApi.open({ type: 'success', content: t('Copy_success') });
+      } else {
+        messageApi.open({ type: 'warning', content: t('Copy_nothing') });
+      }
+    } else {
+      messageApi.open({ type: 'error', content: t('Copry_error') });
     }
-  }, [handleInitMessage, initMessage, messages.length]);
+  };
 
-  useEffect(() => {
-    if (paramsOpts?.length) {
-      setCurrentParam(spaceNameOriginal || paramsOpts[0].value);
+  useAsyncEffect(async () => {
+    const initMessage = getInitMessage();
+    if (initMessage && initMessage.id === chatId) {
+      await handleChat(initMessage.message);
+      refreshDialogList();
+      localStorage.removeItem(STORAGE_INIT_MESSAGE_KET);
     }
-  }, [paramsOpts, paramsOpts?.length, spaceNameOriginal]);
+  }, [chatId]);
 
   useEffect(() => {
+    let tempMessage: IChatDialogueMessageSchema[] = messages;
     if (isChartChat) {
-      let temp = lodash.cloneDeep(messages);
-      temp.forEach((item) => {
+      tempMessage = loadsh.cloneDeep(messages).map((item) => {
         if (item?.role === 'view' && typeof item?.context === 'string') {
           item.context = handleJson2Obj(item?.context);
         }
+        return item;
       });
-      setShowMessages(temp.filter((item) => ['view', 'human'].includes(item.role)));
-    } else {
-      setShowMessages(messages.filter((item) => ['view', 'human'].includes(item.role)));
     }
+    setShowMessages(tempMessage.filter((item) => ['view', 'human'].includes(item.role)));
   }, [isChartChat, messages]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      scrollableRef.current?.scrollTo(0, scrollableRef.current.scrollHeight);
+    }, 50);
+  }, [messages]);
 
   return (
     <>
+      {contextHolder}
       <div ref={scrollableRef} className="flex flex-1 overflow-y-auto pb-8 w-full flex-col">
         <div className="flex items-center flex-1 flex-col text-sm leading-6 text-slate-900 dark:text-slate-300 sm:text-base sm:leading-7">
-          {showMessages?.map((content, index) => {
-            return (
-              <ChatContent
-                key={index}
-                content={content}
-                isChartChat={isChartChat}
-                onLinkClick={() => {
-                  setJsonModalOpen(true);
-                  setCurrentJsonIndex(index);
-                  setJsonValue(JSON.stringify(content?.context, null, 2));
-                }}
-              />
-            );
-          })}
+          {showMessages.length ? (
+            showMessages.map((content, index) => {
+              return (
+                <ChatContent
+                  key={index}
+                  content={content}
+                  isChartChat={isChartChat}
+                  onLinkClick={() => {
+                    setJsonModalOpen(true);
+                    setJsonValue(JSON.stringify(content?.context, null, 2));
+                  }}
+                >
+                  {content.role === 'view' && (
+                    <div className="flex w-full flex-row-reverse pt-2 px-4">
+                      <ChatFeedback
+                        conv_index={Math.ceil((index + 1) / 2)}
+                        question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
+                        knowledge_space={spaceNameOriginal || dbParam || ''}
+                      />
+                      <Tooltip title={t('Copy')}>
+                        <Button
+                          onClick={() => onCopyContext(content?.context)}
+                          slots={{ root: IconButton }}
+                          slotProps={{ root: { variant: 'plain', color: 'primary' } }}
+                          sx={{ borderRadius: 40 }}
+                        >
+                          <CopyOutlined />
+                        </Button>
+                      </Tooltip>
+                    </div>
+                  )}
+                </ChatContent>
+              );
+            })
+          ) : (
+            <Empty
+              image="/empty.png"
+              imageStyle={{ width: 320, height: 320, margin: '0 auto', maxWidth: '100%', maxHeight: '100%' }}
+              className="flex items-center justify-center flex-col h-full w-full"
+              description="Start a conversation"
+            />
+          )}
         </div>
       </div>
       <div
@@ -138,61 +160,26 @@ const Completion = ({ messages, onSubmit, paramsObj = {}, clearInitMessage }: Pr
           },
         )}
       >
-        <form
-          className="flex flex-wrap w-full py-2 sm:pt-6 sm:pb-10"
-          onSubmit={(e) => {
-            e.stopPropagation();
-            methods.handleSubmit(submit)(e);
-          }}
-        >
-          {!!paramsOpts?.length && (
-            <div
-              className={classNames('flex flex-grow items-center h-12 mb-2', {
-                'max-w-[6rem] sm:max-w-[12rem] mr-2': scene !== 'chat_dashboard',
-              })}
-            >
-              <Select
-                className="h-full w-full"
-                value={currentParam}
-                onChange={(_, newValue) => {
-                  setCurrentParam(newValue ?? '');
-                }}
-              >
-                {paramsOpts.map((item) => (
-                  <Option key={item.key} value={item.value}>
-                    {item.key}
-                  </Option>
-                ))}
-              </Select>
-            </div>
-          )}
-          <Input
-            disabled={scene === 'chat_excel' && !currentDialogue?.select_param}
-            className="flex-1 h-12 min-w-min"
-            style={{ minWidth: 'min-content' }}
-            variant="outlined"
-            startDecorator={renderModelIcon(model || '')}
-            endDecorator={<IconButton type="submit">{isLoading ? <CircularProgress /> : <SendRoundedIcon />}</IconButton>}
-            {...methods.register('query')}
-          />
-        </form>
+        <div className="flex flex-wrap w-full py-2 sm:pt-6 sm:pb-10">
+          {model && <div className="mr-2 flex items-center h-10">{renderModelIcon(model)}</div>}
+          <CompletionInput loading={isLoading} onSubmit={handleChat} />
+        </div>
       </div>
       <Modal
+        title="JSON Editor"
         open={jsonModalOpen}
-        onClose={() => {
+        width="60%"
+        cancelButtonProps={{
+          hidden: true,
+        }}
+        onOk={() => {
+          setJsonModalOpen(false);
+        }}
+        onCancel={() => {
           setJsonModalOpen(false);
         }}
       >
-        <ModalDialog
-          className="w-1/2 h-[600px] flex items-center justify-center"
-          aria-labelledby="variant-modal-title"
-          aria-describedby="variant-modal-description"
-        >
-          <MonacoEditor className="w-full h-[500px]" language="json" value={jsonValue} />
-          <Button variant="outlined" className="w-full mt-2" onClick={() => setJsonModalOpen(false)}>
-            OK
-          </Button>
-        </ModalDialog>
+        <MonacoEditor className="w-full h-[500px]" language="json" value={jsonValue} />
       </Modal>
     </>
   );

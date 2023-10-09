@@ -1,4 +1,4 @@
-'use client';
+import { STORAGE_LANG_KEY } from '@/constant';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -83,6 +83,7 @@ const resources = {
       Database: 'Database',
       Data_Source: 'Data Center',
       Close_Sidebar: 'Fold',
+      Show_Sidebar: 'UnFold',
       language: 'Language',
       choose_model: 'Please choose a model',
       data_center_desc: 'DB-GPT also offers a user-friendly data center management interface for efficient data maintenance.',
@@ -97,6 +98,43 @@ const resources = {
       close: 'Close',
       start_model_success: 'Start model success',
       download_model_tip: 'Please download model first.',
+      Open_Sidebar: 'Unfold',
+      cancel: 'Cancel',
+      Edit_Success: 'Edit Success',
+      Add: 'Add',
+      Add_Success: 'Add Success',
+      Error_Message: 'Something Error',
+      Please_Input: 'Please Input',
+      Prompt_Info_Scene: 'Scene',
+      Prompt_Info_Sub_Scene: 'Sub Scene',
+      Prompt_Info_Name: 'Name',
+      Prompt_Info_Content: 'Content',
+      Public: 'Public',
+      Private: 'Private',
+      Lowest: 'Lowest',
+      Missed: 'Missed',
+      Lost: 'Lost',
+      Incorrect: 'Incorrect',
+      Verbose: 'Verbose',
+      Best: 'Best',
+      Rating: 'Rating',
+      Q_A_Category: 'Q&A Category',
+      Q_A_Rating: 'Q&A Rating',
+      feed_back_desc:
+        '0: No results\n' +
+        '1: Results exist, but they are irrelevant, the question is not understood\n' +
+        '2: Results exist, the question is understood, but it indicates that the question cannot be answered\n' +
+        '3: Results exist, the question is understood, and an answer is given, but the answer is incorrect\n' +
+        '4: Results exist, the question is understood, the answer is correct, but it is verbose and lacks a summary\n' +
+        '5: Results exist, the question is understood, the answer is correct, the reasoning is correct, and a summary is provided, concise and to the point\n',
+      input_count: 'Total input',
+      input_unit: 'characters',
+      Copy: 'Copy',
+      Copy_success: 'Content copied successfully',
+      Copy_nothing: 'Content copied is empty',
+      Copry_error: 'Copy failed',
+      Click_Select: 'Click&Select',
+      Quick_Start: 'Quick Start',
     },
   },
   zh: {
@@ -163,7 +201,6 @@ const resources = {
       The_size_of_the_data_chunks: '处理中使用的数据块的大小',
       chunk_overlap: '块重叠',
       The_amount_of_overlap: '相邻数据块之间的重叠量',
-      Prompt: '迅速的',
       scene: '场景',
       A_contextual_parameter: '用于定义使用提示的设置或环境的上下文参数',
       template: '模板',
@@ -179,6 +216,7 @@ const resources = {
       Database: '数据库',
       Data_Source: '数据中心',
       Close_Sidebar: '收起',
+      Show_Sidebar: '展开',
       language: '语言',
       choose_model: '请选择一个模型',
       data_center_desc: 'DB-GPT支持数据库交互和基于文档的对话，它还提供了一个用户友好的数据中心管理界面。',
@@ -192,6 +230,44 @@ const resources = {
       submit: '提交',
       start_model_success: '启动模型成功',
       download_model_tip: '请先下载模型！',
+      Prompt: '提示语',
+      Open_Sidebar: '展开',
+      cancel: '取消',
+      Edit_Success: '编辑成功',
+      Add: '新增',
+      Add_Success: '新增成功',
+      Error_Message: '出错了',
+      Please_Input: '请输入',
+      Prompt_Info_Scene: '场景',
+      Prompt_Info_Sub_Scene: '次级场景',
+      Prompt_Info_Name: '名称',
+      Prompt_Info_Content: '内容',
+      Public: '公共',
+      Private: '私有',
+      Lowest: '渣渣',
+      Missed: '没理解',
+      Lost: '答不了',
+      Incorrect: '答错了',
+      Verbose: '较啰嗦',
+      Best: '真棒',
+      Rating: '评分',
+      Q_A_Category: '问答类别',
+      Q_A_Rating: '问答评分',
+      feed_back_desc:
+        '0: 无结果\n' +
+        '1: 有结果，但是在文不对题，没有理解问题\n' +
+        '2: 有结果，理解了问题，但是提示回答不了这个问题\n' +
+        '3: 有结果，理解了问题，并做出回答，但是回答的结果错误\n' +
+        '4: 有结果，理解了问题，回答结果正确，但是比较啰嗦，缺乏总结\n' +
+        '5: 有结果，理解了问题，回答结果正确，推理正确，并给出了总结，言简意赅\n',
+      input_count: '共计输入',
+      input_unit: '字',
+      Copy: '复制',
+      Copy_success: '内容复制成功',
+      Copy_nothing: '内容复制为空',
+      Copry_error: '复制失败',
+      Click_Select: '点击选择',
+      Quick_Start: '快速开始',
     },
   },
 };

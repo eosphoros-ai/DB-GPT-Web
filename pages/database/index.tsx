@@ -89,7 +89,6 @@ function Database() {
             refreshDbList();
             resolve();
           } catch (e: any) {
-            message.error(e.message);
             reject();
           }
         });

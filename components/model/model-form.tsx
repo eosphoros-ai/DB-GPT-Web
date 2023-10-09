@@ -12,6 +12,7 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
   const [models, setModels] = useState<Array<SupportModel> | null>([]);
   const [selectedModel, setSelectedModel] = useState<SupportModel>();
   const [params, setParams] = useState<Array<SupportModelParams> | null>(null);
+  const [form] = Form.useForm();
 
   async function getModels() {
     const [, res] = await apiInterceptors(getSupportModels());
@@ -62,14 +63,14 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
 
   return (
     <div className="">
-      <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={onFinish}>
+      <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={onFinish} form={form}>
         <Form.Item label="Model" name="model" rules={[{ required: true, message: t('model_select_tips') }]}>
           <Select showSearch onChange={handleChange}>
             {models?.map((model) => (
               <Option key={model.model} value={model.model} label={model.model} model={model} disabled={!model.enabled}>
                 {renderModelIcon(model.model)}
                 <Tooltip title={model.enabled ? model.model : t('download_model_tip')}>
-                  <span>{model.model}</span>
+                  <span className="ml-2">{model.model}</span>
                 </Tooltip>
                 <Tooltip title={model.enabled ? `${model.host}:${model.port}` : t('download_model_tip')}>
                   <p className="inline-block absolute right-4">
@@ -81,7 +82,7 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
             ))}
           </Select>
         </Form.Item>
-        <ModelParams params={params} />
+        <ModelParams params={params} form={form} />
         <div className="flex justify-center">
           <Button type="primary" htmlType="submit">
             {t('submit')}

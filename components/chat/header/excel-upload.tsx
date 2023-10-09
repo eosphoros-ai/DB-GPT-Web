@@ -1,5 +1,5 @@
 import { PropsWithChildren, useContext, useState } from 'react';
-import { Upload, UploadProps, Button, message, UploadFile, Tooltip, Progress, ProgressProps } from 'antd';
+import { Upload, UploadProps, Button, message, UploadFile, Tooltip } from 'antd';
 import { LinkOutlined, SelectOutlined, UploadOutlined } from '@ant-design/icons';
 import { apiInterceptors, postChatModeParamsFileLoad } from '@/client/api';
 import { ChatContext } from '@/app/chat-context';
@@ -15,7 +15,6 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
   const [messageApi, contextHolder] = message.useMessage();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [percent, setPercent] = useState<number>();
-  const [uploadState, setUploadState] = useState<ProgressProps['status']>();
   const { model } = useContext(ChatContext);
 
   const onChange: UploadProps['onChange'] = async (info) => {
@@ -33,7 +32,6 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
 
   const onUpload = async () => {
     setLoading(true);
-    setUploadState('normal');
     try {
       const formData = new FormData();
       formData.append('doc_file', fileList[0] as any);
@@ -56,10 +54,8 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
       );
       if (err) return;
       message.success('success');
-      setUploadState('success');
       onComplete?.();
     } catch (e: any) {
-      setUploadState('exception');
       message.error(e?.message || 'Upload Error');
     } finally {
       setLoading(false);
@@ -71,7 +67,7 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
     <>
       <div className="flex items-start gap-2">
         {contextHolder}
-        <Tooltip placement="topLeft" title="Files cannot be changed after upload">
+        <Tooltip placement="bottom" title="File cannot be changed after upload">
           <Upload
             disabled={loading}
             className="mr-1"
@@ -89,7 +85,7 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
             itemRender={() => <></>}
             {...props}
           >
-            <Button className="flex justify-center items-center dark:bg-[#4e4f56] dark:text-gray-200" disabled={loading} icon={<SelectOutlined />}>
+            <Button className="flex justify-center items-center" type="primary" disabled={loading} icon={<SelectOutlined />}>
               Select File
             </Button>
           </Upload>
@@ -97,7 +93,7 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
         <Button
           type="primary"
           loading={loading}
-          className="flex justify-center items-center dark:text-white"
+          className="flex justify-center items-center"
           disabled={!fileList.length}
           icon={<UploadOutlined />}
           onClick={onUpload}
@@ -111,7 +107,6 @@ function ExcelUpload({ convUid, chatMode, onComplete, ...props }: PropsWithChild
           </div>
         )}
       </div>
-      {/* {typeof percent === 'number' && <Progress className="mb-0 absolute" percent={percent} size="small" status={uploadState} />} */}
     </>
   );
 }

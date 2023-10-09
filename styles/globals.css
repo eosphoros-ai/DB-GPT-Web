@@ -43,7 +43,7 @@ table tr td {
 
 /* 自定义滚动条样式 */
 ::-webkit-scrollbar {
-  width: 0;
+  display: none;
 }
 
 ::-webkit-scrollbar-track {
