@@ -137,20 +137,20 @@ export default function CollapseContainer(props: IProps) {
                   <>
                     <EyeFilled
                       className="mr-2"
-                      style={{ color: '#1b7eff' }}
+                      style={{ color: '#1b7eff', fontSize: '20px' }}
                       onClick={() => {
                         setChunkModal({ spaceName: knowledge.name, open: true, id: item.id });
                       }}
                     />
                     <InteractionFilled
                       className="mr-2"
-                      style={{ color: '#1b7eff' }}
+                      style={{ color: '#1b7eff', fontSize: '20px' }}
                       onClick={() => {
                         handleSync(item);
                       }}
                     />
                     <DeleteFilled
-                      style={{ color: '#ff1b2e' }}
+                      style={{ color: '#ff1b2e', fontSize: '20px' }}
                       onClick={() => {
                         handleDelete(item);
                       }}
@@ -186,10 +186,10 @@ export default function CollapseContainer(props: IProps) {
   return (
     <div className="collapse-container pt-2 px-4">
       <Space>
-        <Button size="small" type="primary" className="flex items-center" icon={<PlusOutlined />} onClick={handleAddDocument}>
+        <Button size="middle" type="primary" className="flex items-center" icon={<PlusOutlined />} onClick={handleAddDocument}>
           {t('Add_Datasource')}
         </Button>
-        <Button size="small" className="flex items-center mx-2" icon={<ToolFilled />} onClick={handleArguments}>
+        <Button size="middle" className="flex items-center mx-2" icon={<ToolFilled />} onClick={handleArguments}>
           Arguments
         </Button>
       </Space>

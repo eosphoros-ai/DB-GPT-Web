@@ -363,7 +363,7 @@ const SpaceParameterModal = ({ spaceName, isParameterModalShow, setIsParameterMo
               setIsParameterModalShow(false);
             }}
           >
-            关闭
+            {t('close')}
           </Button>
         </Stack>
       </Sheet>
