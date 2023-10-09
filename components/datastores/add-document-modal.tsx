@@ -74,7 +74,7 @@ export default function AddDocumentModal(props: any) {
   const Item = styled(Sheet)(({ theme }) => ({
     width: '50%',
     backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.level1 : '#fff',
-    ...theme.typography.body2,
+    ...theme.typography,
     padding: theme.spacing(1),
     textAlign: 'center',
     borderRadius: 4,

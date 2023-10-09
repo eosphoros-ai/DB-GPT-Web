@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Popover, ConfigProvider, Button, Modal, message } from 'antd';
 import { useRouter } from 'next/router';
-import { DeleteTwoTone, MessageTwoTone, ExclamationCircleFilled } from '@ant-design/icons';
+import { DeleteTwoTone, MessageTwoTone, ExclamationCircleFilled, FileSearchOutlined } from '@ant-design/icons';
 import { IKnowLedge } from '@/types/knowledge';
-import ContentPasteSearchOutlinedIcon from '@mui/icons-material/ContentPasteSearchOutlined';
+
 import { sendSpacePostRequest } from '@/utils/request';
 import CollapseContainer from '../collapse-container';
 import './index.css';
@@ -76,8 +76,8 @@ export default function StoresCard(props: IProps) {
       <Popover className={className} placement="bottom" trigger="click" content={<CollapseContainer knowledge={item} />}>
         <div className="flex justify-between mx-6 mt-3">
           <div className="text-lg font-bold text-black truncate">
-            <ContentPasteSearchOutlinedIcon className="mr-[5px] text-[#2AA3FF]" />
-            <span className="dark:text-white">{item?.name}</span>
+            <FileSearchOutlined style={{ fontSize: '20px' }} className=" text-[#2AA3FF] mr-[5px]   " />
+            <span className="dark:text-white ml-2">{item?.name}</span>
           </div>
           <DeleteTwoTone
             onClick={(e) => {

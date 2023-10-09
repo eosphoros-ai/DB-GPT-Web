@@ -126,7 +126,7 @@ export default function CollapseContainer(props: IProps) {
             return (
               <Card
                 key={index}
-                className="bg-[#FFFFFF] dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full"
+                className=" dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full"
                 title={
                   <div>
                     {renderDocTypeIcon(item.doc_type)}
