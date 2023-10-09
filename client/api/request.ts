@@ -137,5 +137,3 @@ export const postChatFeedBackForm = ({ data, config }: { data: ChatFeedBackSchem
     ...config,
   });
 };
-
-/** prompt **/

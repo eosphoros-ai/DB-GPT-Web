@@ -1,4 +1,4 @@
-'use client';
+
 import { useRequest } from 'ahooks';
 import { useContext, useState } from 'react';
 import { Divider, Spin } from 'antd';
