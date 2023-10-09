@@ -127,7 +127,7 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
 
   const [contextMsg, relation] = typeof context === 'string' ? context.split('\trelations:') : [context];
   const relations = (relation && typeof relation === 'string' ? relation : null)?.split(',');
-  console.log(relations);
+
   return (
     <>
       <div
