@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useAsyncEffect } from 'ahooks';
 import useChat from '@/hooks/use-chat';
-import Completion from '@/components/chat/completion';
+import Completion from './completion';
 import { ChartData, ChatHistoryResponse } from '@/types/chart';
 import { apiInterceptors, getChatHistory } from '@/client/api';
 import { ChatContext } from '@/app/chat-context';

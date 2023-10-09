@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
-import { DbListResponse, DbSupportTypeResponse, PostDbParams } from '@/types/db';
-import { IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse, DialogueListResponse } from '@/types/chart';
+import { DbListResponse, DbSupportTypeResponse, PostDbParams, ChatFeedBackSchema } from '@/types/db';
+import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chart';
 import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
 import {
   GetEditorSQLRoundRequest,
@@ -49,6 +49,9 @@ export const getUsableModels = () => {
 };
 export const postChatModeParamsList = (chatMode: string) => {
   return POST<null, Record<string, string>>(`/api/v1/chat/mode/params/list?chat_mode=${chatMode}`);
+};
+export const postChatModeParamsInfoList = (chatMode: string) => {
+  return POST<null, Record<string, string>>(`/api/v1/chat/mode/params/info?chat_mode=${chatMode}`);
 };
 export const getChatHistory = (convId: string) => {
   return GET<null, ChatHistoryResponse>(`/api/v1/chat/dialogue/messages/history?con_uid=${convId}`);
@@ -118,3 +121,21 @@ export const startModel = (data: StartModelParams) => {
 export const getSupportModels = () => {
   return GET<null, Array<SupportModel>>('/api/v1/worker/model/params');
 };
+
+/** chat feedback **/
+export const getChatFeedBackSelect = () => {
+  return GET<null, Record<string, string>>(`/api/v1/feedback/select`, undefined);
+};
+export const getChatFeedBackItme = (conv_uid: string, conv_index: number) => {
+  return GET<null, Record<string, string>>(`/api/v1/feedback/find?conv_uid=${conv_uid}&conv_index=${conv_index}`, undefined);
+};
+export const postChatFeedBackForm = ({ data, config }: { data: ChatFeedBackSchema; config?: Omit<AxiosRequestConfig, 'headers'> }) => {
+  return POST<ChatFeedBackSchema, any>(`/api/v1/feedback/commit`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...config,
+  });
+};
+
+/** prompt **/

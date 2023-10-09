@@ -66,6 +66,12 @@ function SideBar() {
   const routes = useMemo(() => {
     const items: RouteItem[] = [
       {
+        key: 'prompt',
+        name: t('Prompt'),
+        icon: <MessageOutlined />,
+        path: '/prompt',
+      },
+      {
         key: 'database',
         name: t('Database'),
         icon: <ConsoleSqlOutlined />,
@@ -308,7 +314,7 @@ function SideBar() {
         <div className="flex items-center justify-around mt-4 pt-6 border-t border-dashed">
           {settings.map((item) => (
             <Tooltip key={item.key} title={item.name}>
-              <div className="flex-1 flex items-center justify-center cursor-pointer text-2xl" onClick={item.onClick}>
+              <div className="flex-1 flex items-center justify-center cursor-pointer text-xl" onClick={item.onClick}>
                 {item.icon}
               </div>
             </Tooltip>
