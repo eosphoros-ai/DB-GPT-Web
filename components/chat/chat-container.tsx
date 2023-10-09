@@ -11,6 +11,7 @@ import classNames from 'classnames';
 import MuiLoading from '../common/loading';
 import { Empty } from 'antd';
 import { useSearchParams } from 'next/navigation';
+import { getInitMessage } from '@/utils';
 
 const ChatContainer = () => {
   const searchParams = useSearchParams();
@@ -42,7 +43,8 @@ const ChatContainer = () => {
   };
 
   useAsyncEffect(async () => {
-    if (initMessage) return;
+    const initMessage = getInitMessage();
+    if (initMessage && initMessage.id === chatId) return;
     await getHistory();
   }, [initMessage, chatId]);
 

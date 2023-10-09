@@ -35,6 +35,10 @@ function CompletionInput({ children, loading, onSubmit, ...props }: PropsWithChi
           }
         }}
         onChange={(e) => {
+          if (typeof props.maxLength === 'number') {
+            setUserInput(e.target.value.substring(0, props.maxLength));
+            return;
+          }
           setUserInput(e.target.value);
         }}
       />

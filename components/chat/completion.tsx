@@ -16,6 +16,7 @@ import { useAsyncEffect } from 'ahooks';
 import { STORAGE_INIT_MESSAGE_KET } from '@/constant';
 import { Button, IconButton } from '@/lib/mui';
 import { CopyOutlined } from '@ant-design/icons';
+import { getInitMessage } from '@/utils';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
@@ -75,18 +76,12 @@ const Completion = ({ messages, onSubmit }: Props) => {
   };
 
   useAsyncEffect(async () => {
-    try {
-      const initMessage = localStorage.getItem(STORAGE_INIT_MESSAGE_KET);
-      const data = handleJson2Obj(initMessage ?? '');
-      if (typeof data === 'object') {
-        const { id, initMessage } = data as { id: string; initMessage: string };
-        if (chatId === id) {
-          await handleChat(initMessage);
-          refreshDialogList();
-          localStorage.removeItem(STORAGE_INIT_MESSAGE_KET);
-        }
-      }
-    } catch (e) {}
+    const initMessage = getInitMessage();
+    if (initMessage && initMessage.id === chatId) {
+      await handleChat(initMessage.message);
+      refreshDialogList();
+      localStorage.removeItem(STORAGE_INIT_MESSAGE_KET);
+    }
   }, [chatId]);
 
   useEffect(() => {
