@@ -6,7 +6,6 @@ import { ChatContext } from '@/app/chat-context';
 import { ModelType } from '@/types/chart';
 import { Select } from 'antd';
 import { ICON_MAP } from '@/utils/constants';
-import classNames from 'classnames';
 import Image from 'next/image';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +16,7 @@ interface Props {
 
 const DEFAULT_ICON_URL = '/models/huggingface.svg';
 
-export function renderModelIcon(model?: string | undefined, props?: { width: number; height: number }) {
+export function renderModelIcon(model?: string, props?: { width: number; height: number }) {
   const { width, height } = props || {};
 
   if (!model) return null;

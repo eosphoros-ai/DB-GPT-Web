@@ -2,15 +2,21 @@ import { useState, useRef, useEffect, useMemo, useContext } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MonacoEditor from './monaco-editor';
 import ChatContent from './chat-content';
+import ChatFeedback from './chat-feedback';
 import { ChatContext } from '@/app/chat-context';
 import { IChatDialogueMessageSchema } from '@/types/chart';
 import classNames from 'classnames';
-import { Input, Button, Empty, Modal } from 'antd';
-import { SendOutlined } from '@ant-design/icons';
+import { Empty, Modal, message, Tooltip } from 'antd';
 import { renderModelIcon } from './header/model-selector';
 import loadsh from 'lodash';
-
-const { TextArea } = Input;
+import copy from 'copy-to-clipboard';
+import { useTranslation } from 'react-i18next';
+import CompletionInput from '../common/completion-input';
+import { useAsyncEffect } from 'ahooks';
+import { STORAGE_INIT_MESSAGE_KET } from '@/constant';
+import { Button, IconButton } from '@/lib/mui';
+import { CopyOutlined } from '@ant-design/icons';
+import { getInitMessage } from '@/utils';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
@@ -18,42 +24,30 @@ type Props = {
 };
 
 const Completion = ({ messages, onSubmit }: Props) => {
-  const searchParams = useSearchParams();
-  const initMessage = (searchParams && searchParams.get('initMessage')) ?? '';
-  const spaceNameOriginal = (searchParams && searchParams.get('spaceNameOriginal')) ?? '';
   const { dbParam, currentDialogue, scene, model, refreshDialogList, chatId } = useContext(ChatContext);
+  const { t } = useTranslation();
+  const searchParams = useSearchParams();
+
+  const spaceNameOriginal = (searchParams && searchParams.get('spaceNameOriginal')) ?? '';
 
   const [isLoading, setIsLoading] = useState(false);
   const [jsonModalOpen, setJsonModalOpen] = useState(false);
   const [showMessages, setShowMessages] = useState(messages);
   const [jsonValue, setJsonValue] = useState<string>('');
-  const [userInput, setUserInput] = useState<string>(initMessage);
 
   const scrollableRef = useRef<HTMLDivElement>(null);
 
   const isChartChat = useMemo(() => scene === 'chat_dashboard', [scene]);
 
-  const handleChat = async () => {
-    if (isLoading || !userInput.trim()) return;
+  const handleChat = async (message: string) => {
+    if (isLoading || !message.trim()) return;
     try {
       setIsLoading(true);
-      setUserInput('');
-      await onSubmit(userInput.trim(), {
+      await onSubmit(message, {
         select_param: scene === 'chat_excel' ? currentDialogue?.select_param : spaceNameOriginal || dbParam,
       });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleInitMessage = async () => {
-    try {
-      const searchParamsTemp = new URLSearchParams(window.location.search);
-      searchParamsTemp.delete('initMessage');
-      window.history?.replaceState(null, '', `?${searchParamsTemp.toString()}`);
-      await handleChat();
-    } finally {
-      refreshDialogList();
     }
   };
 
@@ -65,11 +59,30 @@ const Completion = ({ messages, onSubmit }: Props) => {
     }
   };
 
-  useEffect(() => {
-    if (initMessage) {
-      handleInitMessage();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const onCopyContext = async (context: any) => {
+    const pureStr = context?.replace(/\trelations:.*/g, '');
+    const result = copy(pureStr);
+    if (result) {
+      if (pureStr) {
+        messageApi.open({ type: 'success', content: t('Copy_success') });
+      } else {
+        messageApi.open({ type: 'warning', content: t('Copy_nothing') });
+      }
+    } else {
+      messageApi.open({ type: 'error', content: t('Copry_error') });
     }
-  }, []);
+  };
+
+  useAsyncEffect(async () => {
+    const initMessage = getInitMessage();
+    if (initMessage && initMessage.id === chatId) {
+      await handleChat(initMessage.message);
+      refreshDialogList();
+      localStorage.removeItem(STORAGE_INIT_MESSAGE_KET);
+    }
+  }, [chatId]);
 
   useEffect(() => {
     let tempMessage: IChatDialogueMessageSchema[] = messages;
@@ -92,6 +105,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
 
   return (
     <>
+      {contextHolder}
       <div ref={scrollableRef} className="flex flex-1 overflow-y-auto pb-8 w-full flex-col">
         <div className="flex items-center flex-1 flex-col text-sm leading-6 text-slate-900 dark:text-slate-300 sm:text-base sm:leading-7">
           {showMessages.length ? (
@@ -105,7 +119,27 @@ const Completion = ({ messages, onSubmit }: Props) => {
                     setJsonModalOpen(true);
                     setJsonValue(JSON.stringify(content?.context, null, 2));
                   }}
-                />
+                >
+                  {content.role === 'view' && (
+                    <div className="flex w-full flex-row-reverse pt-2 px-4">
+                      <ChatFeedback
+                        conv_index={Math.ceil((index + 1) / 2)}
+                        question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
+                        knowledge_space={spaceNameOriginal || dbParam || ''}
+                      />
+                      <Tooltip title={t('Copy')}>
+                        <Button
+                          onClick={() => onCopyContext(content?.context)}
+                          slots={{ root: IconButton }}
+                          slotProps={{ root: { variant: 'plain', color: 'primary' } }}
+                          sx={{ borderRadius: 40 }}
+                        >
+                          <CopyOutlined />
+                        </Button>
+                      </Tooltip>
+                    </div>
+                  )}
+                </ChatContent>
               );
             })
           ) : (
@@ -128,29 +162,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
       >
         <div className="flex flex-wrap w-full py-2 sm:pt-6 sm:pb-10">
           {model && <div className="mr-2 flex items-center h-10">{renderModelIcon(model)}</div>}
-          <TextArea
-            className="flex-1"
-            size="large"
-            value={userInput}
-            disabled={scene === 'chat_excel' && !currentDialogue?.select_param}
-            autoSize={{ minRows: 1, maxRows: 4 }}
-            onPressEnter={(e) => {
-              if (e.keyCode === 13) {
-                handleChat();
-              }
-            }}
-            onChange={(e) => {
-              setUserInput(e.target.value);
-            }}
-          />
-          <Button
-            className="ml-2 flex items-center justify-center"
-            size="large"
-            type="text"
-            loading={isLoading}
-            icon={<SendOutlined />}
-            onClick={handleChat}
-          />
+          <CompletionInput loading={isLoading} onSubmit={handleChat} />
         </div>
       </div>
       <Modal

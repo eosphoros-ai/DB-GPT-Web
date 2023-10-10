@@ -1,7 +1,21 @@
 import { SupportModelParams } from '@/types/model';
-import { Checkbox, Form, Input, InputNumber } from 'antd';
+import { Checkbox, Form, FormInstance, Input, InputNumber } from 'antd';
+import { useEffect } from 'react';
 
-function ModelParams({ params }: { params: Array<SupportModelParams> | null }) {
+interface ParamValues {
+  [key: string]: string | number | boolean;
+}
+
+function ModelParams({ params, form }: { params: Array<SupportModelParams> | null; form: FormInstance<any> }) {
+  useEffect(() => {
+    if (params) {
+      const initialValues: ParamValues = {};
+      params.forEach((param) => {
+        initialValues[param.param_name] = param.default_value;
+      });
+      form.setFieldsValue(initialValues); // 设置表单字段的初始值
+    }
+  }, [params, form]);
   if (!params || params?.length < 1) {
     return null;
   }

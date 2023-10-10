@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useAsyncEffect } from 'ahooks';
 import useChat from '@/hooks/use-chat';
-import Completion from '@/components/chat/completion';
+import Completion from './completion';
 import { ChartData, ChatHistoryResponse } from '@/types/chart';
 import { apiInterceptors, getChatHistory } from '@/client/api';
 import { ChatContext } from '@/app/chat-context';
@@ -11,6 +11,7 @@ import classNames from 'classnames';
 import MuiLoading from '../common/loading';
 import { Empty } from 'antd';
 import { useSearchParams } from 'next/navigation';
+import { getInitMessage } from '@/utils';
 
 const ChatContainer = () => {
   const searchParams = useSearchParams();
@@ -42,7 +43,8 @@ const ChatContainer = () => {
   };
 
   useAsyncEffect(async () => {
-    if (initMessage) return;
+    const initMessage = getInitMessage();
+    if (initMessage && initMessage.id === chatId) return;
     await getHistory();
   }, [initMessage, chatId]);
 

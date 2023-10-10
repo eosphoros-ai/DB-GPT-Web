@@ -12,6 +12,7 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
   const [models, setModels] = useState<Array<SupportModel> | null>([]);
   const [selectedModel, setSelectedModel] = useState<SupportModel>();
   const [params, setParams] = useState<Array<SupportModelParams> | null>(null);
+  const [form] = Form.useForm();
 
   async function getModels() {
     const [, res] = await apiInterceptors(getSupportModels());
@@ -62,7 +63,7 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
 
   return (
     <div className="">
-      <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={onFinish}>
+      <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={onFinish} form={form}>
         <Form.Item label="Model" name="model" rules={[{ required: true, message: t('model_select_tips') }]}>
           <Select showSearch onChange={handleChange}>
             {models?.map((model) => (
@@ -81,7 +82,7 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
             ))}
           </Select>
         </Form.Item>
-        <ModelParams params={params} />
+        <ModelParams params={params} form={form} />
         <div className="flex justify-center">
           <Button type="primary" htmlType="submit">
             {t('submit')}

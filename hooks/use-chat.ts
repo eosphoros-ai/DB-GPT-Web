@@ -5,7 +5,6 @@ import i18n from '@/app/i18n';
 
 type Props = {
   queryAgentURL?: string;
-  channel?: 'dashboard' | 'website' | 'slack' | 'crisp';
 };
 
 type ChatParams = {
@@ -18,7 +17,7 @@ type ChatParams = {
   onError?: (content: string, error?: Error) => void;
 };
 
-const useChat = ({ queryAgentURL = '/api/v1/chat/completions', channel }: Props) => {
+const useChat = ({ queryAgentURL = '/api/v1/chat/completions' }: Props) => {
   const ctrl = useMemo(() => new AbortController(), []);
 
   const chat = useCallback(
@@ -32,7 +31,6 @@ const useChat = ({ queryAgentURL = '/api/v1/chat/completions', channel }: Props)
         ...data,
         conv_uid: chatId,
         user_input: context,
-        channel,
       };
 
       if (!parmas.conv_uid) {
@@ -77,7 +75,7 @@ const useChat = ({ queryAgentURL = '/api/v1/chat/completions', channel }: Props)
         onError?.('Sorry, We meet some error, please try agin later.', err as Error);
       }
     },
-    [queryAgentURL, channel],
+    [queryAgentURL],
   );
 
   useEffect(() => {
