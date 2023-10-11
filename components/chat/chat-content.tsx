@@ -158,14 +158,12 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
           )}
           {/* Markdown */}
           {isRobot && typeof contextMsg === 'string' && (
-            <ReactMarkdown
-              children={contextMsg
+            <ReactMarkdown components={markdownComponents} rehypePlugins={[rehypeRaw]}>
+              {contextMsg
                 .replaceAll('\\n', '\n')
                 .replace(/<table(\w*=[^>]+)>/gi, '<table $1>')
                 .replace(/<tr(\w*=[^>]+)>/gi, '<tr $1>')}
-              components={markdownComponents}
-              rehypePlugins={[rehypeRaw]}
-            />
+            </ReactMarkdown>
           )}
           {typeof relations === 'object' && !!relations?.length && (
             <div className="flex flex-wrap mt-2">
