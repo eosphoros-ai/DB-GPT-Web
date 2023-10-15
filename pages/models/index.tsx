@@ -21,7 +21,7 @@ function Models() {
   }, []);
 
   return (
-    <div className="p-8">
+    <div className="p-8 h-full">
       <Button
         className="mb-8"
         type="primary"
