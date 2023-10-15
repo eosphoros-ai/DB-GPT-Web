@@ -68,7 +68,7 @@ export default function AddModal(props: IProps) {
 
   return (
     <Modal
-      title="Add knowledge"
+      title={type === 'knowledge' ? 'Add Knowledge' : 'Add Datasource'}
       centered
       open={isAddShow}
       onCancel={() => {
