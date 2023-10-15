@@ -217,12 +217,7 @@ export default function SpaceModal({ knowledge, isParameterModalShow, setIsParam
         argument: JSON.stringify(newSpaceArguments),
       }),
     );
-    if (res?.success) {
-      message.success('success');
-      setIsParameterModalShow(false);
-    } else {
-      message.error(res?.err_msg || 'failed');
-    }
+    res?.success && setIsParameterModalShow(false);
   };
   return (
     <Modal

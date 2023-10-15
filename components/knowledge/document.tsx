@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, message, Space, Divider, Empty, Spin, Tag, Tooltip, Modal } from 'antd';
+import { Button, Card, Space, Divider, Empty, Spin, Tag, Tooltip, Modal } from 'antd';
 import {
   DeleteFilled,
   InteractionFilled,
@@ -11,11 +11,11 @@ import {
   EyeFilled,
   ExclamationCircleFilled,
 } from '@ant-design/icons';
-import { apiInterceptors, delDocument, getDocumentList, postDocumentSync } from '@/client/api';
+import { apiInterceptors, delDocument, getDocumentList, syncDocument } from '@/client/api';
 import { IKnowLedge } from '@/types/knowledge';
 import moment from 'moment';
 import AddDocumentModal from './add-modal';
-import SpaceParameterModal from './space-modal';
+import SpaceParameterModal from './arguments';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 
@@ -27,23 +27,23 @@ interface IProps {
 const { confirm } = Modal;
 
 export const renderDocTypeIcon = (type: string) => {
-  if (type === 'TEXT') return <FileTextFilled className="text-[#2AA3FF] mr-2" />;
-  if (type === 'DOCUMENT') return <FileWordTwoTone className="text-[#2AA3FF] mr-2" />;
-  return <IeCircleFilled className="text-[#2AA3FF] mr-2" />;
+  if (type === 'TEXT') return <FileTextFilled className="text-[#2AA3FF] !text-3xl mr-2" />;
+  if (type === 'DOCUMENT') return <FileWordTwoTone className="text-[#2AA3FF] !text-3xl mr-2" />;
+  return <IeCircleFilled className="text-[#2AA3FF] !text-3xl mr-2" />;
 };
 
 export default function CollapseContainer(props: IProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const page_size = 20;
+
   const { knowledge, setDocumentCount } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [documents, setDocuments] = useState<any>([]);
   const [isAddDocumentShow, setIsAddDocumentShow] = useState<boolean>(false);
-  const [current, setCurrent] = useState<number>(0);
-
   const [isParameterModalShow, setIsParameterModalShow] = useState<boolean>(false);
-  const router = useRouter();
+
   const showDeleteConfirm = (row: any) => {
     confirm({
       title: 'Tips',
@@ -53,7 +53,7 @@ export default function CollapseContainer(props: IProps) {
       okType: 'danger',
       cancelText: 'No',
       async onOk() {
-        handleDelete(row);
+        await handleDelete(row);
       },
       onCancel() {
         console.log('Cancel');
@@ -70,29 +70,18 @@ export default function CollapseContainer(props: IProps) {
       }),
     );
 
-    setDocuments(data.data);
-    setDocumentCount(data.total);
-    setCurrent(data.page);
+    setDocuments(data?.data);
+    setDocumentCount(String(data?.total));
     setIsLoading(false);
   }
 
-  const handleSync = async (row: any) => {
-    const [_, data, res] = await apiInterceptors(postDocumentSync(knowledge?.name, { doc_ids: [row.id] }));
-    if (res?.success) {
-      message.success('success');
-    } else {
-      message.error(res?.err_msg || 'failed');
-    }
+  const handleSync = async (knowledgeName: string, id: number) => {
+    await apiInterceptors(syncDocument(knowledgeName, { doc_ids: [id] }));
   };
 
   const handleDelete = async (row: any) => {
-    const [_, data, res] = await apiInterceptors(delDocument(knowledge?.name, { doc_name: row.doc_name }));
-    if (res?.success) {
-      message.success('success');
-      fetchDocuments();
-    } else {
-      message.error(res?.err_msg || 'failed');
-    }
+    await apiInterceptors(delDocument(knowledge?.name, { doc_name: row.doc_name }));
+    fetchDocuments();
   };
 
   const handleAddDocument = () => {
@@ -132,9 +121,9 @@ export default function CollapseContainer(props: IProps) {
                 className=" dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full"
                 title={
                   <Tooltip title={item.doc_name}>
-                    <div className="truncate">
+                    <div className="truncate ">
                       {renderDocTypeIcon(item.doc_type)}
-                      {item.doc_name}
+                      <span className="!text-3xl">{item.doc_name}</span>
                     </div>
                   </Tooltip>
                 }
@@ -154,7 +143,7 @@ export default function CollapseContainer(props: IProps) {
                         className="mr-2"
                         style={{ color: '#1b7eff', fontSize: '20px' }}
                         onClick={() => {
-                          handleSync(item);
+                          handleSync(knowledge.name, item.id);
                         }}
                       />
                     </Tooltip>
@@ -202,6 +191,7 @@ export default function CollapseContainer(props: IProps) {
       <Divider />
       <Spin spinning={isLoading}>{renderCardList()}</Spin>
       <AddDocumentModal
+        syncDocuments={handleSync}
         fetchDocuments={fetchDocuments}
         setIsAddShow={setIsAddDocumentShow}
         isAddShow={isAddDocumentShow}

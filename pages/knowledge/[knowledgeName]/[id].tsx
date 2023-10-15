@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Card, Empty } from 'antd';
+import { Breadcrumb, Card, Empty } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { apiInterceptors, getChunkList } from '@/client/api';
 import { renderDocTypeIcon } from '@/components/knowledge/document';
 
 const page_size = 20;
 function Detail() {
+  const router = useRouter();
   const { t } = useTranslation();
   const [chunkList, setChunkList] = useState<any>([]);
   const {
@@ -15,7 +16,7 @@ function Detail() {
   const fetchChunks = async () => {
     const [_, data, res] = await apiInterceptors(
       getChunkList(knowledgeName as string, {
-        document_id: id,
+        document_id: id as string,
         page: 1,
         page_size,
       }),
@@ -30,6 +31,21 @@ function Detail() {
 
   return (
     <div>
+      <Breadcrumb
+        className="m-6"
+        items={[
+          {
+            title: 'Knowledge',
+            onClick() {
+              router.back();
+            },
+            path: '/knowledge',
+          },
+          {
+            title: chunkList?.[0]?.doc_name || 'Source Detail',
+          },
+        ]}
+      />
       {chunkList?.length > 0 ? (
         chunkList?.map((item: any, index: number) => {
           return (
