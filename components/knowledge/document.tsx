@@ -123,7 +123,7 @@ export default function CollapseContainer(props: IProps) {
                   <Tooltip title={item.doc_name}>
                     <div className="truncate ">
                       {renderDocTypeIcon(item.doc_type)}
-                      <span className="!text-3xl">{item.doc_name}</span>
+                      <span>{item.doc_name}</span>
                     </div>
                   </Tooltip>
                 }
