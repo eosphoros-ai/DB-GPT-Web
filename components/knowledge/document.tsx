@@ -27,9 +27,9 @@ interface IProps {
 const { confirm } = Modal;
 
 export const renderDocTypeIcon = (type: string) => {
-  if (type === 'TEXT') return <FileTextFilled className="text-[#2AA3FF] mr-2" />;
-  if (type === 'DOCUMENT') return <FileWordTwoTone className="text-[#2AA3FF] mr-2" />;
-  return <IeCircleFilled className="text-[#2AA3FF] mr-2" />;
+  if (type === 'TEXT') return <FileTextFilled className="text-[#2AA3FF] mr-2 !text-lg" />;
+  if (type === 'DOCUMENT') return <FileWordTwoTone className="text-[#2AA3FF] mr-2 !text-lg" />;
+  return <IeCircleFilled className="text-[#2AA3FF] mr-2 !text-lg" />;
 };
 
 export default function CollapseContainer(props: IProps) {
@@ -142,7 +142,7 @@ export default function CollapseContainer(props: IProps) {
                   <div className="mx-3">
                     <Tooltip title={'detail'}>
                       <EyeFilled
-                        className="mr-2"
+                        className="mr-2 !text-lg"
                         style={{ color: '#1b7eff', fontSize: '20px' }}
                         onClick={() => {
                           router.push(`/knowledge/${knowledge.name}/${item.id}`);
@@ -151,7 +151,7 @@ export default function CollapseContainer(props: IProps) {
                     </Tooltip>
                     <Tooltip title={'Sync'}>
                       <InteractionFilled
-                        className="mr-2"
+                        className="mr-2 !text-lg"
                         style={{ color: '#1b7eff', fontSize: '20px' }}
                         onClick={() => {
                           handleSync(item);
@@ -160,7 +160,7 @@ export default function CollapseContainer(props: IProps) {
                     </Tooltip>
                     <Tooltip title={'Delete'}>
                       <DeleteFilled
-                        style={{ color: '#ff1b2e', fontSize: '20px' }}
+                        className="text-[#ff1b2e] !text-lg"
                         onClick={() => {
                           showDeleteConfirm(item);
                         }}
