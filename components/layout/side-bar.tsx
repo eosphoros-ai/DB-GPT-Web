@@ -81,7 +81,7 @@ function SideBar() {
         key: 'knowledge',
         name: t('Knowledge_Space'),
         icon: <PartitionOutlined />,
-        path: '/datastores',
+        path: '/knowledge',
       },
       {
         key: 'models',

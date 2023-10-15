@@ -11,6 +11,7 @@ import {
   PostEditorSQLRunParams,
   PostSQLEditorSubmitParams,
 } from '@/types/editor';
+import { BaseDocumentParams, IKnowLedge } from '@/types/knowledge';
 
 /** App */
 export const postScenes = () => {
@@ -104,7 +105,102 @@ export const getEditorSql = (id: string, round: string | number) => {
 };
 
 /** knowledge */
+export const getArguments = (knowledgeName: string) => {
+  return POST<object, any>(
+    `/knowledge/${knowledgeName}/arguments`,
+    {},
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+};
+export const saveArguments = (knowledgeName: string, argument: any) => {
+  return POST<object, any>(
+    `/knowledge/${knowledgeName}/arguments`,
+    {
+      argument,
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+};
 
+export const getKnowledgeList = () => {
+  return POST<object, Array<IKnowLedge>>(
+    '/knowledge/space/list',
+    {},
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+};
+
+export const postDocumentAdd = (knowledgeName: string, data: any) => {
+  return POST<object, any>(`/knowledge/${knowledgeName}/document/add`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const postDocumentSync = (knowLedgeName: string, data: any) => {
+  return POST<object, any>(`/knowledge/${knowLedgeName}/document/sync`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const getDocumentList = (knowLedgeName: string, data: any) => {
+  return POST<object, any>(`/knowledge/${knowLedgeName}/document/list`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const postDocumentUpload = (knowLedgeName: string, data: any) => {
+  return POST<object, any>(`/knowledge/${knowLedgeName}/document/upload`, data);
+};
+
+export const postKnowledgeAdd = (data: any) => {
+  return POST<object, any>(`/knowledge/space/add`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const getChunkList = (spaceName: string, data: any) => {
+  return POST<object, any>(`/knowledge/${spaceName}/chunk/list`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const delDocument = (knowledgeName: string, data: any) => {
+  return POST<object, any>(`/knowledge/${knowledgeName}/document/delete`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const delKnowledge = (data: any) => {
+  return POST<object, any>(`/knowledge/space/delete`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
 /** models */
 export const getModelList = () => {
   return GET<null, Array<IModelData>>('/api/v1/worker/model/list');

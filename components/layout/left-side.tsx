@@ -59,10 +59,10 @@ const LeftSide = () => {
       },
       {
         label: t('Knowledge_Space'),
-        route: '/datastores',
+        route: '/knowledge',
         icon: <Article fontSize="small" />,
         tooltip: t('Knowledge_Space'),
-        active: pathname === '/datastores',
+        active: pathname === '/knowledge',
       },
       {
         label: t('model_manage'),
@@ -86,7 +86,7 @@ const LeftSide = () => {
     const language = i18n.language === 'en' ? 'zh' : 'en';
     i18n.changeLanguage(language);
     window.localStorage.setItem('db_gpt_lng', language);
-  }
+  };
 
   useEffect(() => {
     if (mode === 'light') {
@@ -105,7 +105,7 @@ const LeftSide = () => {
   function expandMenu() {
     return (
       <>
-      <Box className="p-2 gap-2 flex flex-row justify-between items-center">
+        <Box className="p-2 gap-2 flex flex-row justify-between items-center">
           <div className="flex items-center gap-3">
             <Link href={'/'}>
               <Image src={logoPath} alt="DB-GPT" width={633} height={157} className="w-full max-w-full" />
@@ -233,10 +233,7 @@ const LeftSide = () => {
                 </ListItemButton>
               </ListItem>
               <ListItem>
-                <ListItemButton
-                  className="h-10"
-                  onClick={handleChangeLanguage}
-                >
+                <ListItemButton className="h-10" onClick={handleChangeLanguage}>
                   <Tooltip title={t('language')}>
                     <ListItemDecorator className="text-2xl">
                       <LanguageIcon fontSize="small" />
@@ -252,7 +249,7 @@ const LeftSide = () => {
                     setIsMenuExpand(false);
                   }}
                 >
-                  <Tooltip title={t("Close_Sidebar")}>
+                  <Tooltip title={t('Close_Sidebar')}>
                     <ListItemDecorator className="text-2xl">
                       <ExpandIcon className="transform rotate-90" fontSize="small" />
                     </ListItemDecorator>
@@ -288,7 +285,7 @@ const LeftSide = () => {
           ))}
           <ListItem>
             <ListItemButton onClick={handleChangeTheme}>
-              <Tooltip title={t("Theme")}>
+              <Tooltip title={t('Theme')}>
                 <ListItemDecorator className="text-2xl">
                   {mode === 'dark' ? <DarkModeIcon fontSize="small" /> : <WbSunnyIcon fontSize="small" />}
                 </ListItemDecorator>
@@ -297,7 +294,7 @@ const LeftSide = () => {
           </ListItem>
           <ListItem>
             <ListItemButton onClick={handleChangeLanguage}>
-              <Tooltip title={t("language")}>
+              <Tooltip title={t('language')}>
                 <ListItemDecorator className="text-2xl">
                   <LanguageIcon fontSize="small" />
                 </ListItemDecorator>
@@ -310,7 +307,7 @@ const LeftSide = () => {
                 setIsMenuExpand(true);
               }}
             >
-              <Tooltip title={t("Open_Sidebar")}>
+              <Tooltip title={t('Open_Sidebar')}>
                 <ListItemDecorator className="text-2xl">
                   <ExpandIcon className="transform rotate-90" fontSize="small" />
                 </ListItemDecorator>

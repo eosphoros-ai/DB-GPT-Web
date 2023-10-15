@@ -9,3 +9,9 @@ export interface IKnowLedge {
   owner: string;
   vector_type: string;
 }
+
+export type BaseDocumentParams = {
+  doc_name: string;
+  content: string;
+  doc_type: string;
+};
