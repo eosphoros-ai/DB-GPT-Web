@@ -3,7 +3,6 @@
  */
 
 import { ChatContext } from '@/app/chat-context';
-import { ModelType } from '@/types/chart';
 import { Select } from 'antd';
 import { ICON_MAP } from '@/utils/constants';
 import Image from 'next/image';
@@ -38,9 +37,9 @@ function ModelSelector({ onChange }: Props) {
   if (!modelList || modelList.length <= 0) {
     return null;
   }
-
   return (
     <Select
+      className="w-48"
       value={model}
       placeholder={t('choose_model')}
       onChange={(val) => {
@@ -49,9 +48,9 @@ function ModelSelector({ onChange }: Props) {
     >
       {modelList.map((item) => (
         <Select.Option key={item}>
-          <div className="flex items-center justify-center">
-            {renderModelIcon(model)}
-            <span className="ml-2">{ICON_MAP[model]?.label || model}</span>
+          <div className="flex items-center">
+            {renderModelIcon(item)}
+            <span className="ml-2">{ICON_MAP[item]?.label || item}</span>
           </div>
         </Select.Option>
       ))}
