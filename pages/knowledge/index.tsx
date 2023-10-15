@@ -25,7 +25,7 @@ const Knowledge = () => {
 
   return (
     <div className="bg-[#FAFAFA] dark:bg-[#212121] w-full h-full">
-      <div className="page-body p-6 px-12 h-[90%] overflow-auto">
+      <div className="page-body p-6 px-12 h-full overflow-auto">
         <Button
           type="primary"
           className="flex items-center"

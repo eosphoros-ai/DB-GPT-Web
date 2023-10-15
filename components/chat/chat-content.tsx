@@ -30,7 +30,7 @@ const markdownComponents: Parameters<typeof ReactMarkdown>['0']['components'] = 
     return !inline && match ? (
       <div className="relative">
         <Button
-          className="absolute right-3 top-3 text-white hover:!text-white"
+          className="absolute right-3 top-2 text-gray-300 hover:!text-gray-200 bg-gray-700"
           type="text"
           icon={<CopyOutlined />}
           onClick={() => {
@@ -38,7 +38,9 @@ const markdownComponents: Parameters<typeof ReactMarkdown>['0']['components'] = 
             message[success ? 'success' : 'error'](success ? 'Copy success' : 'Copy failed');
           }}
         />
-        <SyntaxHighlighter children={String(children)} language={match?.[1] ?? 'javascript'} style={oneDark} />
+        <SyntaxHighlighter language={match?.[1] ?? 'javascript'} style={oneDark}>
+          {children as string}
+        </SyntaxHighlighter>
       </div>
     ) : (
       <code
@@ -97,17 +99,19 @@ const markdownComponents: Parameters<typeof ReactMarkdown>['0']['components'] = 
   },
   img({ src, alt }) {
     return (
-      <Image
-        className="min-h-[1rem] max-w-full max-h-full border rounded"
-        src={src}
-        alt={alt}
-        placeholder={
-          <Tag icon={<SyncOutlined spin />} color="processing">
-            Image Loading...
-          </Tag>
-        }
-        fallback="/images/fallback.png"
-      />
+      <div>
+        <Image
+          className="min-h-[1rem] max-w-full max-h-full border rounded"
+          src={src}
+          alt={alt}
+          placeholder={
+            <Tag icon={<SyncOutlined spin />} color="processing">
+              Image Loading...
+            </Tag>
+          }
+          fallback="/images/fallback.png"
+        />
+      </div>
     );
   },
   blockquote({ children }) {
@@ -131,7 +135,7 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
   return (
     <>
       <div
-        className={classNames('relative overflow-x-auto w-full flex px-2 sm:px-4 py-2 sm:py-6 rounded-xl', {
+        className={classNames('relative flex flex-wrap w-full px-2 sm:px-4 py-2 sm:py-6 rounded-xl', {
           'bg-slate-100 dark:bg-[#353539]': isRobot,
           'lg:w-full xl:w-full pl-0': ['chat_with_db_execute', 'chat_dashboard'].includes(scene),
         })}
@@ -139,7 +143,7 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
         <div className="mr-2 flex flex-shrink-0 items-center justify-center h-7 w-7 rounded-full text-lg sm:mr-4">
           {isRobot ? renderModelIcon(model_name) || <RobotOutlined /> : <UserOutlined />}
         </div>
-        <div className="flex-1 items-center text-md leading-8">
+        <div className="flex-1 overflow-hidden items-center text-md leading-8">
           {/* User Input */}
           {!isRobot && typeof context === 'string' && context}
           {/* Render Report */}
@@ -154,14 +158,12 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
           )}
           {/* Markdown */}
           {isRobot && typeof contextMsg === 'string' && (
-            <ReactMarkdown
-              children={contextMsg
+            <ReactMarkdown components={markdownComponents} rehypePlugins={[rehypeRaw]}>
+              {contextMsg
                 .replaceAll('\\n', '\n')
                 .replace(/<table(\w*=[^>]+)>/gi, '<table $1>')
                 .replace(/<tr(\w*=[^>]+)>/gi, '<tr $1>')}
-              components={markdownComponents}
-              rehypePlugins={[rehypeRaw]}
-            />
+            </ReactMarkdown>
           )}
           {typeof relations === 'object' && !!relations?.length && (
             <div className="flex flex-wrap mt-2">
@@ -173,8 +175,8 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
             </div>
           )}
         </div>
+        {children}
       </div>
-      {children}
     </>
   );
 }
