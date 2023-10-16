@@ -38,11 +38,11 @@ const ChatContext = createContext<IChatContext>({
 });
 
 const ChatContextProvider = ({ children }: { children: React.ReactElement }) => {
-  const { query: { id = '', scene = '' } = {} } = useRouter();
+  const { query: { id = '', scene = '', db_param = '' } = {} } = useRouter();
   const [isContract, setIsContract] = useState(false);
   const [model, setModel] = useState<string>('');
   const [isMenuExpand, setIsMenuExpand] = useState<boolean>(scene !== 'chat_dashboard');
-  const [dbParam, setDbParam] = useState<string>();
+  const [dbParam, setDbParam] = useState<string>(db_param as string);
 
   const {
     run: queryDialogueList,
@@ -74,7 +74,7 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     chatId: id as string,
     modelList,
     model,
-    dbParam,
+    dbParam: dbParam || (db_param as string),
     setModel,
     dialogueList,
     setIsContract,

@@ -58,7 +58,7 @@ export default function KnowledgeCard(props: IProps) {
     );
 
     if (data?.conv_uid) {
-      router.push(`/chat/chat_knowledge/${data?.conv_uid}`);
+      router.push(`/chat/chat_knowledge/${data?.conv_uid}?db_param=${item.name}`);
     }
   };
 

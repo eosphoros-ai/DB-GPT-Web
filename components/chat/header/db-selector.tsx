@@ -19,10 +19,10 @@ function DBSelector() {
   const dbOpts = useMemo(() => Object.entries(dbMapper).map(([k, v]) => ({ label: k, value: v })), [dbMapper]);
 
   useEffect(() => {
-    if (dbOpts.length) {
+    if (dbOpts.length && !dbParam) {
       setDbParam(dbOpts[0].value);
     }
-  }, [dbOpts]);
+  }, [dbOpts, setDbParam, dbParam]);
 
   if (!dbOpts.length) return null;
 
