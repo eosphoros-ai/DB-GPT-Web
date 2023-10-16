@@ -14,9 +14,8 @@ interface IProps {
   setIsAddShow: (isAddShow: boolean) => void;
   className?: string;
   index?: number;
-  item: IKnowLedge;
+  spaceInfo: IKnowLedge;
   t?: any;
-  setKnowledgeSpaceList: (list: Array<IKnowLedge> | null) => void;
   knowledgeSpaceToDelete: { name: string };
   fetchKnowledge: () => void;
 }
@@ -25,15 +24,15 @@ const { confirm } = Modal;
 
 export default function KnowledgeCard(props: IProps) {
   const router = useRouter();
-  const { item, t, className, setKnowledgeSpaceList, knowledgeSpaceToDelete, fetchKnowledge } = props;
+  const { spaceInfo, t, knowledgeSpaceToDelete, fetchKnowledge } = props;
 
-  const [documentCount, setDocumentCount] = useState(item.docs);
+  const [documentCount, setDocumentCount] = useState(spaceInfo.docs);
 
   const showDeleteConfirm = () => {
     confirm({
-      title: 'Tips',
+      title: t('Tips'),
       icon: <ExclamationCircleFilled />,
-      content: 'Do you want delete the knowledge?',
+      content: `${t('Del_Knowledge_Tips')}?`,
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
@@ -41,15 +40,11 @@ export default function KnowledgeCard(props: IProps) {
         await apiInterceptors(delKnowledge({ name: knowledgeSpaceToDelete?.name }));
         fetchKnowledge();
       },
-      onCancel() {
-        console.log('Cancel');
-      },
     });
   };
 
   const handleChat = async (e: any) => {
     e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
 
     const [_, data] = await apiInterceptors(
       newDialogue({
@@ -58,12 +53,12 @@ export default function KnowledgeCard(props: IProps) {
     );
 
     if (data?.conv_uid) {
-      router.push(`/chat/chat_knowledge/${data?.conv_uid}?db_param=${item.name}`);
+      router.push(`/chat/chat_knowledge/${data?.conv_uid}?db_param=${spaceInfo.name}`);
     }
   };
 
   const renderKnowledgeIcon = (type: string) => {
-    const iconMap: any = {
+    const iconMap: Record<string, string> = {
       Chroma: '/models/chroma-logo.png',
     };
     return (
@@ -87,16 +82,16 @@ export default function KnowledgeCard(props: IProps) {
       }}
     >
       <Popover
-        className={className}
+        className="dark:hover:border-white transition-all hover:shadow-md bg-[#FFFFFF] dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full min-[width]:80"
         placement="bottom"
         trigger="click"
-        content={<CollapseContainer setDocumentCount={setDocumentCount} knowledge={item} />}
+        content={<CollapseContainer setDocumentCount={setDocumentCount} knowledge={spaceInfo} />}
       >
         <Badge count={documentCount || 0}>
           <div className="flex justify-between mx-6 mt-3">
             <div className="text-lg font-bold text-black truncate">
-              {renderKnowledgeIcon(item.vector_type)}
-              <span className="dark:text-white ml-2">{item?.name}</span>
+              {renderKnowledgeIcon(spaceInfo.vector_type)}
+              <span className="dark:text-white ml-2">{spaceInfo?.name}</span>
             </div>
             <DeleteTwoTone
               onClick={(e) => {
@@ -111,11 +106,11 @@ export default function KnowledgeCard(props: IProps) {
           </div>
           <div className="text-sm mt-2  p-6 pt-2 h-40">
             <p className="font-semibold">{t('Owner')}:</p>
-            <p className=" truncate">{item?.owner}</p>
+            <p className=" truncate">{spaceInfo?.owner}</p>
             <p className="font-semibold mt-2">{t('Description')}:</p>
-            <p className=" line-clamp-2">{item?.desc}</p>
+            <p className=" line-clamp-2">{spaceInfo?.desc}</p>
             <p className="font-semibold mt-2">Last modify:</p>
-            <p className=" truncate">{moment(item.gmt_modified).format('YYYY-MM-DD HH:MM:SS')}</p>
+            <p className=" truncate">{moment(spaceInfo.gmt_modified).format('YYYY-MM-DD HH:MM:SS')}</p>
           </div>
           <div className="flex justify-center">
             <Button size="middle" onClick={handleChat} className="mr-4 dark:text-white mb-2" shape="round" icon={<MessageTwoTone />}>

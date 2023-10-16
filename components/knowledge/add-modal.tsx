@@ -3,8 +3,8 @@ import { Steps, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { IKnowLedge } from '@/types/knowledge';
-import AddKnowledge from './add-knowledge';
-import AddDatasource from './add-datasource';
+import AddKnowledge from './knowledge-form';
+import AddDatasource from './datasource-form';
 
 interface IProps {
   setDocuments?: (documents: any) => void;
@@ -22,13 +22,9 @@ export default function AddModal(props: IProps) {
   const { setIsAddShow, isAddShow, type, knowLedge, fetchDocuments, fetchKnowledge, syncDocuments } = props;
   const { t } = useTranslation();
 
-  const stepsOfAddingKnowledge = [
-    { title: t('Knowledge_Space_Config') },
-    { title: t('Choose_a_Datasource_type') },
-    { title: t('Setup_the_Datasource') },
-  ];
+  const addKnowledgeSteps = [{ title: t('Knowledge_Space_Config') }, { title: t('Choose_a_Datasource_type') }, { title: t('Setup_the_Datasource') }];
 
-  const stepsOfAddingDocument = [{ title: t('Choose_a_Datasource_type') }, { title: t('Setup_the_Datasource') }];
+  const addDocumentSteps = [{ title: t('Choose_a_Datasource_type') }, { title: t('Setup_the_Datasource') }];
 
   const [documentType, setDocumentType] = useState<string>('');
   const [activeStep, setActiveStep] = useState<number>(0);
@@ -71,6 +67,7 @@ export default function AddModal(props: IProps) {
       title={type === 'knowledge' ? 'Add Knowledge' : 'Add Datasource'}
       centered
       open={isAddShow}
+      destroyOnClose={true}
       onCancel={() => {
         setIsAddShow(false);
       }}
@@ -80,7 +77,7 @@ export default function AddModal(props: IProps) {
       }}
       footer={null}
     >
-      <Steps current={activeStep} items={type === 'knowledge' ? stepsOfAddingKnowledge : stepsOfAddingDocument} />
+      <Steps current={activeStep} items={type === 'knowledge' ? addKnowledgeSteps : addDocumentSteps} />
       {renderStepContent()}
     </Modal>
   );

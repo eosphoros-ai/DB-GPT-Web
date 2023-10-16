@@ -14,7 +14,7 @@ import {
 import { apiInterceptors, delDocument, getDocumentList, syncDocument } from '@/client/api';
 import { IKnowLedge } from '@/types/knowledge';
 import moment from 'moment';
-import AddDocumentModal from './add-modal';
+import ArgumentsModal from './add-modal';
 import SpaceParameterModal from './arguments';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
@@ -42,21 +42,18 @@ export default function CollapseContainer(props: IProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [documents, setDocuments] = useState<any>([]);
   const [isAddDocumentShow, setIsAddDocumentShow] = useState<boolean>(false);
-  const [isParameterModalShow, setIsParameterModalShow] = useState<boolean>(false);
+  const [argumentsShow, setArgumentsShow] = useState<boolean>(false);
 
   const showDeleteConfirm = (row: any) => {
     confirm({
-      title: 'Tips',
+      title: t('Tips'),
       icon: <ExclamationCircleFilled />,
-      content: 'Do you want delete the document?',
+      content: `${t('Del_Document_Tips')}?`,
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
       async onOk() {
         await handleDelete(row);
-      },
-      onCancel() {
-        console.log('Cancel');
       },
     });
   };
@@ -89,16 +86,28 @@ export default function CollapseContainer(props: IProps) {
   };
 
   const handleArguments = () => {
-    setIsParameterModalShow(true);
+    setArgumentsShow(true);
   };
 
   const renderResultTag = (status: string, result: string) => {
     let color;
-    if (status === 'TODO') color = 'gold';
-    if (status === 'RUNNING') color = '#2db7f5';
-    if (status === 'FINISHED') color = '#87d068';
-    if (status === 'FAILED') color = 'f50';
-
+    switch (status) {
+      case 'TODO':
+        color = 'gold';
+        break;
+      case 'RUNNING':
+        color = '#2db7f5';
+        break;
+      case 'FINISHED':
+        color = '#87d068';
+        break;
+      case 'FAILED':
+        color = 'f50';
+        break;
+      default:
+        color = 'f50';
+        break;
+    }
     return (
       <Tooltip title={result}>
         <Tag color={color}>{status}</Tag>
@@ -113,11 +122,11 @@ export default function CollapseContainer(props: IProps) {
   const renderCardList = () => {
     if (documents.length > 0) {
       return (
-        <div className="knowledge-list max-h-96 mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-5 overflow-auto">
-          {documents.map((item: any, index: number) => {
+        <div className="max-h-96 mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-5 overflow-auto">
+          {documents.map((item: any) => {
             return (
               <Card
-                key={index}
+                key={item.id}
                 className=" dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full"
                 title={
                   <Tooltip title={item.doc_name}>
@@ -190,7 +199,7 @@ export default function CollapseContainer(props: IProps) {
       </Space>
       <Divider />
       <Spin spinning={isLoading}>{renderCardList()}</Spin>
-      <AddDocumentModal
+      <ArgumentsModal
         syncDocuments={handleSync}
         fetchDocuments={fetchDocuments}
         setIsAddShow={setIsAddDocumentShow}
@@ -199,7 +208,7 @@ export default function CollapseContainer(props: IProps) {
         setDocuments={setDocuments}
         knowLedge={knowledge}
       />
-      <SpaceParameterModal knowledge={knowledge} isParameterModalShow={isParameterModalShow} setIsParameterModalShow={setIsParameterModalShow} />
+      <SpaceParameterModal knowledge={knowledge} argumentsShow={argumentsShow} setArgumentsShow={setArgumentsShow} />
     </div>
   );
 }

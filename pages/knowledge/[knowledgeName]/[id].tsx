@@ -14,16 +14,14 @@ function Detail() {
     query: { id, knowledgeName },
   } = useRouter();
   const fetchChunks = async () => {
-    const [_, data, res] = await apiInterceptors(
+    const [_, data] = await apiInterceptors(
       getChunkList(knowledgeName as string, {
         document_id: id as string,
         page: 1,
         page_size,
       }),
     );
-    if (res?.success) {
-      setChunkList(data.data);
-    }
+    setChunkList(data?.data);
   };
   useEffect(() => {
     knowledgeName && id && fetchChunks();
@@ -42,7 +40,7 @@ function Detail() {
             path: '/knowledge',
           },
           {
-            title: chunkList?.[0]?.doc_name || 'Source Detail',
+            title: knowledgeName,
           },
         ]}
       />
@@ -52,10 +50,10 @@ function Detail() {
             <Card
               key={index}
               title={
-                <div>
+                <>
                   {renderDocTypeIcon(item.doc_type)}
                   <span>{item.doc_name}</span>
-                </div>
+                </>
               }
             >
               <p className="font-semibold">{t('Content')}:</p>

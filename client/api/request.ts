@@ -13,9 +13,10 @@ import {
 } from '@/types/editor';
 import {
   AddKnowledgeParams,
-  BaseDocumentParams,
+  ArgumentsParams,
   ChunkListParams,
   DocumentParams,
+  IArguments,
   IChunkList,
   IDocument,
   IDocumentResponse,
@@ -115,16 +116,14 @@ export const getEditorSql = (id: string, round: string | number) => {
 
 /** knowledge */
 export const getArguments = (knowledgeName: string) => {
-  return POST<object, IArguments>(`/knowledge/${knowledgeName}/arguments`, {});
+  return POST<any, IArguments>(`/knowledge/${knowledgeName}/arguments`, {});
 };
-export const saveArguments = (knowledgeName: string, data: { argument: string }) => {
-  return POST<object, IArguments>(`/knowledge/${knowledgeName}/arguments`, {
-    data,
-  });
+export const saveArguments = (knowledgeName: string, data: ArgumentsParams) => {
+  return POST<ArgumentsParams, IArguments>(`/knowledge/${knowledgeName}/argument/save`, data);
 };
 
 export const getKnowledgeList = () => {
-  return POST<object, Array<IKnowLedge>>('/knowledge/space/list', {});
+  return POST<any, Array<IKnowLedge>>('/knowledge/space/list', {});
 };
 export const getDocumentList = (knowLedgeName: string, data: Record<string, number>) => {
   return POST<Record<string, number>, IDocumentResponse>(`/knowledge/${knowLedgeName}/document/list`, data);
@@ -147,7 +146,7 @@ export const uploadDocument = (knowLedgeName: string, data: FormData) => {
 };
 
 export const getChunkList = (spaceName: string, data: ChunkListParams) => {
-  return POST<object, IChunkList>(`/knowledge/${spaceName}/chunk/list`, data);
+  return POST<ChunkListParams, IChunkList>(`/knowledge/${spaceName}/chunk/list`, data);
 };
 
 export const delDocument = (knowledgeName: string, data: Record<string, string>) => {

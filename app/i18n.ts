@@ -136,6 +136,9 @@ const resources = {
       Copry_error: 'Copy failed',
       Click_Select: 'Click&Select',
       Quick_Start: 'Quick Start',
+      Del_Knowledge_Tips: 'Do you want delete the knowledge',
+      Del_Document_Tips: 'Do you want delete the Document',
+      Tips: 'Tips',
     },
   },
   zh: {
@@ -270,6 +273,9 @@ const resources = {
       Copry_error: '复制失败',
       Click_Select: '点击选择',
       Quick_Start: '快速开始',
+      Del_Knowledge_Tips: '你确定删除该知识库吗',
+      Del_Document_Tips: '你确定删除该文档吗',
+      Tips: '提示',
     },
   },
 };

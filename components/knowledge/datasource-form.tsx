@@ -33,7 +33,6 @@ type FieldType = {
 const { Dragger } = Upload;
 
 export default function AddDatasource(props: IProps) {
-  const [form] = Form.useForm();
   const { handleChooseType, documentType, step, handleBackBtn, knowledgeName, syncDocuments, fetchDocuments, setIsAddShow } = props;
   const { t } = useTranslation();
   const { TextArea } = Input;
@@ -71,7 +70,7 @@ export default function AddDatasource(props: IProps) {
         break;
     }
     synchChecked && syncDocuments?.(knowledgeName as string, res?.[1] as number);
-    if (res[2]?.success) return;
+    if (!res[2]?.success) return;
     setIsAddShow?.(false);
     fetchDocuments?.();
   };
@@ -86,7 +85,6 @@ export default function AddDatasource(props: IProps) {
     ];
 
     if (!acceptedTypes.includes(file.type)) {
-      console.log('不支持的文件类型');
       return false;
     }
 
@@ -115,7 +113,7 @@ export default function AddDatasource(props: IProps) {
 
   const renderChooseType = () => {
     return (
-      <div>
+      <>
         {documentTypeList.map((item, index) => (
           <Card
             key={index}
@@ -130,7 +128,7 @@ export default function AddDatasource(props: IProps) {
             <div>{item.subTitle}</div>
           </Card>
         ))}
-      </div>
+      </>
     );
   };
 
@@ -180,7 +178,7 @@ export default function AddDatasource(props: IProps) {
             }),
           ]}
         >
-          <Dragger>
+          <Dragger accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md">
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
@@ -208,22 +206,13 @@ export default function AddDatasource(props: IProps) {
   return step === StepMap['ChooseType'] ? (
     renderChooseType()
   ) : (
-    <Form
-      form={form}
-      size="large"
-      className="mt-4"
-      layout="vertical"
-      name="basic"
-      initialValues={{ remember: true }}
-      autoComplete="off"
-      onFinish={handleFinish}
-    >
+    <Form size="large" className="mt-4" layout="vertical" name="basic" initialValues={{ remember: true }} autoComplete="off" onFinish={handleFinish}>
       <Form.Item<FieldType> label={`${t('Name')}:`} name="documentName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
         <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
       </Form.Item>
       {renderFormContainer()}
       <Form.Item<FieldType> label={`${t('Synch')}:`} name="synchChecked">
-        <Switch />
+        <Switch className="bg-slate-400" />
       </Form.Item>
       <Form.Item>
         <Button onClick={handleBackBtn} className="mr-4">{`${t('Back')}`}</Button>

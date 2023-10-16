@@ -48,11 +48,9 @@ export default function AddKnowledge(props: IProps) {
       >
         <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
       </Form.Item>
-
       <Form.Item<FieldType> label={t('Owner')} name="owner" rules={[{ required: true, message: t('Please_input_the_owner') }]}>
         <Input className="mb-5  h-12" placeholder={t('Please_input_the_owner')} />
       </Form.Item>
-
       <Form.Item<FieldType> label={t('Description')} name="description" rules={[{ required: true, message: t('Please_input_the_description') }]}>
         <Input className="mb-5  h-12" placeholder={t('Please_input_the_description')} />
       </Form.Item>

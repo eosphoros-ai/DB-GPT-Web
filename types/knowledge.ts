@@ -22,7 +22,7 @@ export type BaseDocumentParams = {
   doc_type: string;
 };
 
-type Embedding = {
+export type Embedding = {
   chunk_overlap: string | number;
   chunk_size: string | number;
   model: string;
@@ -31,7 +31,7 @@ type Embedding = {
   topk: string;
 };
 
-type Prompt = {
+export type Prompt = {
   max_token: string | number;
   scene: string;
   template: string;
@@ -90,4 +90,8 @@ export type IChunkList = {
   data: Array<IChunk>;
   page: string | number;
   total: string | number;
+};
+
+export type ArgumentsParams = {
+  argument: string;
 };

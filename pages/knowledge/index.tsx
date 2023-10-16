@@ -40,11 +40,9 @@ const Knowledge = () => {
           {knowledgeSpaceList?.map((item: IKnowLedge, index: number) => (
             <KnowledgeCard
               fetchKnowledge={fetchData}
-              className="dark:hover:border-white transition-all hover:shadow-md bg-[#FFFFFF] dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full min-[width]:80"
               key={index}
-              item={item}
+              spaceInfo={item}
               t={t}
-              setKnowledgeSpaceList={setKnowledgeSpaceList}
               knowledgeSpaceToDelete={item}
               isAddShow={isAddShow}
               setIsAddShow={setIsAddShow}
