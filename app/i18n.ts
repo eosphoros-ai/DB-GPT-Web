@@ -137,6 +137,7 @@ const resources = {
       Copry_error: 'Copy failed',
       Click_Select: 'Click&Select',
       Quick_Start: 'Quick Start',
+      Select_Plugins: 'Select Plugins',
     },
   },
   zh: {
@@ -272,6 +273,7 @@ const resources = {
       Copry_error: '复制失败',
       Click_Select: '点击选择',
       Quick_Start: '快速开始',
+      Select_Plugins: '选择插件',
     },
   },
 };

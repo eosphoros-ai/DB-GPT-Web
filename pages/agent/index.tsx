@@ -16,13 +16,13 @@ function Agent() {
         label: 'My',
         children: <MyPlugins />,
       },
-    ],
+  ],
     [],
   );
 
   return (
-    <div className="h-screen p-6 overflow-y-auto">
-      <Tabs type="card" items={items} />
+    <div className="h-screen p-4 md:p-6 overflow-y-auto">
+      <Tabs items={items} />
     </div>
   );
 }

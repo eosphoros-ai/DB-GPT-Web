@@ -2,18 +2,20 @@ import { createContext, useEffect, useMemo, useState } from 'react';
 import { apiInterceptors, getDialogueList, getUsableModels } from '@/client/api';
 import { useRequest } from 'ahooks';
 import { useRouter } from 'next/router';
-import { DialogueListResponse } from '@/types/chart';
+import { DialogueListResponse, IChatDialogueSchema } from '@/types/chat';
 
 interface IChatContext {
   isContract?: boolean;
   isMenuExpand?: boolean;
-  scene: string;
+  scene: IChatDialogueSchema['chat_mode'] | (string & {});
   chatId: string;
   model: string;
   dbParam?: string;
   modelList: Array<string>;
-  setModel: (val: string) => void;
+  agentList: string[];
   dialogueList?: DialogueListResponse;
+  setAgentList?: (val: string[]) => void;
+  setModel: (val: string) => void;
   setIsContract: (val: boolean) => void;
   setIsMenuExpand: (val: boolean) => void;
   setDbParam: (val: string) => void;
@@ -28,8 +30,10 @@ const ChatContext = createContext<IChatContext>({
   modelList: [],
   model: '',
   dbParam: undefined,
-  setModel: () => {},
   dialogueList: [],
+  agentList: [],
+  setAgentList: () => {},
+  setModel: () => {},
   setIsContract: () => {},
   setIsMenuExpand: () => {},
   setDbParam: () => void 0,
@@ -43,6 +47,7 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
   const [model, setModel] = useState<string>('');
   const [isMenuExpand, setIsMenuExpand] = useState<boolean>(scene !== 'chat_dashboard');
   const [dbParam, setDbParam] = useState<string>();
+  const [agentList, setAgentList] = useState<string[]>([]);
 
   const {
     run: queryDialogueList,
@@ -75,8 +80,10 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     modelList,
     model,
     dbParam,
-    setModel,
     dialogueList,
+    agentList,
+    setAgentList,
+    setModel,
     setIsContract,
     setIsMenuExpand,
     setDbParam,

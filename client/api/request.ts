@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
 import { DbListResponse, DbSupportTypeResponse, PostDbParams, ChatFeedBackSchema } from '@/types/db';
-import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chart';
+import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chat';
 import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
 import {
   GetEditorSQLRoundRequest,

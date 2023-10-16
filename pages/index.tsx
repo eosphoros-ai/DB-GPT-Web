@@ -1,4 +1,3 @@
-
 import { useRequest } from 'ahooks';
 import { useContext, useState } from 'react';
 import { Divider, Spin } from 'antd';
@@ -8,7 +7,7 @@ import { NextPage } from 'next';
 import { apiInterceptors, newDialogue, postScenes } from '@/client/api';
 import ModelSelector from '@/components/chat/header/model-selector';
 import { ChatContext } from '@/app/chat-context';
-import { SceneResponse } from '@/types/chart';
+import { SceneResponse } from '@/types/chat';
 import CompletionInput from '@/components/common/completion-input';
 import { useTranslation } from 'react-i18next';
 import { STORAGE_INIT_MESSAGE_KET } from '@/constant';

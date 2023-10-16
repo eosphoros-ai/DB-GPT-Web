@@ -1,7 +1,7 @@
-import { apiInterceptors, postAgentInstall, postAgentMy, postAgentQuery, postAgentUninstall } from '@/client/api';
+import { apiInterceptors, postAgentInstall, postAgentQuery, postAgentUninstall } from '@/client/api';
 import { IAgentPlugin, PostAgentQueryParams } from '@/types/agent';
 import { useRequest } from 'ahooks';
-import { Button, Card, Form, Input, Spin, Tag, Tooltip, message } from 'antd';
+import { Button, Card, Form, Input, Spin, Tabs, Tag, Tooltip, message } from 'antd';
 import { useCallback, useMemo, useState } from 'react';
 import MyEmpty from '../common/MyEmpty';
 import { ClearOutlined, DownloadOutlined, GithubOutlined, LoadingOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
@@ -35,14 +35,19 @@ function MarketPlugins() {
     return res?.datas ?? [];
   });
 
-  const pluginAction = async (name: string, index: number, isInstall: boolean) => {
-    if (actionIndex) return;
-    setActionIndex(index);
-    const [err] = await apiInterceptors((isInstall ? postAgentInstall : postAgentUninstall)(name));
-    message[err ? 'error' : 'success'](err ? 'failed' : 'success');
-    !err && refresh();
-    setActionIndex(undefined);
-  };
+  const pluginAction = useCallback(
+    async (name: string, index: number, isInstall: boolean) => {
+      if (actionIndex) return;
+      setActionIndex(index);
+      const [err] = await apiInterceptors((isInstall ? postAgentInstall : postAgentUninstall)(name));
+      if (!err) {
+        message.success('success');
+        refresh();
+      }
+      setActionIndex(undefined);
+    },
+    [actionIndex],
+  );
 
   const renderAction = useCallback(
     (item: IAgentPlugin, index: number) => {
@@ -78,29 +83,8 @@ function MarketPlugins() {
 
   return (
     <Spin spinning={loading}>
-      <Form form={form} layout="inline" onFinish={refresh} className="my-4">
+      <Form form={form} layout="inline" onFinish={refresh} className="mb-2">
         <Form.Item className="!mb-2" name="name" label={'Name'}>
-          <Input allowClear className="w-48" />
-        </Form.Item>
-        <Form.Item className="!mb-2" name="description" label={'Description'}>
-          <Input allowClear className="w-48" />
-        </Form.Item>
-        <Form.Item className="!mb-2" name="author" label={'Author'}>
-          <Input allowClear className="w-48" />
-        </Form.Item>
-        <Form.Item className="!mb-2" name="email" label={'Email'}>
-          <Input allowClear className="w-48" />
-        </Form.Item>
-        <Form.Item className="!mb-2" name="type" label={'Type'}>
-          <Input allowClear className="w-48" />
-        </Form.Item>
-        <Form.Item className="!mb-2" name="version" label={'Version'}>
-          <Input allowClear className="w-48" />
-        </Form.Item>
-        <Form.Item className="!mb-2" name="storage_channel" label={'Storage Channel'}>
-          <Input allowClear className="w-48" />
-        </Form.Item>
-        <Form.Item className="!mb-2" name="storage_url" label={'Storage Url'}>
           <Input allowClear className="w-48" />
         </Form.Item>
         <Form.Item>
@@ -108,7 +92,7 @@ function MarketPlugins() {
             Reset
           </Button>
           <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-            Submit
+            Search
           </Button>
         </Form.Item>
       </Form>
@@ -120,7 +104,7 @@ function MarketPlugins() {
             key={item.id}
             actions={[
               renderAction(item, index),
-              <Tooltip title="To Github">
+              <Tooltip key="github" title="Github">
                 <div
                   className="w-full h-full"
                   onClick={() => {
@@ -132,7 +116,9 @@ function MarketPlugins() {
               </Tooltip>,
             ]}
           >
-            <h2 className="mb-2 text-base font-semibold">{item.name}</h2>
+            <Tooltip title={item.name}>
+              <h2 className="mb-2 text-base font-semibold line-clamp-1">{item.name}</h2>
+            </Tooltip>
             {item.author && <Tag>{item.author}</Tag>}
             {item.version && <Tag>v{item.version}</Tag>}
             {item.type && <Tag>Type {item.type}</Tag>}

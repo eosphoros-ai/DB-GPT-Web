@@ -4,7 +4,7 @@ import { STORAGE_LANG_KEY, STORAGE_THEME_KEY } from '@/constant';
 import DarkSvg from '@/icons/dark-svg';
 import SunnySvg from '@/icons/sunny-svg';
 import { useColorScheme } from '@/lib/mui';
-import { IChatDialogueSchema } from '@/types/chart';
+import { IChatDialogueSchema } from '@/types/chat';
 import Icon, {
   ConsoleSqlOutlined,
   PartitionOutlined,

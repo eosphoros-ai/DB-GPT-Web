@@ -2,7 +2,7 @@ import { Card, CardContent, Typography } from '@mui/joy';
 import BarChart from './bar-chart';
 import LineChart from './line-chart';
 import TableChart from './table-chart';
-import { ChartData } from '@/types/chart';
+import { ChartData } from '@/types/chat';
 import { useMemo } from 'react';
 
 type Props = {
