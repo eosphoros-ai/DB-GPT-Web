@@ -30,7 +30,7 @@ function Detail() {
   }, [id, knowledgeName]);
 
   return (
-    <div>
+    <div className="h-full overflow-y-scroll">
       <Breadcrumb
         className="m-6"
         items={[
