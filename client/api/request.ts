@@ -127,7 +127,7 @@ export const getSupportModels = () => {
 export const postAgentQuery = (data: PostAgentQueryParams) => {
   return POST<PostAgentQueryParams, PostAgentPluginResponse>('/api/v1/agent/query', data);
 };
-export const postAgentHubUpdate = (data: PostAgentHubUpdateParams) => {
+export const postAgentHubUpdate = (data?: PostAgentHubUpdateParams) => {
   return POST<PostAgentHubUpdateParams>('/api/v1/agent/hub/update', data);
 };
 export const postAgentMy = (user?: string) => {
@@ -140,7 +140,7 @@ export const postAgentUninstall = (pluginName: string, user?: string) => {
   return POST('/api/v1/agent/uninstall', undefined, { params: { plugin_name: pluginName, user }, timeout: 60000 });
 };
 export const postAgentUpload = (user = '', data: FormData, config?: Omit<AxiosRequestConfig, 'headers'>) => {
-  return POST<FormData>('/api/v1/agent/upload', data, {
+  return POST<FormData>('/api/v1/personal/agent/upload', data, {
     params: { user },
     headers: {
       'Content-Type': 'multipart/form-data',

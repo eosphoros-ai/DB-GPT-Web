@@ -307,8 +307,8 @@ function SideBar() {
         })}
       </div>
       {/* Settings */}
-      <div className="pt-2 pb-6 border-t">
-        <div className="px-2">
+      <div className="border-t">
+        <div className="py-2 px-2 max-h-44 overflow-y-auto">
           {routes.map((item) => (
             <Link key={item.key} href={item.path} className={`${menuItemStyle(pathname === item.path)}`}>
               <>
@@ -318,7 +318,7 @@ function SideBar() {
             </Link>
           ))}
         </div>
-        <div className="flex items-center justify-around mt-4 pt-6 border-t border-dashed">
+        <div className="flex items-center justify-around py-4 border-t border-dashed">
           {settings.map((item) => (
             <Tooltip key={item.key} title={item.name}>
               <div className="flex-1 flex items-center justify-center cursor-pointer text-xl" onClick={item.onClick}>

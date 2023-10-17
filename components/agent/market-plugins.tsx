@@ -1,12 +1,16 @@
-import { apiInterceptors, postAgentInstall, postAgentQuery, postAgentUninstall } from '@/client/api';
+import { apiInterceptors, postAgentHubUpdate, postAgentInstall, postAgentQuery, postAgentUninstall } from '@/client/api';
 import { IAgentPlugin, PostAgentQueryParams } from '@/types/agent';
 import { useRequest } from 'ahooks';
-import { Button, Card, Form, Input, Spin, Tabs, Tag, Tooltip, message } from 'antd';
+import { Button, Card, Form, Input, Spin, Tag, Tooltip, message } from 'antd';
 import { useCallback, useMemo, useState } from 'react';
 import MyEmpty from '../common/MyEmpty';
-import { ClearOutlined, DownloadOutlined, GithubOutlined, LoadingOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { ClearOutlined, DownloadOutlined, GithubOutlined, LoadingOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 function MarketPlugins() {
+  const { t } = useTranslation();
+
+  const [uploading, setUploading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [actionIndex, setActionIndex] = useState<number | undefined>();
 
@@ -34,6 +38,18 @@ function MarketPlugins() {
     setIsError(!!err);
     return res?.datas ?? [];
   });
+
+  const updateFromGithub = async () => {
+    try {
+      setUploading(true);
+      const [err] = await apiInterceptors(postAgentHubUpdate());
+      if (err) return;
+      message.success('success');
+      refresh();
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const pluginAction = useCallback(
     async (name: string, index: number, isInstall: boolean) => {
@@ -88,11 +104,11 @@ function MarketPlugins() {
           <Input allowClear className="w-48" />
         </Form.Item>
         <Form.Item>
-          <Button htmlType="reset" icon={<ReloadOutlined />} className="mr-2">
-            Reset
+          <Button className="mr-2" type="primary" htmlType="submit" icon={<SearchOutlined />}>
+            {t('Search')}
           </Button>
-          <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-            Search
+          <Button loading={uploading} type="primary" icon={<SyncOutlined />} onClick={updateFromGithub}>
+            {t('Update_From_Github')}
           </Button>
         </Form.Item>
       </Form>
