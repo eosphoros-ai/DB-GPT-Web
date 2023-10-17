@@ -3,6 +3,7 @@ import { apiInterceptors, getDialogueList, getUsableModels } from '@/client/api'
 import { useRequest } from 'ahooks';
 import { useRouter } from 'next/router';
 import { DialogueListResponse, IChatDialogueSchema } from '@/types/chat';
+import { useSearchParams } from 'next/navigation';
 
 interface IChatContext {
   isContract?: boolean;
@@ -42,7 +43,9 @@ const ChatContext = createContext<IChatContext>({
 });
 
 const ChatContextProvider = ({ children }: { children: React.ReactElement }) => {
-  const { query: { id = '', scene = '' } = {} } = useRouter();
+  const searchParams = useSearchParams();
+  const chatId = searchParams?.get('id') ?? '';
+  const scene = searchParams?.get('scene') ?? '';
   const [isContract, setIsContract] = useState(false);
   const [model, setModel] = useState<string>('');
   const [isMenuExpand, setIsMenuExpand] = useState<boolean>(scene !== 'chat_dashboard');
@@ -71,12 +74,12 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     setModel(modelList[0]);
   }, [modelList, modelList?.length]);
 
-  const currentDialogue = useMemo(() => dialogueList.find((item: any) => item.conv_uid === id), [id, dialogueList]);
+  const currentDialogue = useMemo(() => dialogueList.find((item: any) => item.conv_uid === chatId), [chatId, dialogueList]);
   const contextValue = {
     isContract,
     isMenuExpand,
-    scene: scene as string,
-    chatId: id as string,
+    scene,
+    chatId,
     modelList,
     model,
     dbParam,

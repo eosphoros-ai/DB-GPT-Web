@@ -230,7 +230,7 @@ function SideBar() {
 
             return (
               <Tooltip key={item.conv_uid} title={item.user_name || item.user_input} placement="right">
-                <Link href={`/chat/${item.chat_mode}/${item.conv_uid}`} className={smallMenuItemStyle(active)}>
+                <Link href={`/chat?scene=${item.chat_mode}&id=${item.conv_uid}`} className={smallMenuItemStyle(active)}>
                   <MessageOutlined />
                 </Link>
               </Tooltip>
@@ -281,7 +281,7 @@ function SideBar() {
           const active = item.conv_uid === chatId && item.chat_mode === scene;
 
           return (
-            <Link key={item.conv_uid} href={`/chat/${item.chat_mode}/${item.conv_uid}`} className={`group/item ${menuItemStyle(active)}`}>
+            <Link key={item.conv_uid} href={`/chat?scene=${item.chat_mode}&id=${item.conv_uid}`} className={`group/item ${menuItemStyle(active)}`}>
               <MessageOutlined className="text-base" />
               <div className="flex-1 line-clamp-1 mx-2 text-sm">{item.user_name || item.user_input}</div>
               <div

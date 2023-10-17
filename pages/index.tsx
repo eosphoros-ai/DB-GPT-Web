@@ -32,7 +32,7 @@ const Home: NextPage = () => {
     const [, res] = await apiInterceptors(newDialogue({ chat_mode: 'chat_normal' }));
     if (res) {
       localStorage.setItem(STORAGE_INIT_MESSAGE_KET, JSON.stringify({ id: res.conv_uid, message }));
-      router.push(`/chat/chat_normal/${res.conv_uid}${model ? `?model=${model}` : ''}`);
+      router.push(`/chat/?scene=chat_normal&id=${res.conv_uid}${model ? `&model=${model}` : ''}`);
     }
     setLoading(false);
   };
@@ -40,7 +40,7 @@ const Home: NextPage = () => {
   const handleNewChat = async (scene: SceneResponse) => {
     const [, res] = await apiInterceptors(newDialogue({ chat_mode: 'chat_normal' }));
     if (res) {
-      router.push(`/chat/${scene.chat_scene}/${res.conv_uid}${model ? `?model=${model}` : ''}`);
+      router.push(`/chat?scene=${scene.chat_scene}&id=${res.conv_uid}${model ? `&model=${model}` : ''}`);
     }
   };
 

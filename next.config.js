@@ -11,7 +11,7 @@ const nextConfig = {
     API_BASE_URL: process.env.API_BASE_URL,
   },
   trailingSlash: true,
-  images: { unoptimized: true }
+  images: { unoptimized: true },
 };
 
 module.exports = nextConfig;
