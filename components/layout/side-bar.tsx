@@ -14,7 +14,7 @@ import Icon, {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PlusOutlined,
-  CopyOutlined,
+  ShareAltOutlined,
   MenuOutlined,
   SettingOutlined,
   BuildOutlined,
@@ -45,7 +45,7 @@ type RouteItem = {
 };
 
 function menuItemStyle(active?: boolean) {
-  return `flex items-center px-2 h-10 hover:bg-slate-100 dark:hover:bg-[#353539] text-base w-full my-2 rounded transition-colors whitespace-nowrap ${
+  return `flex items-center px-2 h-8 hover:bg-slate-100 dark:hover:bg-[#353539] text-base w-full my-2 rounded transition-colors whitespace-nowrap ${
     active ? 'bg-slate-100 dark:bg-[#353539]' : ''
   }`;
 }
@@ -82,7 +82,7 @@ function SideBar() {
         key: 'knowledge',
         name: t('Knowledge_Space'),
         icon: <PartitionOutlined />,
-        path: '/datastores',
+        path: '/knowledge',
       },
       {
         key: 'models',
@@ -291,7 +291,7 @@ function SideBar() {
                   copyLink(item);
                 }}
               >
-                <CopyOutlined />
+                <ShareAltOutlined />
               </div>
               <div
                 className="group-hover/item:opacity-100 cursor-pointer opacity-0"
@@ -307,8 +307,8 @@ function SideBar() {
         })}
       </div>
       {/* Settings */}
-      <div className="border-t">
-        <div className="py-2 px-2 max-h-44 overflow-y-auto">
+      <div className="pt-2 pb-4 border-t">
+        <div className="px-2">
           {routes.map((item) => (
             <Link key={item.key} href={item.path} className={`${menuItemStyle(pathname === item.path)}`}>
               <>

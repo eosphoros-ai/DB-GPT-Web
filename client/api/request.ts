@@ -12,6 +12,17 @@ import {
   PostSQLEditorSubmitParams,
 } from '@/types/editor';
 import { PostAgentHubUpdateParams, PostAgentQueryParams, PostAgentPluginResponse, PostAgentMyPluginResponse } from '@/types/agent';
+import {
+  AddKnowledgeParams,
+  ArgumentsParams,
+  ChunkListParams,
+  DocumentParams,
+  IArguments,
+  IChunkList,
+  IDocument,
+  IDocumentResponse,
+  IKnowLedge,
+} from '@/types/knowledge';
 
 /** App */
 export const postScenes = () => {
@@ -105,6 +116,47 @@ export const getEditorSql = (id: string, round: string | number) => {
 };
 
 /** knowledge */
+export const getArguments = (knowledgeName: string) => {
+  return POST<any, IArguments>(`/knowledge/${knowledgeName}/arguments`, {});
+};
+export const saveArguments = (knowledgeName: string, data: ArgumentsParams) => {
+  return POST<ArgumentsParams, IArguments>(`/knowledge/${knowledgeName}/argument/save`, data);
+};
+
+export const getKnowledgeList = () => {
+  return POST<any, Array<IKnowLedge>>('/knowledge/space/list', {});
+};
+export const getDocumentList = (knowLedgeName: string, data: Record<string, number>) => {
+  return POST<Record<string, number>, IDocumentResponse>(`/knowledge/${knowLedgeName}/document/list`, data);
+};
+
+export const addDocument = (knowledgeName: string, data: DocumentParams) => {
+  return POST<DocumentParams, number>(`/knowledge/${knowledgeName}/document/add`, data);
+};
+
+export const addKnowledge = (data: AddKnowledgeParams) => {
+  return POST<AddKnowledgeParams, Array<any>>(`/knowledge/space/add`, data);
+};
+
+export const syncDocument = (knowLedgeName: string, data: Record<string, Array<number>>) => {
+  return POST<Record<string, Array<number>>, string | null>(`/knowledge/${knowLedgeName}/document/sync`, data);
+};
+
+export const uploadDocument = (knowLedgeName: string, data: FormData) => {
+  return POST<FormData, number>(`/knowledge/${knowLedgeName}/document/upload`, data);
+};
+
+export const getChunkList = (spaceName: string, data: ChunkListParams) => {
+  return POST<ChunkListParams, IChunkList>(`/knowledge/${spaceName}/chunk/list`, data);
+};
+
+export const delDocument = (knowledgeName: string, data: Record<string, string>) => {
+  return POST<Record<string, string>, null>(`/knowledge/${knowledgeName}/document/delete`, data);
+};
+
+export const delKnowledge = (data: Record<string, string>) => {
+  return POST<Record<string, string>, null>(`/knowledge/space/delete`, data);
+};
 
 /** models */
 export const getModelList = () => {

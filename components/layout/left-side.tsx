@@ -59,10 +59,10 @@ const LeftSide = () => {
       },
       {
         label: t('Knowledge_Space'),
-        route: '/datastores',
+        route: '/knowledge',
         icon: <Article fontSize="small" />,
         tooltip: t('Knowledge_Space'),
-        active: pathname === '/datastores',
+        active: pathname === '/knowledge',
       },
       {
         label: t('model_manage'),

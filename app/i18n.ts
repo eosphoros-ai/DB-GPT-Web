@@ -1,4 +1,3 @@
-import { STORAGE_LANG_KEY } from '@/constant';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -9,7 +8,8 @@ const resources = {
       space: 'space',
       Vector: 'Vector',
       Owner: 'Owner',
-      Docs: 'Docs',
+      Count: 'Count',
+      File_type_Invalid: 'The file type is invalid',
       Knowledge_Space_Config: 'Knowledge Space Config',
       Choose_a_Datasource_type: 'Choose a Datasource type',
       Setup_the_Datasource: 'Setup the Datasource',
@@ -95,6 +95,7 @@ const resources = {
       create_model: 'Create Model',
       model_select_tips: 'Please select a model',
       submit: 'Submit',
+      close: 'Close',
       start_model_success: 'Start model success',
       download_model_tip: 'Please download model first.',
       Plusgins: 'Plusgins',
@@ -144,6 +145,9 @@ const resources = {
       Upload: 'Upload',
       Market_Plugins: 'Market Plugin',
       My_Plugins: 'My Plugins',
+      Del_Knowledge_Tips: 'Do you want delete the knowledge',
+      Del_Document_Tips: 'Do you want delete the Document',
+      Tips: 'Tips',
     },
   },
   zh: {
@@ -152,7 +156,8 @@ const resources = {
       space: '知识库',
       Vector: '向量',
       Owner: '创建人',
-      Docs: '文档数',
+      Count: '文档数',
+      File_type_Invalid: '文件类型错误',
       Knowledge_Space_Config: '知识库配置',
       Choose_a_Datasource_type: '选择数据源类型',
       Setup_the_Datasource: '设置数据源',
@@ -191,6 +196,7 @@ const resources = {
       Delete: '删除',
       Operation: '操作',
       Submit: '提交',
+      close: '关闭',
       Chunks: '切片',
       Content: '内容',
       Meta_Data: '元数据',
@@ -286,6 +292,9 @@ const resources = {
       Upload: '上传',
       Market_Plugins: '插件市场',
       My_Plugins: '我的插件',
+      Del_Knowledge_Tips: '你确定删除该知识库吗',
+      Del_Document_Tips: '你确定删除该文档吗',
+      Tips: '提示',
     },
   },
 };

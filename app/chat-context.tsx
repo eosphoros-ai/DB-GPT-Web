@@ -46,10 +46,11 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
   const searchParams = useSearchParams();
   const chatId = searchParams?.get('id') ?? '';
   const scene = searchParams?.get('scene') ?? '';
+  const db_param = searchParams?.get('db_param') ?? '';
   const [isContract, setIsContract] = useState(false);
   const [model, setModel] = useState<string>('');
   const [isMenuExpand, setIsMenuExpand] = useState<boolean>(scene !== 'chat_dashboard');
-  const [dbParam, setDbParam] = useState<string>();
+  const [dbParam, setDbParam] = useState<string>(db_param);
   const [agentList, setAgentList] = useState<string[]>([]);
 
   const {
@@ -82,7 +83,7 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     chatId,
     modelList,
     model,
-    dbParam,
+    dbParam: dbParam || db_param,
     dialogueList,
     agentList,
     setAgentList,
