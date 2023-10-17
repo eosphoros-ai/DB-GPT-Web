@@ -2,9 +2,8 @@ import { Button, Card, Form, Input, Switch, Upload, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { renderDocTypeIcon } from './document';
-import { InboxOutlined, SelectOutlined } from '@ant-design/icons';
+import { InboxOutlined } from '@ant-design/icons';
 import { apiInterceptors, addDocument, uploadDocument } from '@/client/api';
-import { RcFile } from 'antd/es/upload';
 
 const StepMap = {
   ChooseType: 1,
@@ -54,7 +53,7 @@ export default function AddDatasource(props: IProps) {
         break;
       case 'file':
         const formData = new FormData();
-        formData.append('doc_name', originFileObj.file.name);
+        formData.append('doc_name', documentName || originFileObj.file.name);
         formData.append('doc_file', originFileObj.file);
         formData.append('doc_type', 'DOCUMENT');
 
@@ -202,8 +201,8 @@ export default function AddDatasource(props: IProps) {
         <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
       </Form.Item>
       {renderFormContainer()}
-      <Form.Item<FieldType> label={`${t('Synch')}:`} name="synchChecked">
-        <Switch className="bg-slate-400" />
+      <Form.Item<FieldType> label={`${t('Synch')}:`} name="synchChecked" initialValue={true}>
+        <Switch className="bg-slate-400" defaultChecked />
       </Form.Item>
       <Form.Item>
         <Button onClick={handleBackBtn} className="mr-4">{`${t('Back')}`}</Button>
