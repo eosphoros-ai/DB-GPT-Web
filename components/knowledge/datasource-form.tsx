@@ -1,8 +1,8 @@
-import { Button, Card, Form, Input, Switch, Upload } from 'antd';
-import React from 'react';
+import { Button, Card, Form, Input, Switch, Upload, UploadFile, UploadProps } from 'antd';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { renderDocTypeIcon } from './document';
-import { InboxOutlined } from '@ant-design/icons';
+import { InboxOutlined, SelectOutlined } from '@ant-design/icons';
 import { apiInterceptors, addDocument, uploadDocument } from '@/client/api';
 
 const StepMap = {
@@ -36,8 +36,11 @@ export default function AddDatasource(props: IProps) {
   const { handleChooseType, documentType, step, handleBackBtn, knowledgeName, syncDocuments, fetchDocuments, setIsAddShow } = props;
   const { t } = useTranslation();
   const { TextArea } = Input;
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleFinish = async (data: FieldType) => {
+    setLoading(true);
     const { synchChecked, documentName, textSource, originFileObj, text, webPageUrl } = data;
     let res;
     switch (documentType) {
@@ -52,8 +55,8 @@ export default function AddDatasource(props: IProps) {
         break;
       case 'file':
         const formData = new FormData();
-        formData.append('doc_name', originFileObj.file.name);
-        formData.append('doc_file', originFileObj.file);
+        formData.append('doc_name', fileList[0].name);
+        formData.append('doc_file', fileList[0] as any);
         formData.append('doc_type', 'DOCUMENT');
 
         res = await apiInterceptors(uploadDocument(knowledgeName as string, formData));
@@ -69,26 +72,14 @@ export default function AddDatasource(props: IProps) {
         );
         break;
     }
+    setLoading(false);
     synchChecked && syncDocuments?.(knowledgeName as string, res?.[1] as number);
     if (!res[2]?.success) return;
     setIsAddShow?.(false);
     fetchDocuments?.();
   };
-  const checkFile = (file: any) => {
-    const acceptedTypes = [
-      'application/pdf', // PDF
-      'application/vnd.ms-powerpoint', // PowerPoint (PPT)
-      'application/vnd.ms-excel', // Excel
-      'application/msword', // Word
-      'text/plain', // 文本 (Text)
-      'text/markdown', // Markdown
-    ];
-
-    if (!acceptedTypes.includes(file.type)) {
-      return false;
-    }
-
-    return true;
+  const onChange: UploadProps['onChange'] = async (info) => {
+    setFileList([info.file]);
   };
   const documentTypeList = [
     {
@@ -163,31 +154,39 @@ export default function AddDatasource(props: IProps) {
   const renderAddDocument = () => {
     return (
       <>
-        <Form.Item<FieldType>
-          name="originFileObj"
-          rules={[
-            { required: true, message: t('Please_input_the_owner') },
-            () => ({
-              validator(_, value) {
-                if (checkFile(value.file)) {
-                  return Promise.resolve();
-                } else {
-                  return Promise.reject(new Error(t('File_type_Invalid')));
-                }
-              },
-            }),
-          ]}
+        <p className="ant-upload-hint" style={{ color: 'rgb(22, 108, 255)' }}>
+          PDF, PowerPoint, Excel, Word, Text, Markdown,
+        </p>
+        <Upload
+          disabled={loading}
+          className="mr-1"
+          beforeUpload={() => false}
+          fileList={fileList}
+          name="file"
+          accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md"
+          multiple={false}
+          onChange={onChange}
+          showUploadList={{
+            showDownloadIcon: false,
+            showPreviewIcon: false,
+            showRemoveIcon: false,
+          }}
+          itemRender={() => <></>}
+          {...props}
         >
-          <Dragger accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md">
-            <p className="ant-upload-drag-icon">
-              <InboxOutlined />
-            </p>
-            <p style={{ color: 'rgb(22, 108, 255)', fontSize: '20px' }}>{t('Select_or_Drop_file')}</p>
-            <p className="ant-upload-hint" style={{ color: 'rgb(22, 108, 255)' }}>
-              PDF, PowerPoint, Excel, Word, Text, Markdown,
-            </p>
-          </Dragger>
-        </Form.Item>
+          <Button className="flex justify-center items-center" type="primary" disabled={loading} icon={<SelectOutlined />}>
+            Select File
+          </Button>
+        </Upload>
+        {/* <Dragger accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md" onChange={onChange}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p style={{ color: 'rgb(22, 108, 255)', fontSize: '20px' }}>{t('Select_or_Drop_file')}</p>
+          <p className="ant-upload-hint" style={{ color: 'rgb(22, 108, 255)' }}>
+            PDF, PowerPoint, Excel, Word, Text, Markdown,
+          </p>
+        </Dragger> */}
       </>
     );
   };
@@ -206,20 +205,30 @@ export default function AddDatasource(props: IProps) {
   return step === StepMap['ChooseType'] ? (
     renderChooseType()
   ) : (
-    <Form size="large" className="mt-4" layout="vertical" name="basic" initialValues={{ remember: true }} autoComplete="off" onFinish={handleFinish}>
-      <Form.Item<FieldType> label={`${t('Name')}:`} name="documentName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
-        <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
-      </Form.Item>
-      {renderFormContainer()}
-      <Form.Item<FieldType> label={`${t('Synch')}:`} name="synchChecked">
-        <Switch className="bg-slate-400" />
-      </Form.Item>
-      <Form.Item>
-        <Button onClick={handleBackBtn} className="mr-4">{`${t('Back')}`}</Button>
-        <Button type="primary" htmlType="submit">
-          {t('Finish')}
-        </Button>
-      </Form.Item>
-    </Form>
+    <>
+      <Form
+        size="large"
+        className="mt-4"
+        layout="vertical"
+        name="basic"
+        initialValues={{ remember: true }}
+        autoComplete="off"
+        onFinish={handleFinish}
+      >
+        <Form.Item<FieldType> label={`${t('Name')}:`} name="documentName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
+          <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
+        </Form.Item>
+        {renderFormContainer()}
+        <Form.Item<FieldType> label={`${t('Synch')}:`} name="synchChecked">
+          <Switch className="bg-slate-400" />
+        </Form.Item>
+        <Form.Item>
+          <Button onClick={handleBackBtn} className="mr-4">{`${t('Back')}`}</Button>
+          <Button type="primary" htmlType="submit">
+            {t('Finish')}
+          </Button>
+        </Form.Item>
+      </Form>
+    </>
   );
 }
