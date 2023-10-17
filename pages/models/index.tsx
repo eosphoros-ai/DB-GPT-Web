@@ -21,7 +21,7 @@ function Models() {
   }, []);
 
   return (
-    <div className="p-8">
+    <div className="p-8 h-full">
       <Button
         className="mb-8"
         type="primary"
@@ -31,9 +31,11 @@ function Models() {
       >
         {t('create_model')}
       </Button>
-      {models.map((item) => (
-        <ModelCard info={item} key={item.model_name} />
-      ))}
+      <div className="flex flex-wrap gap-4">
+        {models.map((item) => (
+          <ModelCard info={item} key={item.model_name} />
+        ))}
+      </div>
       <Modal
         width={800}
         open={isModalOpen}

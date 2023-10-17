@@ -3,7 +3,6 @@
  */
 
 import { ChatContext } from '@/app/chat-context';
-import { ModelType } from '@/types/chat';
 import { Select } from 'antd';
 import { ICON_MAP } from '@/utils/constants';
 import Image from 'next/image';
@@ -38,7 +37,6 @@ function ModelSelector({ onChange }: Props) {
   if (!modelList || modelList.length <= 0) {
     return null;
   }
-
   return (
     <Select
       value={model}
@@ -50,7 +48,7 @@ function ModelSelector({ onChange }: Props) {
     >
       {modelList.map((item) => (
         <Select.Option key={item}>
-          <div className="flex items-center justify-center">
+          <div className="flex items-center">
             {renderModelIcon(item)}
             <span className="ml-2">{ICON_MAP[item]?.label || item}</span>
           </div>
