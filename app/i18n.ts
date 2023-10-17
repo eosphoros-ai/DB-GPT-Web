@@ -148,6 +148,7 @@ const resources = {
       Del_Knowledge_Tips: 'Do you want delete the knowledge',
       Del_Document_Tips: 'Do you want delete the Document',
       Tips: 'Tips',
+      Limit_Upload_File_Count_Tips: 'Only one file can be uploaded at a time',
     },
   },
   zh: {
@@ -295,6 +296,7 @@ const resources = {
       Del_Knowledge_Tips: '你确定删除该知识库吗',
       Del_Document_Tips: '你确定删除该文档吗',
       Tips: '提示',
+      Limit_Upload_File_Count_Tips: '一次只能上传一个文件',
     },
   },
 };
