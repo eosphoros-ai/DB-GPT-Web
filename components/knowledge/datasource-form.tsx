@@ -1,9 +1,10 @@
-import { Button, Card, Form, Input, Switch, Upload } from 'antd';
+import { Button, Card, Form, Input, Switch, Upload, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { renderDocTypeIcon } from './document';
 import { InboxOutlined } from '@ant-design/icons';
 import { apiInterceptors, addDocument, uploadDocument } from '@/client/api';
+import { RcFile } from 'antd/es/upload';
 
 const StepMap = {
   ChooseType: 1,
@@ -35,6 +36,7 @@ const { Dragger } = Upload;
 export default function AddDatasource(props: IProps) {
   const { handleChooseType, documentType, step, handleBackBtn, knowledgeName, syncDocuments, fetchDocuments, setIsAddShow } = props;
   const { t } = useTranslation();
+  const [form] = Form.useForm();
   const { TextArea } = Input;
 
   const handleFinish = async (data: FieldType) => {
@@ -74,22 +76,16 @@ export default function AddDatasource(props: IProps) {
     setIsAddShow?.(false);
     fetchDocuments?.();
   };
-  const checkFile = (file: any) => {
-    const acceptedTypes = [
-      'application/pdf', // PDF
-      'application/vnd.ms-powerpoint', // PowerPoint (PPT)
-      'application/vnd.ms-excel', // Excel
-      'application/msword', // Word
-      'text/plain', // 文本 (Text)
-      'text/markdown', // Markdown
-    ];
 
-    if (!acceptedTypes.includes(file.type)) {
+  const beforeUpload = () => {
+    const curFile = form.getFieldsValue().originFileObj;
+    if (!curFile) {
       return false;
     }
-
-    return true;
+    message.warning(t('Limit_Upload_File_Count_Tips'));
+    return Upload.LIST_IGNORE;
   };
+
   const documentTypeList = [
     {
       type: 'text',
@@ -163,22 +159,8 @@ export default function AddDatasource(props: IProps) {
   const renderAddDocument = () => {
     return (
       <>
-        <Form.Item<FieldType>
-          name="originFileObj"
-          rules={[
-            { required: true, message: t('Please_input_the_owner') },
-            () => ({
-              validator(_, value) {
-                if (checkFile(value.file)) {
-                  return Promise.resolve();
-                } else {
-                  return Promise.reject(new Error(t('File_type_Invalid')));
-                }
-              },
-            }),
-          ]}
-        >
-          <Dragger accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md">
+        <Form.Item<FieldType> name="originFileObj" rules={[{ required: true, message: t('Please_input_the_owner') }]}>
+          <Dragger beforeUpload={beforeUpload} multiple={false} accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md">
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
@@ -206,7 +188,16 @@ export default function AddDatasource(props: IProps) {
   return step === StepMap['ChooseType'] ? (
     renderChooseType()
   ) : (
-    <Form size="large" className="mt-4" layout="vertical" name="basic" initialValues={{ remember: true }} autoComplete="off" onFinish={handleFinish}>
+    <Form
+      form={form}
+      size="large"
+      className="mt-4"
+      layout="vertical"
+      name="basic"
+      initialValues={{ remember: true }}
+      autoComplete="off"
+      onFinish={handleFinish}
+    >
       <Form.Item<FieldType> label={`${t('Name')}:`} name="documentName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
         <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
       </Form.Item>
