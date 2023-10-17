@@ -128,7 +128,7 @@ export const postAgentQuery = (data: PostAgentQueryParams) => {
   return POST<PostAgentQueryParams, PostAgentPluginResponse>('/api/v1/agent/query', data);
 };
 export const postAgentHubUpdate = (data?: PostAgentHubUpdateParams) => {
-  return POST<PostAgentHubUpdateParams>('/api/v1/agent/hub/update', data);
+  return POST<PostAgentHubUpdateParams>('/api/v1/agent/hub/update', data ?? { channel: '', url: '', branch: '', authorization: '' });
 };
 export const postAgentMy = (user?: string) => {
   return POST<undefined, PostAgentMyPluginResponse>('/api/v1/agent/my', undefined, { params: { user } });
