@@ -1,7 +1,7 @@
 import { Button, Card, Form, Input, Switch, Upload, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { renderDocTypeIcon } from './document';
+import { renderDocTypeIcon } from './document-container';
 import { InboxOutlined } from '@ant-design/icons';
 import { apiInterceptors, addDocument, uploadDocument } from '@/client/api';
 
@@ -15,7 +15,7 @@ type IProps = {
   documentType: string;
   step: number;
   handleBackBtn: () => void;
-  knowledgeName?: string;
+  spaceName?: string;
   syncDocuments?: (name: string, id: number) => void;
   fetchDocuments?: () => void;
   setIsAddShow?: (isAddShow: boolean) => void;
@@ -32,8 +32,8 @@ type FieldType = {
 
 const { Dragger } = Upload;
 
-export default function AddDatasource(props: IProps) {
-  const { handleChooseType, documentType, step, handleBackBtn, knowledgeName, syncDocuments, fetchDocuments, setIsAddShow } = props;
+export default function DocumentForm(props: IProps) {
+  const { handleChooseType, documentType, step, handleBackBtn, spaceName, syncDocuments, fetchDocuments, setIsAddShow } = props;
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { TextArea } = Input;
@@ -44,7 +44,7 @@ export default function AddDatasource(props: IProps) {
     switch (documentType) {
       case 'webPage':
         res = await apiInterceptors(
-          addDocument(knowledgeName as string, {
+          addDocument(spaceName as string, {
             doc_name: documentName,
             content: webPageUrl,
             doc_type: 'URL',
@@ -57,11 +57,11 @@ export default function AddDatasource(props: IProps) {
         formData.append('doc_file', originFileObj.file);
         formData.append('doc_type', 'DOCUMENT');
 
-        res = await apiInterceptors(uploadDocument(knowledgeName as string, formData));
+        res = await apiInterceptors(uploadDocument(spaceName as string, formData));
         break;
       default:
         res = await apiInterceptors(
-          addDocument(knowledgeName as string, {
+          addDocument(spaceName as string, {
             doc_name: documentName,
             source: textSource,
             content: text,
@@ -70,7 +70,7 @@ export default function AddDatasource(props: IProps) {
         );
         break;
     }
-    synchChecked && syncDocuments?.(knowledgeName as string, res?.[1] as number);
+    synchChecked && syncDocuments?.(spaceName as string, res?.[1] as number);
     if (!res[2]?.success) return;
     setIsAddShow?.(false);
     fetchDocuments?.();
@@ -109,25 +109,25 @@ export default function AddDatasource(props: IProps) {
   const renderChooseType = () => {
     return (
       <>
-        {documentTypeList.map((item, index) => (
+        {documentTypeList.map((type, index) => (
           <Card
             key={index}
             className="mt-4 mb-4 cursor-pointer"
             onClick={() => {
-              handleChooseType(item);
+              handleChooseType(type);
             }}
           >
             <div className="font-semibold">
-              {renderDocTypeIcon(item.iconType)} {item.title}
+              {renderDocTypeIcon(type.iconType)} {type.title}
             </div>
-            <div>{item.subTitle}</div>
+            <div>{type.subTitle}</div>
           </Card>
         ))}
       </>
     );
   };
 
-  const renderAddText = () => {
+  const renderText = () => {
     return (
       <>
         <Form.Item<FieldType>
@@ -145,7 +145,7 @@ export default function AddDatasource(props: IProps) {
     );
   };
 
-  const renderAddWebPage = () => {
+  const renderWebPage = () => {
     return (
       <>
         <Form.Item<FieldType> label={`${t('Web_Page_URL')}:`} name="webPageUrl" rules={[{ required: true, message: t('Please_input_the_owner') }]}>
@@ -155,7 +155,7 @@ export default function AddDatasource(props: IProps) {
     );
   };
 
-  const renderAddDocument = () => {
+  const renderDocument = () => {
     return (
       <>
         <Form.Item<FieldType> name="originFileObj" rules={[{ required: true, message: t('Please_input_the_owner') }]}>
@@ -176,11 +176,11 @@ export default function AddDatasource(props: IProps) {
   const renderFormContainer = () => {
     switch (documentType) {
       case 'webPage':
-        return renderAddWebPage();
+        return renderWebPage();
       case 'file':
-        return renderAddDocument();
+        return renderDocument();
       default:
-        return renderAddText();
+        return renderText();
     }
   };
 

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { Breadcrumb, Card, Empty } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { apiInterceptors, getChunkList } from '@/client/api';
-import { renderDocTypeIcon } from '@/components/knowledge/document';
+import { renderDocTypeIcon } from '@/components/knowledge/document-container';
 
 const page_size = 20;
 function Detail() {

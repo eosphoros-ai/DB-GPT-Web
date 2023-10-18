@@ -2,56 +2,51 @@ import React, { useState } from 'react';
 import { Steps, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { IKnowLedge } from '@/types/knowledge';
-import AddKnowledge from './knowledge-form';
-import AddDatasource from './datasource-form';
+import { ISpace } from '@/types/knowledge';
+import SpaceForm from './space-form';
+import DataSourceForm from './document-form';
 
 interface IProps {
-  setDocuments?: (documents: any) => void;
   isAddShow: boolean;
   setIsAddShow: (isAddShow: boolean) => void;
-  setKnowledgeSpaceList?: (list: Array<any>) => void;
-  type?: 'knowledge' | 'document';
-  knowLedge?: IKnowLedge;
+  type: 'space' | 'document';
+  space?: ISpace;
   fetchDocuments?: () => void;
   fetchKnowledge?: () => void;
   syncDocuments?: (knowledgeName: string, id: number) => void;
 }
 
-export default function AddModal(props: IProps) {
-  const { setIsAddShow, isAddShow, type, knowLedge, fetchDocuments, fetchKnowledge, syncDocuments } = props;
+export default function DocumentModal(props: IProps) {
+  const { setIsAddShow, isAddShow, type, space, fetchDocuments, fetchKnowledge, syncDocuments } = props;
   const { t } = useTranslation();
 
   const addKnowledgeSteps = [{ title: t('Knowledge_Space_Config') }, { title: t('Choose_a_Datasource_type') }, { title: t('Setup_the_Datasource') }];
-
   const addDocumentSteps = [{ title: t('Choose_a_Datasource_type') }, { title: t('Setup_the_Datasource') }];
-
   const [documentType, setDocumentType] = useState<string>('');
   const [activeStep, setActiveStep] = useState<number>(0);
 
-  const handleAddKnowledge = async () => {
+  const handleAddSpace = async () => {
     setActiveStep(1);
     fetchKnowledge?.();
   };
   const handleChooseType = (item: any) => {
     setDocumentType(item.type);
-
-    setActiveStep(type === 'knowledge' ? 2 : 1);
+    setActiveStep(type === 'space' ? 2 : 1);
   };
 
   const handleBackBtn = () => {
-    setActiveStep(type === 'knowledge' ? 1 : 0);
+    setActiveStep(type === 'space' ? 1 : 0);
   };
 
-  const renderStepContent = () => {
+  const renderContent = () => {
     const renderStep = type === 'document' ? activeStep + 1 : activeStep;
     if (renderStep === 0) {
-      return <AddKnowledge handleAddKnowledge={handleAddKnowledge} />;
+      return <SpaceForm handleAddSpace={handleAddSpace} />;
     }
     return (
-      <AddDatasource
+      <DataSourceForm
         fetchDocuments={fetchDocuments}
-        knowledgeName={knowLedge?.name}
+        spaceName={space?.name}
         step={renderStep}
         documentType={documentType}
         handleChooseType={handleChooseType}
@@ -64,7 +59,7 @@ export default function AddModal(props: IProps) {
 
   return (
     <Modal
-      title={type === 'knowledge' ? 'Add Knowledge' : 'Add Datasource'}
+      title={type === 'space' ? 'Add Knowledge' : 'Add Datasource'}
       centered
       open={isAddShow}
       destroyOnClose={true}
@@ -77,8 +72,8 @@ export default function AddModal(props: IProps) {
       }}
       footer={null}
     >
-      <Steps current={activeStep} items={type === 'knowledge' ? addKnowledgeSteps : addDocumentSteps} />
-      {renderStepContent()}
+      <Steps current={activeStep} items={type === 'space' ? addKnowledgeSteps : addDocumentSteps} />
+      {renderContent()}
     </Modal>
   );
 }

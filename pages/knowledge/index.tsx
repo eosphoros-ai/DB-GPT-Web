@@ -1,23 +1,19 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-
-import KnowledgeCard from '@/components/knowledge/knowledge-card';
-import AddKnowledgeModal from '@/components/knowledge/add-modal';
-import { IKnowLedge } from '@/types/knowledge';
+import SpaceCard from '@/components/knowledge/space-card';
+import DocumentModal from '@/components/knowledge/document-modal';
+import { ISpace } from '@/types/knowledge';
 import { apiInterceptors, getKnowledgeList } from '@/client/api';
 
 const Knowledge = () => {
-  const { t } = useTranslation();
-  const [knowledgeSpaceList, setKnowledgeSpaceList] = useState<Array<IKnowLedge> | null>([]);
+  const [spaceList, setSpaceList] = useState<Array<ISpace> | null>([]);
   const [isAddShow, setIsAddShow] = useState<boolean>(false);
 
   async function fetchData() {
     const [_, data] = await apiInterceptors(getKnowledgeList());
-    setKnowledgeSpaceList(data);
+    setSpaceList(data);
   }
   useEffect(() => {
     fetchData();
@@ -37,27 +33,13 @@ const Knowledge = () => {
           Create
         </Button>
         <div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-5">
-          {knowledgeSpaceList?.map((item: IKnowLedge, index: number) => (
-            <KnowledgeCard
-              fetchKnowledge={fetchData}
-              key={index}
-              spaceInfo={item}
-              t={t}
-              knowledgeSpaceToDelete={item}
-              isAddShow={isAddShow}
-              setIsAddShow={setIsAddShow}
-            />
+          {spaceList?.map((space: ISpace, index: number) => (
+            <SpaceCard onFinish={fetchData} key={index} space={space} />
           ))}
         </div>
       </div>
 
-      <AddKnowledgeModal
-        fetchKnowledge={fetchData}
-        setKnowledgeSpaceList={setKnowledgeSpaceList}
-        isAddShow={isAddShow}
-        setIsAddShow={setIsAddShow}
-        type="knowledge"
-      />
+      <DocumentModal fetchKnowledge={fetchData} isAddShow={isAddShow} setIsAddShow={setIsAddShow} type="space" />
     </div>
   );
 };

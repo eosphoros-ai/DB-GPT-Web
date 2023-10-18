@@ -4,36 +4,36 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type FieldType = {
-  knowledgeName: string;
+  spaceName: string;
   owner: string;
   description: string;
 };
 
 type IProps = {
-  handleAddKnowledge: () => void;
+  handleAddSpace: () => void;
 };
 
-export default function AddKnowledge(props: IProps) {
+export default function SpaceForm(props: IProps) {
   const { t } = useTranslation();
-  const { handleAddKnowledge } = props;
+  const { handleAddSpace } = props;
 
   const handleFinish = async (fieldsValue: FieldType) => {
-    const { knowledgeName, owner, description } = fieldsValue;
+    const { spaceName, owner, description } = fieldsValue;
     const [_, data, res] = await apiInterceptors(
       addKnowledge({
-        name: knowledgeName,
+        name: spaceName,
         vector_type: 'Chroma',
         owner,
         desc: description,
       }),
     );
-    res?.success && handleAddKnowledge();
+    res?.success && handleAddSpace();
   };
   return (
     <Form size="large" className="mt-4" layout="vertical" name="basic" initialValues={{ remember: true }} autoComplete="off" onFinish={handleFinish}>
       <Form.Item<FieldType>
         label={t('Knowledge_Space_Name')}
-        name="knowledgeName"
+        name="spaceName"
         rules={[
           { required: true, message: t('Please_input_the_name') },
           () => ({

@@ -138,8 +138,8 @@ export const addKnowledge = (data: AddKnowledgeParams) => {
   return POST<AddKnowledgeParams, Array<any>>(`/knowledge/space/add`, data);
 };
 
-export const syncDocument = (knowLedgeName: string, data: Record<string, Array<number>>) => {
-  return POST<Record<string, Array<number>>, string | null>(`/knowledge/${knowLedgeName}/document/sync`, data);
+export const syncDocument = (spaceName: string, data: Record<string, Array<number>>) => {
+  return POST<Record<string, Array<number>>, string | null>(`/knowledge/${spaceName}/document/sync`, data);
 };
 
 export const uploadDocument = (knowLedgeName: string, data: FormData) => {
@@ -150,11 +150,11 @@ export const getChunkList = (spaceName: string, data: ChunkListParams) => {
   return POST<ChunkListParams, IChunkList>(`/knowledge/${spaceName}/chunk/list`, data);
 };
 
-export const delDocument = (knowledgeName: string, data: Record<string, string>) => {
-  return POST<Record<string, string>, null>(`/knowledge/${knowledgeName}/document/delete`, data);
+export const delDocument = (spaceName: string, data: Record<string, string>) => {
+  return POST<Record<string, string>, null>(`/knowledge/${spaceName}/document/delete`, data);
 };
 
-export const delKnowledge = (data: Record<string, string>) => {
+export const delSpace = (data: Record<string, string>) => {
   return POST<Record<string, string>, null>(`/knowledge/space/delete`, data);
 };
 

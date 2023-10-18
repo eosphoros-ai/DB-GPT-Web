@@ -12,15 +12,15 @@ import {
   ExclamationCircleFilled,
 } from '@ant-design/icons';
 import { apiInterceptors, delDocument, getDocumentList, syncDocument } from '@/client/api';
-import { IKnowLedge } from '@/types/knowledge';
+import { IDocument, ISpace } from '@/types/knowledge';
 import moment from 'moment';
-import ArgumentsModal from './add-modal';
-import SpaceParameterModal from './arguments';
+import DocumentModal from './document-modal';
+import ArgumentsModal from './arguments-modal';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 
 interface IProps {
-  knowledge: IKnowLedge;
+  space: ISpace;
   setDocumentCount: (count: string) => void;
 }
 
@@ -32,12 +32,12 @@ export const renderDocTypeIcon = (type: string) => {
   return <IeCircleFilled className="text-[#2AA3FF] mr-2 !text-lg" />;
 };
 
-export default function CollapseContainer(props: IProps) {
+export default function DocumentContainer(props: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const page_size = 20;
 
-  const { knowledge, setDocumentCount } = props;
+  const { space, setDocumentCount } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [documents, setDocuments] = useState<any>([]);
@@ -61,23 +61,22 @@ export default function CollapseContainer(props: IProps) {
   async function fetchDocuments() {
     setIsLoading(true);
     const [_, data] = await apiInterceptors(
-      getDocumentList(knowledge?.name, {
+      getDocumentList(space?.name, {
         page: 1,
         page_size,
       }),
     );
-
+    setIsLoading(false);
     setDocuments(data?.data);
     setDocumentCount(String(data?.total));
-    setIsLoading(false);
   }
 
-  const handleSync = async (knowledgeName: string, id: number) => {
-    await apiInterceptors(syncDocument(knowledgeName, { doc_ids: [id] }));
+  const handleSync = async (spaceName: string, id: number) => {
+    await apiInterceptors(syncDocument(spaceName, { doc_ids: [id] }));
   };
 
   const handleDelete = async (row: any) => {
-    await apiInterceptors(delDocument(knowledge?.name, { doc_name: row.doc_name }));
+    await apiInterceptors(delDocument(space?.name, { doc_name: row.doc_name }));
     fetchDocuments();
   };
 
@@ -117,22 +116,22 @@ export default function CollapseContainer(props: IProps) {
 
   useEffect(() => {
     fetchDocuments();
-  }, [knowledge]);
+  }, [space]);
 
-  const renderCardList = () => {
-    if (documents.length > 0) {
+  const renderDocumentCard = () => {
+    if (documents?.length > 0) {
       return (
         <div className="max-h-96 mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-5 overflow-auto">
-          {documents.map((item: any) => {
+          {documents.map((document: IDocument) => {
             return (
               <Card
-                key={item.id}
+                key={document.id}
                 className=" dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full"
                 title={
-                  <Tooltip title={item.doc_name}>
+                  <Tooltip title={document.doc_name}>
                     <div className="truncate ">
-                      {renderDocTypeIcon(item.doc_type)}
-                      <span>{item.doc_name}</span>
+                      {renderDocTypeIcon(document.doc_type)}
+                      <span>{document.doc_name}</span>
                     </div>
                   </Tooltip>
                 }
@@ -143,7 +142,7 @@ export default function CollapseContainer(props: IProps) {
                         className="mr-2 !text-lg"
                         style={{ color: '#1b7eff', fontSize: '20px' }}
                         onClick={() => {
-                          router.push(`/knowledge/${knowledge.name}/${item.id}`);
+                          router.push(`/knowledge/${space.name}/${document.id}`);
                         }}
                       />
                     </Tooltip>
@@ -152,7 +151,7 @@ export default function CollapseContainer(props: IProps) {
                         className="mr-2 !text-lg"
                         style={{ color: '#1b7eff', fontSize: '20px' }}
                         onClick={() => {
-                          handleSync(knowledge.name, item.id);
+                          handleSync(space.name, document.id);
                         }}
                       />
                     </Tooltip>
@@ -160,7 +159,7 @@ export default function CollapseContainer(props: IProps) {
                       <DeleteFilled
                         className="text-[#ff1b2e] !text-lg"
                         onClick={() => {
-                          showDeleteConfirm(item);
+                          showDeleteConfirm(document);
                         }}
                       />
                     </Tooltip>
@@ -168,10 +167,10 @@ export default function CollapseContainer(props: IProps) {
                 }
               >
                 <p className="mt-2 font-semibold ">{t('Size')}:</p>
-                <p>{item.chunk_size} chunks</p>
+                <p>{document.chunk_size} chunks</p>
                 <p className="mt-2 font-semibold ">{t('Last_Synch')}:</p>
-                <p>{moment(item.last_sync).format('YYYY-MM-DD HH:MM:SS')}</p>
-                <p className="mt-2 mb-2">{renderResultTag(item.status, item.result)}</p>
+                <p>{moment(document.last_sync).format('YYYY-MM-DD HH:MM:SS')}</p>
+                <p className="mt-2 mb-2">{renderResultTag(document.status, document.result)}</p>
               </Card>
             );
           })}
@@ -198,17 +197,15 @@ export default function CollapseContainer(props: IProps) {
         </Button>
       </Space>
       <Divider />
-      <Spin spinning={isLoading}>{renderCardList()}</Spin>
-      <ArgumentsModal
+      <Spin spinning={isLoading}>{renderDocumentCard()}</Spin>
+      <DocumentModal
         syncDocuments={handleSync}
         fetchDocuments={fetchDocuments}
         setIsAddShow={setIsAddDocumentShow}
         isAddShow={isAddDocumentShow}
         type="document"
-        setDocuments={setDocuments}
-        knowLedge={knowledge}
       />
-      <SpaceParameterModal knowledge={knowledge} argumentsShow={argumentsShow} setArgumentsShow={setArgumentsShow} />
+      <ArgumentsModal space={space} argumentsShow={argumentsShow} setArgumentsShow={setArgumentsShow} />
     </div>
   );
 }
