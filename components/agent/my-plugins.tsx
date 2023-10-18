@@ -60,10 +60,6 @@ function MyPlugins() {
       message.error('Please select the *.zip,*.rar file');
       return;
     }
-    if (!/\.(zip|rar)$/.test(info.file.name ?? '')) {
-      message.error('File type must be zip or rar');
-      return;
-    }
     try {
       const file = info.file;
       setUploading(true);
