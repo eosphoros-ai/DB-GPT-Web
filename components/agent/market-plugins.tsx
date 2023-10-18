@@ -25,7 +25,7 @@ function MarketPlugins() {
   );
 
   const {
-    data = [],
+    data: agents = [],
     loading,
     refresh,
   } = useRequest(async () => {
@@ -62,20 +62,20 @@ function MarketPlugins() {
       }
       setActionIndex(undefined);
     },
-    [actionIndex],
+    [actionIndex, refresh],
   );
 
   const renderAction = useCallback(
-    (item: IAgentPlugin, index: number) => {
+    (agent: IAgentPlugin, index: number) => {
       if (index === actionIndex) {
         return <LoadingOutlined />;
       }
-      return item.installed ? (
+      return agent.installed ? (
         <Tooltip title="Uninstall">
           <div
             className="w-full h-full"
             onClick={() => {
-              pluginAction(item.name, index, false);
+              pluginAction(agent.name, index, false);
             }}
           >
             <ClearOutlined />
@@ -86,7 +86,7 @@ function MarketPlugins() {
           <div
             className="w-full h-full"
             onClick={() => {
-              pluginAction(item.name, index, true);
+              pluginAction(agent.name, index, true);
             }}
           >
             <DownloadOutlined />
@@ -94,7 +94,7 @@ function MarketPlugins() {
         </Tooltip>
       );
     },
-    [actionIndex],
+    [actionIndex, pluginAction],
   );
 
   return (
@@ -112,19 +112,19 @@ function MarketPlugins() {
           </Button>
         </Form.Item>
       </Form>
-      {!data.length && !loading && <MyEmpty error={isError} refresh={refresh} />}
+      {!agents.length && !loading && <MyEmpty error={isError} refresh={refresh} />}
       <div className="flex flex-wrap gap-2 md:gap-4">
-        {data.map((item, index) => (
+        {agents.map((agent, index) => (
           <Card
             className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4"
-            key={item.id}
+            key={agent.id}
             actions={[
-              renderAction(item, index),
+              renderAction(agent, index),
               <Tooltip key="github" title="Github">
                 <div
                   className="w-full h-full"
                   onClick={() => {
-                    window.open(item.storage_url, '_blank');
+                    window.open(agent.storage_url, '_blank');
                   }}
                 >
                   <GithubOutlined />
@@ -132,15 +132,15 @@ function MarketPlugins() {
               </Tooltip>,
             ]}
           >
-            <Tooltip title={item.name}>
-              <h2 className="mb-2 text-base font-semibold line-clamp-1">{item.name}</h2>
+            <Tooltip title={agent.name}>
+              <h2 className="mb-2 text-base font-semibold line-clamp-1">{agent.name}</h2>
             </Tooltip>
-            {item.author && <Tag>{item.author}</Tag>}
-            {item.version && <Tag>v{item.version}</Tag>}
-            {item.type && <Tag>Type {item.type}</Tag>}
-            {item.storage_channel && <Tag>{item.storage_channel}</Tag>}
-            <Tooltip title={item.description}>
-              <p className="mt-2 line-clamp-2 text-gray-400 text-sm">{item.description}</p>
+            {agent.author && <Tag>{agent.author}</Tag>}
+            {agent.version && <Tag>v{agent.version}</Tag>}
+            {agent.type && <Tag>Type {agent.type}</Tag>}
+            {agent.storage_channel && <Tag>{agent.storage_channel}</Tag>}
+            <Tooltip title={agent.description}>
+              <p className="mt-2 line-clamp-2 text-gray-400 text-sm">{agent.description}</p>
             </Tooltip>
           </Card>
         ))}
