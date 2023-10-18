@@ -1,4 +1,4 @@
-import { ModelType } from '@/types/chart';
+import { ModelType } from '@/types/chat';
 
 export const ICON_MAP: Record<ModelType, { label: string; icon: string }> = {
   proxyllm: { label: 'Proxy LLM', icon: '/models/chatgpt.png' },

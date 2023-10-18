@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useAsyncEffect } from 'ahooks';
 import useChat from '@/hooks/use-chat';
 import Completion from './completion';
-import { ChartData, ChatHistoryResponse } from '@/types/chart';
+import { ChartData, ChatHistoryResponse } from '@/types/chat';
 import { apiInterceptors, getChatHistory } from '@/client/api';
 import { ChatContext } from '@/app/chat-context';
 import Header from './header';

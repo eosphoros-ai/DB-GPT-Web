@@ -1,5 +1,5 @@
 declare namespace JSX {
   interface IntrinsicElements {
-    'dbgpt-call': React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+    'custom-view': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
   }
 }

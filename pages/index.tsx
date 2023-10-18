@@ -1,4 +1,3 @@
-
 import { useRequest } from 'ahooks';
 import { useContext, useState } from 'react';
 import { Divider, Spin } from 'antd';
@@ -8,7 +7,7 @@ import { NextPage } from 'next';
 import { apiInterceptors, newDialogue, postScenes } from '@/client/api';
 import ModelSelector from '@/components/chat/header/model-selector';
 import { ChatContext } from '@/app/chat-context';
-import { SceneResponse } from '@/types/chart';
+import { SceneResponse } from '@/types/chat';
 import CompletionInput from '@/components/common/completion-input';
 import { useTranslation } from 'react-i18next';
 import { STORAGE_INIT_MESSAGE_KET } from '@/constant';
@@ -33,7 +32,7 @@ const Home: NextPage = () => {
     const [, res] = await apiInterceptors(newDialogue({ chat_mode: 'chat_normal' }));
     if (res) {
       localStorage.setItem(STORAGE_INIT_MESSAGE_KET, JSON.stringify({ id: res.conv_uid, message }));
-      router.push(`/chat/chat_normal/${res.conv_uid}${model ? `?model=${model}` : ''}`);
+      router.push(`/chat/?scene=chat_normal&id=${res.conv_uid}${model ? `&model=${model}` : ''}`);
     }
     setLoading(false);
   };
@@ -41,7 +40,7 @@ const Home: NextPage = () => {
   const handleNewChat = async (scene: SceneResponse) => {
     const [, res] = await apiInterceptors(newDialogue({ chat_mode: 'chat_normal' }));
     if (res) {
-      router.push(`/chat/${scene.chat_scene}/${res.conv_uid}${model ? `?model=${model}` : ''}`);
+      router.push(`/chat?scene=${scene.chat_scene}&id=${res.conv_uid}${model ? `&model=${model}` : ''}`);
     }
   };
 

@@ -1,4 +1,4 @@
-import { ChartData } from '@/types/chart';
+import { ChartData } from '@/types/chat';
 import { Card, CardContent, Typography } from '@mui/joy';
 import { useEffect, useRef } from 'react';
 import { Line } from '@antv/g2plot';

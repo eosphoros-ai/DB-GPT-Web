@@ -1,8 +1,3 @@
-/**
- * Preview and Editor tab component
- */
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import './index.css';
 import { useContext } from 'react';
 import { ChatContext } from '@/app/chat-context';

@@ -1,4 +1,3 @@
-import { STORAGE_LANG_KEY } from '@/constant';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -9,7 +8,8 @@ const resources = {
       space: 'space',
       Vector: 'Vector',
       Owner: 'Owner',
-      Docs: 'Docs',
+      Count: 'Count',
+      File_type_Invalid: 'The file type is invalid',
       Knowledge_Space_Config: 'Knowledge Space Config',
       Choose_a_Datasource_type: 'Choose a Datasource type',
       Setup_the_Datasource: 'Setup the Datasource',
@@ -95,8 +95,12 @@ const resources = {
       create_model: 'Create Model',
       model_select_tips: 'Please select a model',
       submit: 'Submit',
+      close: 'Close',
       start_model_success: 'Start model success',
       download_model_tip: 'Please download model first.',
+      Plugins: 'Plugins',
+      try_again: 'Try again',
+      no_data: 'No data',
       Open_Sidebar: 'Unfold',
       cancel: 'Cancel',
       Edit_Success: 'Edit Success',
@@ -134,6 +138,17 @@ const resources = {
       Copry_error: 'Copy failed',
       Click_Select: 'Click&Select',
       Quick_Start: 'Quick Start',
+      Select_Plugins: 'Select Plugins',
+      Search: 'Search',
+      Update_From_Github: 'Upload From Github',
+      Reset: 'Reset',
+      Upload: 'Upload',
+      Market_Plugins: 'Market Plugin',
+      My_Plugins: 'My Plugins',
+      Del_Knowledge_Tips: 'Do you want delete the knowledge',
+      Del_Document_Tips: 'Do you want delete the Document',
+      Tips: 'Tips',
+      Limit_Upload_File_Count_Tips: 'Only one file can be uploaded at a time',
     },
   },
   zh: {
@@ -142,7 +157,8 @@ const resources = {
       space: '知识库',
       Vector: '向量',
       Owner: '创建人',
-      Docs: '文档数',
+      Count: '文档数',
+      File_type_Invalid: '文件类型错误',
       Knowledge_Space_Config: '知识库配置',
       Choose_a_Datasource_type: '选择数据源类型',
       Setup_the_Datasource: '设置数据源',
@@ -181,6 +197,7 @@ const resources = {
       Delete: '删除',
       Operation: '操作',
       Submit: '提交',
+      close: '关闭',
       Chunks: '切片',
       Content: '内容',
       Meta_Data: '元数据',
@@ -228,6 +245,9 @@ const resources = {
       submit: '提交',
       start_model_success: '启动模型成功',
       download_model_tip: '请先下载模型！',
+      Plugins: '插件列表',
+      try_again: '刷新重试',
+      no_data: '暂无数据',
       Prompt: '提示语',
       Open_Sidebar: '展开',
       cancel: '取消',
@@ -266,6 +286,17 @@ const resources = {
       Copry_error: '复制失败',
       Click_Select: '点击选择',
       Quick_Start: '快速开始',
+      Select_Plugins: '选择插件',
+      Search: '搜索',
+      Reset: '重置',
+      Update_From_Github: '更新Github插件',
+      Upload: '上传',
+      Market_Plugins: '插件市场',
+      My_Plugins: '我的插件',
+      Del_Knowledge_Tips: '你确定删除该知识库吗',
+      Del_Document_Tips: '你确定删除该文档吗',
+      Tips: '提示',
+      Limit_Upload_File_Count_Tips: '一次只能上传一个文件',
     },
   },
 };
@@ -277,5 +308,7 @@ i18n.use(initReactI18next).init({
     escapeValue: false,
   },
 });
+
+export type I18nKeyMapper = (typeof resources)['en']['translation'];
 
 export default i18n;

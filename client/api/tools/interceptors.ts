@@ -20,6 +20,10 @@ export const apiInterceptors = <T = any, D = any>(promise: Promise<ApiResponse<T
         if (ignoreCodes === '*' || (data.err_code && ignoreCodes && ignoreCodes.includes(data.err_code))) {
           return [null, data.data, data, response];
         } else {
+          notification.error({
+            message: `Request error`,
+            description: data?.err_msg ?? 'The interface is abnormal. Please try again later',
+          });
           throw new Error(data?.err_msg || 'The interface is abnormal. Please try again later');
         }
       }

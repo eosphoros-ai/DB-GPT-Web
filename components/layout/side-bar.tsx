@@ -4,7 +4,7 @@ import { STORAGE_LANG_KEY, STORAGE_THEME_KEY } from '@/constant';
 import DarkSvg from '@/icons/dark-svg';
 import SunnySvg from '@/icons/sunny-svg';
 import { useColorScheme } from '@/lib/mui';
-import { IChatDialogueSchema } from '@/types/chart';
+import { IChatDialogueSchema } from '@/types/chat';
 import Icon, {
   ConsoleSqlOutlined,
   PartitionOutlined,
@@ -14,9 +14,10 @@ import Icon, {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PlusOutlined,
-  CopyOutlined,
+  ShareAltOutlined,
   MenuOutlined,
   SettingOutlined,
+  BuildOutlined,
 } from '@ant-design/icons';
 import { Modal, message, Tooltip, Dropdown } from 'antd';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
@@ -44,7 +45,7 @@ type RouteItem = {
 };
 
 function menuItemStyle(active?: boolean) {
-  return `flex items-center px-2 h-10 hover:bg-slate-100 dark:hover:bg-[#353539] text-base w-full my-2 rounded transition-colors whitespace-nowrap ${
+  return `flex items-center px-2 h-8 hover:bg-slate-100 dark:hover:bg-[#353539] text-base w-full my-2 rounded transition-colors whitespace-nowrap ${
     active ? 'bg-slate-100 dark:bg-[#353539]' : ''
   }`;
 }
@@ -81,13 +82,19 @@ function SideBar() {
         key: 'knowledge',
         name: t('Knowledge_Space'),
         icon: <PartitionOutlined />,
-        path: '/datastores',
+        path: '/knowledge',
       },
       {
         key: 'models',
         name: t('model_manage'),
         path: '/models',
         icon: <Icon component={ModelSvg} />,
+      },
+      {
+        key: 'agent',
+        name: t('Plugins'),
+        path: '/agent',
+        icon: <BuildOutlined />,
       },
     ];
     return items;
@@ -223,7 +230,7 @@ function SideBar() {
 
             return (
               <Tooltip key={item.conv_uid} title={item.user_name || item.user_input} placement="right">
-                <Link href={`/chat/${item.chat_mode}/${item.conv_uid}`} className={smallMenuItemStyle(active)}>
+                <Link href={`/chat?scene=${item.chat_mode}&id=${item.conv_uid}`} className={smallMenuItemStyle(active)}>
                   <MessageOutlined />
                 </Link>
               </Tooltip>
@@ -274,7 +281,7 @@ function SideBar() {
           const active = item.conv_uid === chatId && item.chat_mode === scene;
 
           return (
-            <Link key={item.conv_uid} href={`/chat/${item.chat_mode}/${item.conv_uid}`} className={`group/item ${menuItemStyle(active)}`}>
+            <Link key={item.conv_uid} href={`/chat?scene=${item.chat_mode}&id=${item.conv_uid}`} className={`group/item ${menuItemStyle(active)}`}>
               <MessageOutlined className="text-base" />
               <div className="flex-1 line-clamp-1 mx-2 text-sm">{item.user_name || item.user_input}</div>
               <div
@@ -284,7 +291,7 @@ function SideBar() {
                   copyLink(item);
                 }}
               >
-                <CopyOutlined />
+                <ShareAltOutlined />
               </div>
               <div
                 className="group-hover/item:opacity-100 cursor-pointer opacity-0"
@@ -300,7 +307,7 @@ function SideBar() {
         })}
       </div>
       {/* Settings */}
-      <div className="pt-2 pb-6 border-t">
+      <div className="pt-2 pb-4 border-t">
         <div className="px-2">
           {routes.map((item) => (
             <Link key={item.key} href={item.path} className={`${menuItemStyle(pathname === item.path)}`}>
@@ -311,7 +318,7 @@ function SideBar() {
             </Link>
           ))}
         </div>
-        <div className="flex items-center justify-around mt-4 pt-6 border-t border-dashed">
+        <div className="flex items-center justify-around py-4 border-t border-dashed">
           {settings.map((item) => (
             <Tooltip key={item.key} title={item.name}>
               <div className="flex-1 flex items-center justify-center cursor-pointer text-xl" onClick={item.onClick}>

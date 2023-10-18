@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
 import { DbListResponse, DbSupportTypeResponse, PostDbParams, ChatFeedBackSchema } from '@/types/db';
-import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chart';
+import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chat';
 import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
 import {
   GetEditorSQLRoundRequest,
@@ -11,6 +11,18 @@ import {
   PostEditorSQLRunParams,
   PostSQLEditorSubmitParams,
 } from '@/types/editor';
+import { PostAgentHubUpdateParams, PostAgentQueryParams, PostAgentPluginResponse, PostAgentMyPluginResponse } from '@/types/agent';
+import {
+  AddKnowledgeParams,
+  ArgumentsParams,
+  ChunkListParams,
+  DocumentParams,
+  IArguments,
+  IChunkList,
+  IDocument,
+  IDocumentResponse,
+  IKnowLedge,
+} from '@/types/knowledge';
 
 /** App */
 export const postScenes = () => {
@@ -104,6 +116,47 @@ export const getEditorSql = (id: string, round: string | number) => {
 };
 
 /** knowledge */
+export const getArguments = (knowledgeName: string) => {
+  return POST<any, IArguments>(`/knowledge/${knowledgeName}/arguments`, {});
+};
+export const saveArguments = (knowledgeName: string, data: ArgumentsParams) => {
+  return POST<ArgumentsParams, IArguments>(`/knowledge/${knowledgeName}/argument/save`, data);
+};
+
+export const getKnowledgeList = () => {
+  return POST<any, Array<IKnowLedge>>('/knowledge/space/list', {});
+};
+export const getDocumentList = (knowLedgeName: string, data: Record<string, number>) => {
+  return POST<Record<string, number>, IDocumentResponse>(`/knowledge/${knowLedgeName}/document/list`, data);
+};
+
+export const addDocument = (knowledgeName: string, data: DocumentParams) => {
+  return POST<DocumentParams, number>(`/knowledge/${knowledgeName}/document/add`, data);
+};
+
+export const addKnowledge = (data: AddKnowledgeParams) => {
+  return POST<AddKnowledgeParams, Array<any>>(`/knowledge/space/add`, data);
+};
+
+export const syncDocument = (knowLedgeName: string, data: Record<string, Array<number>>) => {
+  return POST<Record<string, Array<number>>, string | null>(`/knowledge/${knowLedgeName}/document/sync`, data);
+};
+
+export const uploadDocument = (knowLedgeName: string, data: FormData) => {
+  return POST<FormData, number>(`/knowledge/${knowLedgeName}/document/upload`, data);
+};
+
+export const getChunkList = (spaceName: string, data: ChunkListParams) => {
+  return POST<ChunkListParams, IChunkList>(`/knowledge/${spaceName}/chunk/list`, data);
+};
+
+export const delDocument = (knowledgeName: string, data: Record<string, string>) => {
+  return POST<Record<string, string>, null>(`/knowledge/${knowledgeName}/document/delete`, data);
+};
+
+export const delKnowledge = (data: Record<string, string>) => {
+  return POST<Record<string, string>, null>(`/knowledge/space/delete`, data);
+};
 
 /** models */
 export const getModelList = () => {
@@ -120,6 +173,32 @@ export const startModel = (data: StartModelParams) => {
 
 export const getSupportModels = () => {
   return GET<null, Array<SupportModel>>('/api/v1/worker/model/params');
+};
+
+/** Agent */
+export const postAgentQuery = (data: PostAgentQueryParams) => {
+  return POST<PostAgentQueryParams, PostAgentPluginResponse>('/api/v1/agent/query', data);
+};
+export const postAgentHubUpdate = (data?: PostAgentHubUpdateParams) => {
+  return POST<PostAgentHubUpdateParams>('/api/v1/agent/hub/update', data ?? { channel: '', url: '', branch: '', authorization: '' });
+};
+export const postAgentMy = (user?: string) => {
+  return POST<undefined, PostAgentMyPluginResponse>('/api/v1/agent/my', undefined, { params: { user } });
+};
+export const postAgentInstall = (pluginName: string, user?: string) => {
+  return POST('/api/v1/agent/install', undefined, { params: { plugin_name: pluginName, user }, timeout: 60000 });
+};
+export const postAgentUninstall = (pluginName: string, user?: string) => {
+  return POST('/api/v1/agent/uninstall', undefined, { params: { plugin_name: pluginName, user }, timeout: 60000 });
+};
+export const postAgentUpload = (user = '', data: FormData, config?: Omit<AxiosRequestConfig, 'headers'>) => {
+  return POST<FormData>('/api/v1/personal/agent/upload', data, {
+    params: { user },
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    ...config,
+  });
 };
 
 /** chat feedback **/

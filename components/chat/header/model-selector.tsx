@@ -39,9 +39,9 @@ function ModelSelector({ onChange }: Props) {
   }
   return (
     <Select
-      className="w-48"
       value={model}
       placeholder={t('choose_model')}
+      className="w-52"
       onChange={(val) => {
         onChange?.(val);
       }}

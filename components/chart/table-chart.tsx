@@ -1,4 +1,4 @@
-import { ChartData } from '@/types/chart';
+import { ChartData } from '@/types/chat';
 import { Card, CardContent, Typography, Table } from '@mui/joy';
 import { groupBy } from 'lodash';
 

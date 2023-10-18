@@ -4,7 +4,7 @@ import MonacoEditor from './monaco-editor';
 import ChatContent from './chat-content';
 import ChatFeedback from './chat-feedback';
 import { ChatContext } from '@/app/chat-context';
-import { IChatDialogueMessageSchema } from '@/types/chart';
+import { IChatDialogueMessageSchema } from '@/types/chat';
 import classNames from 'classnames';
 import { Empty, Modal, message, Tooltip } from 'antd';
 import { renderModelIcon } from './header/model-selector';
@@ -24,7 +24,7 @@ type Props = {
 };
 
 const Completion = ({ messages, onSubmit }: Props) => {
-  const { dbParam, currentDialogue, scene, model, refreshDialogList, chatId } = useContext(ChatContext);
+  const { dbParam, currentDialogue, scene, model, refreshDialogList, chatId, agentList } = useContext(ChatContext);
   const { t } = useTranslation();
   const searchParams = useSearchParams();
 
@@ -39,12 +39,23 @@ const Completion = ({ messages, onSubmit }: Props) => {
 
   const isChartChat = useMemo(() => scene === 'chat_dashboard', [scene]);
 
+  const selectParam = useMemo(() => {
+    switch (scene) {
+      case 'chat_agent':
+        return agentList.join(',');
+      case 'chat_excel':
+        return currentDialogue?.select_param;
+      default:
+        return spaceNameOriginal || dbParam;
+    }
+  }, [scene, agentList, currentDialogue, dbParam, spaceNameOriginal]);
+
   const handleChat = async (message: string) => {
     if (isLoading || !message.trim()) return;
     try {
       setIsLoading(true);
       await onSubmit(message, {
-        select_param: scene === 'chat_excel' ? currentDialogue?.select_param : spaceNameOriginal || dbParam,
+        select_param: selectParam ?? '',
       });
     } finally {
       setIsLoading(false);
