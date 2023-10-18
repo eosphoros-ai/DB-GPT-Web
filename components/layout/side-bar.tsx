@@ -92,7 +92,7 @@ function SideBar() {
       },
       {
         key: 'agent',
-        name: t('Plusgins'),
+        name: t('Plugins'),
         path: '/agent',
         icon: <BuildOutlined />,
       },
