@@ -45,10 +45,10 @@ function Detail() {
         ]}
       />
       {chunkList?.length > 0 ? (
-        chunkList?.map((item: any, index: number) => {
+        chunkList?.map((item: any) => {
           return (
             <Card
-              key={index}
+              key={item.id}
               title={
                 <>
                   {renderDocTypeIcon(item.doc_type)}

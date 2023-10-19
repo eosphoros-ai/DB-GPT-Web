@@ -37,10 +37,10 @@ const Knowledge = () => {
           Create
         </Button>
         <div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-5">
-          {knowledgeSpaceList?.map((item: IKnowLedge, index: number) => (
+          {knowledgeSpaceList?.map((item: IKnowLedge) => (
             <KnowledgeCard
               fetchKnowledge={fetchData}
-              key={index}
+              key={item.id}
               spaceInfo={item}
               t={t}
               knowledgeSpaceToDelete={item}
