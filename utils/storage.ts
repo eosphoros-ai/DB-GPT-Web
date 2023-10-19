@@ -1,4 +1,4 @@
-import { STORAGE_INIT_MESSAGE_KET } from '@/constant';
+import { STORAGE_INIT_MESSAGE_KET } from '@/utils';
 
 export function getInitMessage() {
   const value = localStorage.getItem(STORAGE_INIT_MESSAGE_KET) ?? '';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRequest } from 'ahooks';
-import { Select, Option, Table, Box, Typography, Tooltip } from '@/lib/mui';
+import { Select, Option, Table, Box, Typography, Tooltip } from '@mui/joy';
 import { Button } from 'antd';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import { Input, Tree, Empty, Tabs } from 'antd';
