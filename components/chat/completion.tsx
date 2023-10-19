@@ -13,8 +13,8 @@ import copy from 'copy-to-clipboard';
 import { useTranslation } from 'react-i18next';
 import CompletionInput from '../common/completion-input';
 import { useAsyncEffect } from 'ahooks';
-import { STORAGE_INIT_MESSAGE_KET } from '@/constant';
-import { Button, IconButton } from '@/lib/mui';
+import { STORAGE_INIT_MESSAGE_KET } from '@/utils';
+import { Button, IconButton } from '@mui/joy';
 import { CopyOutlined } from '@ant-design/icons';
 import { getInitMessage } from '@/utils';
 

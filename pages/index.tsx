@@ -10,7 +10,7 @@ import { ChatContext } from '@/app/chat-context';
 import { SceneResponse } from '@/types/chat';
 import CompletionInput from '@/components/common/completion-input';
 import { useTranslation } from 'react-i18next';
-import { STORAGE_INIT_MESSAGE_KET } from '@/constant';
+import { STORAGE_INIT_MESSAGE_KET } from '@/utils';
 
 const Home: NextPage = () => {
   const router = useRouter();

@@ -10,7 +10,7 @@ import classNames from 'classnames';
 import '../styles/globals.css';
 import '../nprogress.css';
 import '../app/i18n';
-import { STORAGE_LANG_KEY, STORAGE_THEME_KEY } from '@/constant';
+import { STORAGE_LANG_KEY, STORAGE_THEME_KEY } from '@/utils';
 import { ConfigProvider, theme } from 'antd';
 
 type ThemeMode = ReturnType<typeof useColorScheme>['mode'];
