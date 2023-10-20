@@ -10,7 +10,7 @@ type FieldType = {
 };
 
 type IProps = {
-  handleAddKnowledge: () => void;
+  handleAddKnowledge: (name: string) => void;
 };
 
 export default function AddKnowledge(props: IProps) {
@@ -30,7 +30,7 @@ export default function AddKnowledge(props: IProps) {
       }),
     );
     setSpinning(false);
-    res?.success && handleAddKnowledge();
+    res?.success && handleAddKnowledge(knowledgeName);
   };
   return (
     <Spin spinning={spinning}>

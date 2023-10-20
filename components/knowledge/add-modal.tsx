@@ -28,10 +28,12 @@ export default function AddModal(props: IProps) {
 
   const [documentType, setDocumentType] = useState<string>('');
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [curKnowledgeName, setCurKnowledgeName] = useState<string>();
 
-  const handleAddKnowledge = async () => {
+  const handleAddKnowledge = async (name: string) => {
     setActiveStep(1);
     fetchKnowledge?.();
+    setCurKnowledgeName(name);
   };
   const handleChooseType = (item: any) => {
     setDocumentType(item.type);
@@ -51,7 +53,7 @@ export default function AddModal(props: IProps) {
     return (
       <AddDatasource
         fetchDocuments={fetchDocuments}
-        knowledgeName={knowLedge?.name}
+        knowledgeName={knowLedge?.name || curKnowledgeName}
         step={renderStep}
         documentType={documentType}
         handleChooseType={handleChooseType}
