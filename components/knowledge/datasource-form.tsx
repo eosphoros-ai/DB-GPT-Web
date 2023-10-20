@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { renderDocTypeIcon } from './document';
 import { InboxOutlined } from '@ant-design/icons';
-import { apiInterceptors, addDocument, uploadDocument } from '@/client/api';
+import { apiInterceptors, addDocument, uploadDocument, syncDocument } from '@/client/api';
 import { RcFile, UploadChangeParam } from 'antd/es/upload';
 
 const StepMap = {
@@ -17,7 +17,6 @@ type IProps = {
   step: number;
   handleBackBtn: () => void;
   knowledgeName?: string;
-  syncDocuments?: (name: string, id: number) => void;
   fetchDocuments?: () => void;
   setIsAddShow?: (isAddShow: boolean) => void;
 };
@@ -40,7 +39,7 @@ const { Dragger } = Upload;
 const { TextArea } = Input;
 
 export default function AddDatasource(props: IProps) {
-  const { handleChooseType, documentType, step, handleBackBtn, knowledgeName, syncDocuments, fetchDocuments, setIsAddShow } = props;
+  const { handleChooseType, documentType, step, handleBackBtn, knowledgeName, fetchDocuments, setIsAddShow } = props;
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -80,11 +79,15 @@ export default function AddDatasource(props: IProps) {
         );
         break;
     }
-    synchChecked && syncDocuments?.(knowledgeName as string, res?.[1] as number);
+    synchChecked && handleSync?.(knowledgeName as string, res?.[1] as number);
     setSpinning(false);
     if (!res[2]?.success) return;
     setIsAddShow?.(false);
     fetchDocuments?.();
+  };
+
+  const handleSync = async (knowledgeName: string, id: number) => {
+    await apiInterceptors(syncDocument(knowledgeName, { doc_ids: [id] }));
   };
 
   const beforeUpload = () => {
@@ -208,16 +211,7 @@ export default function AddDatasource(props: IProps) {
     renderChooseType()
   ) : (
     <Spin spinning={spinning}>
-      <Form
-        form={form}
-        size="large"
-        className="mt-4"
-        layout="vertical"
-        name="basic"
-        initialValues={{ remember: true }}
-        autoComplete="off"
-        onFinish={handleFinish}
-      >
+      <Form form={form} size="large" className="mt-4" layout="vertical" name="basic" autoComplete="off" onFinish={handleFinish}>
         <Form.Item<FieldType> label={`${t('Name')}:`} name="documentName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
           <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
         </Form.Item>

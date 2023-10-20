@@ -58,7 +58,6 @@ export default function AddModal(props: IProps) {
         documentType={documentType}
         handleChooseType={handleChooseType}
         handleBackBtn={handleBackBtn}
-        syncDocuments={syncDocuments}
         setIsAddShow={props.setIsAddShow}
       />
     );
