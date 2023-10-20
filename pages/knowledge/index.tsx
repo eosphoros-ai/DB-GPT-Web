@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import SpaceCard from '@/components/knowledge/space-card';
@@ -33,13 +32,13 @@ const Knowledge = () => {
           Create
         </Button>
         <div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-5">
-          {spaceList?.map((space: ISpace, index: number) => (
-            <SpaceCard onFinish={fetchData} key={index} space={space} />
+          {spaceList?.map((space: ISpace) => (
+            <SpaceCard onFinish={fetchData} key={space.id} space={space} />
           ))}
         </div>
       </div>
 
-      <DocumentModal fetchKnowledge={fetchData} isAddShow={isAddShow} setIsAddShow={setIsAddShow} type="space" />
+      <DocumentModal fetchSpace={fetchData} isAddShow={isAddShow} setIsAddShow={setIsAddShow} type="space" />
     </div>
   );
 };

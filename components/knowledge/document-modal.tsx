@@ -12,23 +12,25 @@ interface IProps {
   type: 'space' | 'document';
   space?: ISpace;
   fetchDocuments?: () => void;
-  fetchKnowledge?: () => void;
-  syncDocuments?: (knowledgeName: string, id: number) => void;
+  fetchSpace?: () => void;
 }
 
 export default function DocumentModal(props: IProps) {
-  const { setIsAddShow, isAddShow, type, space, fetchDocuments, fetchKnowledge, syncDocuments } = props;
+  const { setIsAddShow, isAddShow, type, space, fetchDocuments, fetchSpace } = props;
   const { t } = useTranslation();
 
   const addKnowledgeSteps = [{ title: t('Knowledge_Space_Config') }, { title: t('Choose_a_Datasource_type') }, { title: t('Setup_the_Datasource') }];
   const addDocumentSteps = [{ title: t('Choose_a_Datasource_type') }, { title: t('Setup_the_Datasource') }];
   const [documentType, setDocumentType] = useState<string>('');
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [curSpaceName, setCurSpaceName] = useState<string>();
 
-  const handleAddSpace = async () => {
+  const handleAddSpace = async (name: string) => {
     setActiveStep(1);
-    fetchKnowledge?.();
+    fetchSpace?.();
+    setCurSpaceName(name);
   };
+
   const handleChooseType = (item: any) => {
     setDocumentType(item.type);
     setActiveStep(type === 'space' ? 2 : 1);
@@ -46,12 +48,11 @@ export default function DocumentModal(props: IProps) {
     return (
       <DataSourceForm
         fetchDocuments={fetchDocuments}
-        spaceName={space?.name}
+        spaceName={space?.name || curSpaceName}
         step={renderStep}
         documentType={documentType}
         handleChooseType={handleChooseType}
         handleBackBtn={handleBackBtn}
-        syncDocuments={syncDocuments}
         setIsAddShow={props.setIsAddShow}
       />
     );

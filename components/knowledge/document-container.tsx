@@ -199,10 +199,10 @@ export default function DocumentContainer(props: IProps) {
       <Divider />
       <Spin spinning={isLoading}>{renderDocumentCard()}</Spin>
       <DocumentModal
-        syncDocuments={handleSync}
         fetchDocuments={fetchDocuments}
         setIsAddShow={setIsAddDocumentShow}
         isAddShow={isAddDocumentShow}
+        space={space}
         type="document"
       />
       <ArgumentsModal space={space} argumentsShow={argumentsShow} setArgumentsShow={setArgumentsShow} />

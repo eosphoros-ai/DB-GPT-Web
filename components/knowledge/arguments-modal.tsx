@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Tabs, Button, Input, Form, Col, Row } from 'antd';
+import { Modal, Tabs, Button, Input, Form, Col, Row, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { AlertFilled, FileSearchOutlined } from '@ant-design/icons';
@@ -17,6 +17,7 @@ interface IProps {
 export default function ArgumentsModal({ space, argumentsShow, setArgumentsShow }: IProps) {
   const { t } = useTranslation();
   const [newSpaceArguments, setNewSpaceArguments] = useState<IArguments | null>();
+  const [spinning, setSpinning] = useState<boolean>(false);
 
   const fetchArguments = async () => {
     const [_, data] = await apiInterceptors(getArguments(space.name));
@@ -119,11 +120,13 @@ export default function ArgumentsModal({ space, argumentsShow, setArgumentsShow 
   ];
 
   const handleSubmit = async (fieldsValue: IArguments) => {
+    setSpinning(true);
     const [_, data, res] = await apiInterceptors(
       saveArguments(space.name, {
         argument: JSON.stringify(fieldsValue),
       }),
     );
+    setSpinning(false);
     res?.success && setArgumentsShow(false);
   };
 
@@ -136,29 +139,31 @@ export default function ArgumentsModal({ space, argumentsShow, setArgumentsShow 
       }}
       footer={null}
     >
-      <Form
-        size="large"
-        className="mt-4"
-        layout="vertical"
-        name="basic"
-        initialValues={{ ...newSpaceArguments }}
-        autoComplete="off"
-        onFinish={handleSubmit}
-      >
-        <Tabs items={items}></Tabs>
-        <div className="mt-3 mb-3">
-          <Button htmlType="submit" type="primary" className="mr-6">
-            {t('Submit')}
-          </Button>
-          <Button
-            onClick={() => {
-              setArgumentsShow(false);
-            }}
-          >
-            {t('close')}
-          </Button>
-        </div>
-      </Form>
+      <Spin spinning={spinning}>
+        <Form
+          size="large"
+          className="mt-4"
+          layout="vertical"
+          name="basic"
+          initialValues={{ ...newSpaceArguments }}
+          autoComplete="off"
+          onFinish={handleSubmit}
+        >
+          <Tabs items={items}></Tabs>
+          <div className="mt-3 mb-3">
+            <Button htmlType="submit" type="primary" className="mr-6">
+              {t('Submit')}
+            </Button>
+            <Button
+              onClick={() => {
+                setArgumentsShow(false);
+              }}
+            >
+              {t('close')}
+            </Button>
+          </div>
+        </Form>
+      </Spin>
     </Modal>
   );
 }

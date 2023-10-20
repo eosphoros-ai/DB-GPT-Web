@@ -1,13 +1,19 @@
-import { Button, Card, Form, Input, Switch, Upload, message } from 'antd';
-import React from 'react';
+import { Button, Card, Form, Input, Switch, Upload, message, Spin } from 'antd';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { renderDocTypeIcon } from './document-container';
 import { InboxOutlined } from '@ant-design/icons';
-import { apiInterceptors, addDocument, uploadDocument } from '@/client/api';
+import { apiInterceptors, addDocument, uploadDocument, syncDocument } from '@/client/api';
+import { RcFile, UploadChangeParam } from 'antd/es/upload';
 
 const StepMap = {
   ChooseType: 1,
   AddDataSourceForm: 2,
+};
+
+type FileParams = {
+  file: RcFile;
+  fileList: FileList;
 };
 
 type IProps = {
@@ -16,7 +22,6 @@ type IProps = {
   step: number;
   handleBackBtn: () => void;
   spaceName?: string;
-  syncDocuments?: (name: string, id: number) => void;
   fetchDocuments?: () => void;
   setIsAddShow?: (isAddShow: boolean) => void;
 };
@@ -25,22 +30,25 @@ type FieldType = {
   synchChecked: boolean;
   documentName: string;
   textSource: string;
-  originFileObj: any;
+  originFileObj: FileParams;
   text: string;
   webPageUrl: string;
 };
 
 const { Dragger } = Upload;
+const { TextArea } = Input;
 
 export default function DocumentForm(props: IProps) {
-  const { handleChooseType, documentType, step, handleBackBtn, spaceName, syncDocuments, fetchDocuments, setIsAddShow } = props;
+  const { handleChooseType, documentType, step, handleBackBtn, spaceName, fetchDocuments, setIsAddShow } = props;
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const { TextArea } = Input;
+
+  const [spinning, setSpinning] = useState<boolean>(false);
 
   const handleFinish = async (data: FieldType) => {
     const { synchChecked, documentName, textSource, originFileObj, text, webPageUrl } = data;
     let res;
+    setSpinning(true);
     switch (documentType) {
       case 'webPage':
         res = await apiInterceptors(
@@ -70,10 +78,24 @@ export default function DocumentForm(props: IProps) {
         );
         break;
     }
-    synchChecked && syncDocuments?.(spaceName as string, res?.[1] as number);
+    synchChecked && handleSync?.(spaceName as string, res?.[1] as number);
+    setSpinning(false);
     if (!res[2]?.success) return;
-    setIsAddShow?.(false);
     fetchDocuments?.();
+    setIsAddShow?.(false);
+  };
+
+  const handleSync = async (knowledgeName: string, id: number) => {
+    await apiInterceptors(syncDocument(knowledgeName, { doc_ids: [id] }));
+  };
+
+  const handleFileChange = ({ file, fileList }: UploadChangeParam) => {
+    if (!form.getFieldsValue().documentName) {
+      form.setFieldValue('documentName', file.name);
+    }
+    if (fileList.length === 0) {
+      form.setFieldValue('originFileObj', null);
+    }
   };
 
   const beforeUpload = () => {
@@ -159,7 +181,7 @@ export default function DocumentForm(props: IProps) {
     return (
       <>
         <Form.Item<FieldType> name="originFileObj" rules={[{ required: true, message: t('Please_input_the_owner') }]}>
-          <Dragger beforeUpload={beforeUpload} multiple={false} accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md">
+          <Dragger onChange={handleFileChange} beforeUpload={beforeUpload} multiple={false} accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md">
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
@@ -187,29 +209,31 @@ export default function DocumentForm(props: IProps) {
   return step === StepMap['ChooseType'] ? (
     renderChooseType()
   ) : (
-    <Form
-      form={form}
-      size="large"
-      className="mt-4"
-      layout="vertical"
-      name="basic"
-      initialValues={{ remember: true }}
-      autoComplete="off"
-      onFinish={handleFinish}
-    >
-      <Form.Item<FieldType> label={`${t('Name')}:`} name="documentName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
-        <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
-      </Form.Item>
-      {renderFormContainer()}
-      <Form.Item<FieldType> label={`${t('Synch')}:`} name="synchChecked" initialValue={true}>
-        <Switch className="bg-slate-400" defaultChecked />
-      </Form.Item>
-      <Form.Item>
-        <Button onClick={handleBackBtn} className="mr-4">{`${t('Back')}`}</Button>
-        <Button type="primary" htmlType="submit">
-          {t('Finish')}
-        </Button>
-      </Form.Item>
-    </Form>
+    <Spin spinning={spinning}>
+      <Form
+        form={form}
+        size="large"
+        className="mt-4"
+        layout="vertical"
+        name="basic"
+        initialValues={{ remember: true }}
+        autoComplete="off"
+        onFinish={handleFinish}
+      >
+        <Form.Item<FieldType> label={`${t('Name')}:`} name="documentName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
+          <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
+        </Form.Item>
+        {renderFormContainer()}
+        <Form.Item<FieldType> label={`${t('Synch')}:`} name="synchChecked" initialValue={true}>
+          <Switch className="bg-slate-400" defaultChecked />
+        </Form.Item>
+        <Form.Item>
+          <Button onClick={handleBackBtn} className="mr-4">{`${t('Back')}`}</Button>
+          <Button type="primary" htmlType="submit">
+            {t('Finish')}
+          </Button>
+        </Form.Item>
+      </Form>
+    </Spin>
   );
 }
