@@ -37,13 +37,13 @@ const Knowledge = () => {
           Create
         </Button>
         <div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-5">
-          {knowledgeSpaceList?.map((item: IKnowLedge) => (
+          {knowledgeSpaceList?.map((knowledge: IKnowLedge) => (
             <KnowledgeCard
               fetchKnowledge={fetchData}
-              key={item.id}
-              spaceInfo={item}
+              key={knowledge.id}
+              spaceInfo={knowledge}
               t={t}
-              knowledgeSpaceToDelete={item}
+              knowledgeSpaceToDelete={knowledge}
               isAddShow={isAddShow}
               setIsAddShow={setIsAddShow}
             />

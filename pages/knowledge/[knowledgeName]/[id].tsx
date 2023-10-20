@@ -45,21 +45,21 @@ function Detail() {
         ]}
       />
       {chunkList?.length > 0 ? (
-        chunkList?.map((item: any) => {
+        chunkList?.map((chunk: any) => {
           return (
             <Card
-              key={item.id}
+              key={chunk.id}
               title={
                 <>
-                  {renderDocTypeIcon(item.doc_type)}
-                  <span>{item.doc_name}</span>
+                  {renderDocTypeIcon(chunk.doc_type)}
+                  <span>{chunk.doc_name}</span>
                 </>
               }
             >
               <p className="font-semibold">{t('Content')}:</p>
-              <p>{item?.content}</p>
+              <p>{chunk?.content}</p>
               <p className="font-semibold">{t('Meta_Data')}: </p>
-              <p>{item?.meta_info}</p>
+              <p>{chunk?.meta_info}</p>
             </Card>
           );
         })
