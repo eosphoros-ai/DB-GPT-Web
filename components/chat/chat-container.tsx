@@ -91,7 +91,7 @@ const ChatContainer = () => {
         });
       });
     },
-    [history, chat],
+    [history, chat, model],
   );
 
   return (
