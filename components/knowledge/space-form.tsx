@@ -1,6 +1,7 @@
 import { addKnowledge, apiInterceptors } from '@/client/api';
+import { knowledgeContext } from '@/context/knowledgeContext';
 import { Button, Form, Input, Spin } from 'antd';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type FieldType = {
@@ -16,6 +17,7 @@ type IProps = {
 export default function SpaceForm(props: IProps) {
   const { t } = useTranslation();
   const { handleAddSpace } = props;
+  const { onFinish: fetchSpace } = useContext(knowledgeContext);
   const [spinning, setSpinning] = useState<boolean>(false);
 
   const handleFinish = async (fieldsValue: FieldType) => {
@@ -29,7 +31,9 @@ export default function SpaceForm(props: IProps) {
         desc: description,
       }),
     );
+    fetchSpace?.();
     setSpinning(false);
+
     res?.success && handleAddSpace(spaceName);
   };
   return (

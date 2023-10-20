@@ -1,10 +1,11 @@
 import { Button, Card, Form, Input, Switch, Upload, message, Spin } from 'antd';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { renderDocTypeIcon } from './document-container';
 import { InboxOutlined } from '@ant-design/icons';
 import { apiInterceptors, addDocument, uploadDocument, syncDocument } from '@/client/api';
 import { RcFile, UploadChangeParam } from 'antd/es/upload';
+import { knowledgeContext } from '@/context/knowledgeContext';
 
 const StepMap = {
   ChooseType: 1,
@@ -22,7 +23,6 @@ type IProps = {
   step: number;
   handleBackBtn: () => void;
   spaceName?: string;
-  fetchDocuments?: () => void;
   setIsAddShow?: (isAddShow: boolean) => void;
 };
 
@@ -39,9 +39,10 @@ const { Dragger } = Upload;
 const { TextArea } = Input;
 
 export default function DocumentForm(props: IProps) {
-  const { handleChooseType, documentType, step, handleBackBtn, spaceName, fetchDocuments, setIsAddShow } = props;
+  const { handleChooseType, documentType, step, handleBackBtn, spaceName, setIsAddShow } = props;
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { onFinish } = useContext(knowledgeContext);
 
   const [spinning, setSpinning] = useState<boolean>(false);
 
@@ -81,7 +82,7 @@ export default function DocumentForm(props: IProps) {
     synchChecked && handleSync?.(spaceName as string, res?.[1] as number);
     setSpinning(false);
     if (!res[2]?.success) return;
-    fetchDocuments?.();
+    onFinish?.();
     setIsAddShow?.(false);
   };
 

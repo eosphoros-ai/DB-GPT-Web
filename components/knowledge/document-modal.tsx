@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Steps, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { ISpace } from '@/types/knowledge';
 import SpaceForm from './space-form';
 import DataSourceForm from './document-form';
+import { knowledgeContext } from '@/context/knowledgeContext';
 
 interface IProps {
   isAddShow: boolean;
   setIsAddShow: (isAddShow: boolean) => void;
   type: 'space' | 'document';
   space?: ISpace;
-  fetchDocuments?: () => void;
-  fetchSpace?: () => void;
 }
 
 export default function DocumentModal(props: IProps) {
-  const { setIsAddShow, isAddShow, type, space, fetchDocuments, fetchSpace } = props;
+  const { setIsAddShow, isAddShow, type, space } = props;
   const { t } = useTranslation();
+  const { onFinish: fetchSpace } = useContext(knowledgeContext);
 
   const addKnowledgeSteps = [{ title: t('Knowledge_Space_Config') }, { title: t('Choose_a_Datasource_type') }, { title: t('Setup_the_Datasource') }];
   const addDocumentSteps = [{ title: t('Choose_a_Datasource_type') }, { title: t('Setup_the_Datasource') }];
@@ -47,7 +47,6 @@ export default function DocumentModal(props: IProps) {
     }
     return (
       <DataSourceForm
-        fetchDocuments={fetchDocuments}
         spaceName={space?.name || curSpaceName}
         step={renderStep}
         documentType={documentType}

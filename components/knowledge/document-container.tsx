@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Card, Space, Divider, Empty, Spin, Tag, Tooltip, Modal } from 'antd';
 import {
   DeleteFilled,
@@ -18,10 +18,10 @@ import DocumentModal from './document-modal';
 import ArgumentsModal from './arguments-modal';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
+import { knowledgeContext } from '@/context/knowledgeContext';
 
 interface IProps {
   space: ISpace;
-  setDocumentCount: (count: string) => void;
 }
 
 const { confirm } = Modal;
@@ -33,11 +33,12 @@ export const renderDocTypeIcon = (type: string) => {
 };
 
 export default function DocumentContainer(props: IProps) {
+  const { space } = props;
   const { t } = useTranslation();
   const router = useRouter();
   const page_size = 20;
 
-  const { space, setDocumentCount } = props;
+  const { onFinish } = useContext(knowledgeContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [documents, setDocuments] = useState<any>([]);
@@ -68,7 +69,6 @@ export default function DocumentContainer(props: IProps) {
     );
     setIsLoading(false);
     setDocuments(data?.data);
-    setDocumentCount(String(data?.total));
   }
 
   const handleSync = async (spaceName: string, id: number) => {
@@ -78,6 +78,7 @@ export default function DocumentContainer(props: IProps) {
   const handleDelete = async (row: any) => {
     await apiInterceptors(delDocument(space?.name, { doc_name: row.doc_name }));
     fetchDocuments();
+    onFinish?.();
   };
 
   const handleAddDocument = () => {
@@ -198,13 +199,7 @@ export default function DocumentContainer(props: IProps) {
       </Space>
       <Divider />
       <Spin spinning={isLoading}>{renderDocumentCard()}</Spin>
-      <DocumentModal
-        fetchDocuments={fetchDocuments}
-        setIsAddShow={setIsAddDocumentShow}
-        isAddShow={isAddDocumentShow}
-        space={space}
-        type="document"
-      />
+      <DocumentModal setIsAddShow={setIsAddDocumentShow} isAddShow={isAddDocumentShow} space={space} type="document" />
       <ArgumentsModal space={space} argumentsShow={argumentsShow} setArgumentsShow={setArgumentsShow} />
     </div>
   );

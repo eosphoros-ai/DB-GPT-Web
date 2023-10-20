@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { Popover, ConfigProvider, Button, Modal, Badge } from 'antd';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -9,10 +9,10 @@ import moment from 'moment';
 import { apiInterceptors, delSpace, newDialogue } from '@/client/api';
 import { useTranslation } from 'react-i18next';
 import { VECTOR_ICON_MAP } from '@/utils/constants';
+import { knowledgeContext } from '@/context/knowledgeContext';
 
 interface IProps {
   space: ISpace;
-  onFinish: () => void;
 }
 
 const { confirm } = Modal;
@@ -20,8 +20,9 @@ const { confirm } = Modal;
 export default function SpaceCard(props: IProps) {
   const router = useRouter();
   const { t } = useTranslation();
-  const { space, onFinish } = props;
-  const [documentCount, setDocumentCount] = useState(space.docs);
+  const { space } = props;
+
+  const { onFinish } = useContext(knowledgeContext);
 
   const showDeleteConfirm = () => {
     confirm({
@@ -33,7 +34,7 @@ export default function SpaceCard(props: IProps) {
       cancelText: 'No',
       async onOk() {
         await apiInterceptors(delSpace({ name: space?.name }));
-        onFinish();
+        onFinish?.();
       },
     });
   };
@@ -76,9 +77,9 @@ export default function SpaceCard(props: IProps) {
         className="dark:hover:border-white transition-all hover:shadow-md bg-[#FFFFFF] dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full min-[width]:80"
         placement="bottom"
         trigger="click"
-        content={<DocumentContainer setDocumentCount={setDocumentCount} space={space} />}
+        content={<DocumentContainer space={space} />}
       >
-        <Badge className="min-w-min" count={documentCount || 0}>
+        <Badge className="min-w-min" count={space.docs || 0}>
           <div className="flex justify-between mx-6 mt-3">
             <div className="text-lg font-bold text-black truncate">
               {renderVectorIcon(space.vector_type)}
