@@ -1,7 +1,7 @@
-import { addKnowledge, apiInterceptors } from '@/client/api';
-import { knowledgeContext } from '@/context/knowledgeContext';
+import { addSpace, apiInterceptors } from '@/client/api';
+import { StepChangeParams } from '@/types/knowledge';
 import { Button, Form, Input, Spin } from 'antd';
-import React, { useContext, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type FieldType = {
@@ -11,30 +11,27 @@ type FieldType = {
 };
 
 type IProps = {
-  handleAddSpace: (name: string) => void;
+  handleStepChange: (params: StepChangeParams) => void;
 };
 
 export default function SpaceForm(props: IProps) {
   const { t } = useTranslation();
-  const { handleAddSpace } = props;
-  const { onFinish: fetchSpace } = useContext(knowledgeContext);
+  const { handleStepChange } = props;
   const [spinning, setSpinning] = useState<boolean>(false);
 
   const handleFinish = async (fieldsValue: FieldType) => {
     const { spaceName, owner, description } = fieldsValue;
     setSpinning(true);
     const [_, data, res] = await apiInterceptors(
-      addKnowledge({
+      addSpace({
         name: spaceName,
         vector_type: 'Chroma',
         owner,
         desc: description,
       }),
     );
-    fetchSpace?.();
     setSpinning(false);
-
-    res?.success && handleAddSpace(spaceName);
+    res?.success && handleStepChange({ label: 'forward', spaceName });
   };
   return (
     <Spin spinning={spinning}>

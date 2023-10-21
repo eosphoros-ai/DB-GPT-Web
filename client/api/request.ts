@@ -19,9 +19,8 @@ import {
   DocumentParams,
   IArguments,
   IChunkList,
-  IDocument,
   IDocumentResponse,
-  IKnowLedge,
+  ISpace,
 } from '@/types/knowledge';
 
 /** App */
@@ -123,8 +122,8 @@ export const saveArguments = (knowledgeName: string, data: ArgumentsParams) => {
   return POST<ArgumentsParams, IArguments>(`/knowledge/${knowledgeName}/argument/save`, data);
 };
 
-export const getKnowledgeList = () => {
-  return POST<any, Array<IKnowLedge>>('/knowledge/space/list', {});
+export const getSpaceList = () => {
+  return POST<any, Array<ISpace>>('/knowledge/space/list', {});
 };
 export const getDocumentList = (knowLedgeName: string, data: Record<string, number>) => {
   return POST<Record<string, number>, IDocumentResponse>(`/knowledge/${knowLedgeName}/document/list`, data);
@@ -134,7 +133,7 @@ export const addDocument = (knowledgeName: string, data: DocumentParams) => {
   return POST<DocumentParams, number>(`/knowledge/${knowledgeName}/document/add`, data);
 };
 
-export const addKnowledge = (data: AddKnowledgeParams) => {
+export const addSpace = (data: AddKnowledgeParams) => {
   return POST<AddKnowledgeParams, Array<any>>(`/knowledge/space/add`, data);
 };
 

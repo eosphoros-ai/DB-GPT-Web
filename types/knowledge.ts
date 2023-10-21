@@ -1,3 +1,5 @@
+import { type } from 'os';
+
 export interface ISpace {
   context?: any;
   desc: string;
@@ -94,4 +96,10 @@ export type IChunkList = {
 
 export type ArgumentsParams = {
   argument: string;
+};
+
+export type StepChangeParams = {
+  label: 'forward' | 'back' | 'finish';
+  spaceName?: string;
+  docType?: string;
 };

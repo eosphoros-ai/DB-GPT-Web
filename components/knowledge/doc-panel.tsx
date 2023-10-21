@@ -1,54 +1,36 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, Space, Divider, Empty, Spin, Tag, Tooltip, Modal } from 'antd';
-import {
-  DeleteFilled,
-  InteractionFilled,
-  PlusOutlined,
-  ToolFilled,
-  FileTextFilled,
-  FileWordTwoTone,
-  IeCircleFilled,
-  EyeFilled,
-  ExclamationCircleFilled,
-} from '@ant-design/icons';
+import { DeleteFilled, InteractionFilled, PlusOutlined, ToolFilled, EyeFilled, WarningOutlined } from '@ant-design/icons';
 import { apiInterceptors, delDocument, getDocumentList, syncDocument } from '@/client/api';
 import { IDocument, ISpace } from '@/types/knowledge';
 import moment from 'moment';
-import DocumentModal from './document-modal';
 import ArgumentsModal from './arguments-modal';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { knowledgeContext } from '@/context/knowledgeContext';
+import DocIcon from './doc-icon';
 
 interface IProps {
   space: ISpace;
+  onAddDoc: (spaceName: string) => void;
+  onDeleteDoc: () => void;
 }
 
 const { confirm } = Modal;
 
-export const renderDocTypeIcon = (type: string) => {
-  if (type === 'TEXT') return <FileTextFilled className="text-[#2AA3FF] mr-2 !text-lg" />;
-  if (type === 'DOCUMENT') return <FileWordTwoTone className="text-[#2AA3FF] mr-2 !text-lg" />;
-  return <IeCircleFilled className="text-[#2AA3FF] mr-2 !text-lg" />;
-};
-
-export default function DocumentContainer(props: IProps) {
+export default function DocPanel(props: IProps) {
   const { space } = props;
   const { t } = useTranslation();
   const router = useRouter();
   const page_size = 20;
 
-  const { onFinish } = useContext(knowledgeContext);
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [documents, setDocuments] = useState<any>([]);
-  const [isAddDocumentShow, setIsAddDocumentShow] = useState<boolean>(false);
   const [argumentsShow, setArgumentsShow] = useState<boolean>(false);
 
   const showDeleteConfirm = (row: any) => {
     confirm({
       title: t('Tips'),
-      icon: <ExclamationCircleFilled />,
+      icon: <WarningOutlined />,
       content: `${t('Del_Document_Tips')}?`,
       okText: 'Yes',
       okType: 'danger',
@@ -62,7 +44,7 @@ export default function DocumentContainer(props: IProps) {
   async function fetchDocuments() {
     setIsLoading(true);
     const [_, data] = await apiInterceptors(
-      getDocumentList(space?.name, {
+      getDocumentList(space.name, {
         page: 1,
         page_size,
       }),
@@ -76,13 +58,13 @@ export default function DocumentContainer(props: IProps) {
   };
 
   const handleDelete = async (row: any) => {
-    await apiInterceptors(delDocument(space?.name, { doc_name: row.doc_name }));
+    await apiInterceptors(delDocument(space.name, { doc_name: row.doc_name }));
     fetchDocuments();
-    onFinish?.();
+    props.onDeleteDoc();
   };
 
   const handleAddDocument = () => {
-    setIsAddDocumentShow(true);
+    props.onAddDoc(space.name);
   };
 
   const handleArguments = () => {
@@ -131,7 +113,7 @@ export default function DocumentContainer(props: IProps) {
                 title={
                   <Tooltip title={document.doc_name}>
                     <div className="truncate ">
-                      {renderDocTypeIcon(document.doc_type)}
+                      <DocIcon type={document.doc_type} />
                       <span>{document.doc_name}</span>
                     </div>
                   </Tooltip>
@@ -199,7 +181,6 @@ export default function DocumentContainer(props: IProps) {
       </Space>
       <Divider />
       <Spin spinning={isLoading}>{renderDocumentCard()}</Spin>
-      <DocumentModal setIsAddShow={setIsAddDocumentShow} isAddShow={isAddDocumentShow} space={space} type="document" />
       <ArgumentsModal space={space} argumentsShow={argumentsShow} setArgumentsShow={setArgumentsShow} />
     </div>
   );

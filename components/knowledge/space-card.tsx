@@ -1,18 +1,18 @@
-import React, { useContext } from 'react';
 import { Popover, ConfigProvider, Button, Modal, Badge } from 'antd';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import { DeleteTwoTone, MessageTwoTone, ExclamationCircleFilled } from '@ant-design/icons';
+import { DeleteTwoTone, MessageTwoTone, WarningOutlined } from '@ant-design/icons';
 import { ISpace } from '@/types/knowledge';
-import DocumentContainer from './document-container';
+import DocPanel from './doc-panel';
 import moment from 'moment';
 import { apiInterceptors, delSpace, newDialogue } from '@/client/api';
 import { useTranslation } from 'react-i18next';
 import { VECTOR_ICON_MAP } from '@/utils/constants';
-import { knowledgeContext } from '@/context/knowledgeContext';
 
 interface IProps {
   space: ISpace;
+  onAddDoc: (spaceName: string) => void;
+  getSpaces: () => void;
 }
 
 const { confirm } = Modal;
@@ -20,24 +20,26 @@ const { confirm } = Modal;
 export default function SpaceCard(props: IProps) {
   const router = useRouter();
   const { t } = useTranslation();
-  const { space } = props;
-
-  const { onFinish } = useContext(knowledgeContext);
+  const { space, getSpaces } = props;
 
   const showDeleteConfirm = () => {
     confirm({
       title: t('Tips'),
-      icon: <ExclamationCircleFilled />,
+      icon: <WarningOutlined />,
       content: `${t('Del_Knowledge_Tips')}?`,
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
       async onOk() {
         await apiInterceptors(delSpace({ name: space?.name }));
-        onFinish?.();
+        getSpaces();
       },
     });
   };
+
+  function onDeleteDoc() {
+    getSpaces();
+  }
 
   const handleChat = async (e: any) => {
     e.stopPropagation();
@@ -77,7 +79,7 @@ export default function SpaceCard(props: IProps) {
         className="dark:hover:border-white transition-all hover:shadow-md bg-[#FFFFFF] dark:bg-[#484848] cursor-pointer rounded-[10px] border border-gray-200 border-solid"
         placement="bottom"
         trigger="click"
-        content={<DocumentContainer space={space} />}
+        content={<DocPanel space={space} onAddDoc={props.onAddDoc} onDeleteDoc={onDeleteDoc} />}
       >
         <Badge className="mr-4 mb-4 min-w-[200px] sm:w-60 lg:w-72" count={space.docs || 0}>
           <div className="flex justify-between mx-6 mt-3">

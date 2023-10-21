@@ -3,10 +3,11 @@ import { useRouter } from 'next/router';
 import { Breadcrumb, Card, Empty } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { apiInterceptors, getChunkList } from '@/client/api';
-import { renderDocTypeIcon } from '@/components/knowledge/document-container';
+import DocIcon from '@/components/knowledge/doc-icon';
 
 const page_size = 20;
-function Detail() {
+
+function ChunkList() {
   const router = useRouter();
   const { t } = useTranslation();
   const [chunkList, setChunkList] = useState<any>([]);
@@ -51,7 +52,7 @@ function Detail() {
               key={chunk.id}
               title={
                 <>
-                  {renderDocTypeIcon(chunk.doc_type)}
+                  <DocIcon type={chunk.doc_type} />
                   <span>{chunk.doc_name}</span>
                 </>
               }
@@ -70,4 +71,4 @@ function Detail() {
   );
 }
 
-export default Detail;
+export default ChunkList;

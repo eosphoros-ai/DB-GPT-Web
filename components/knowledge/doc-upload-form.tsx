@@ -1,16 +1,10 @@
-import { Button, Card, Form, Input, Switch, Upload, message, Spin } from 'antd';
-import React, { useContext, useState } from 'react';
+import { Button, Form, Input, Switch, Upload, message, Spin } from 'antd';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { renderDocTypeIcon } from './document-container';
 import { InboxOutlined } from '@ant-design/icons';
 import { apiInterceptors, addDocument, uploadDocument, syncDocument } from '@/client/api';
 import { RcFile, UploadChangeParam } from 'antd/es/upload';
-import { knowledgeContext } from '@/context/knowledgeContext';
-
-const StepMap = {
-  ChooseType: 1,
-  AddDataSourceForm: 2,
-};
+import { StepChangeParams } from '@/types/knowledge';
 
 type FileParams = {
   file: RcFile;
@@ -18,17 +12,14 @@ type FileParams = {
 };
 
 type IProps = {
-  handleChooseType: (item: any) => void;
-  documentType: string;
-  step: number;
-  handleBackBtn: () => void;
-  spaceName?: string;
-  setIsAddShow?: (isAddShow: boolean) => void;
+  handleStepChange: (params: StepChangeParams) => void;
+  spaceName: string;
+  docType: string;
 };
 
 type FieldType = {
   synchChecked: boolean;
-  documentName: string;
+  docName: string;
   textSource: string;
   originFileObj: FileParams;
   text: string;
@@ -38,23 +29,21 @@ type FieldType = {
 const { Dragger } = Upload;
 const { TextArea } = Input;
 
-export default function DocumentForm(props: IProps) {
-  const { handleChooseType, documentType, step, handleBackBtn, spaceName, setIsAddShow } = props;
+export default function DocUploadForm(props: IProps) {
+  const { handleStepChange, spaceName, docType } = props;
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const { onFinish } = useContext(knowledgeContext);
-
   const [spinning, setSpinning] = useState<boolean>(false);
 
   const handleFinish = async (data: FieldType) => {
-    const { synchChecked, documentName, textSource, originFileObj, text, webPageUrl } = data;
+    const { synchChecked, docName, textSource, originFileObj, text, webPageUrl } = data;
     let res;
     setSpinning(true);
-    switch (documentType) {
+    switch (docType) {
       case 'webPage':
         res = await apiInterceptors(
           addDocument(spaceName as string, {
-            doc_name: documentName,
+            doc_name: docName,
             content: webPageUrl,
             doc_type: 'URL',
           }),
@@ -62,7 +51,7 @@ export default function DocumentForm(props: IProps) {
         break;
       case 'file':
         const formData = new FormData();
-        formData.append('doc_name', documentName || originFileObj.file.name);
+        formData.append('doc_name', docName || originFileObj.file.name);
         formData.append('doc_file', originFileObj.file);
         formData.append('doc_type', 'DOCUMENT');
 
@@ -71,7 +60,7 @@ export default function DocumentForm(props: IProps) {
       default:
         res = await apiInterceptors(
           addDocument(spaceName as string, {
-            doc_name: documentName,
+            doc_name: docName,
             source: textSource,
             content: text,
             doc_type: 'TEXT',
@@ -81,9 +70,7 @@ export default function DocumentForm(props: IProps) {
     }
     synchChecked && handleSync?.(spaceName as string, res?.[1] as number);
     setSpinning(false);
-    if (!res[2]?.success) return;
-    onFinish?.();
-    setIsAddShow?.(false);
+    handleStepChange({ label: 'finish' });
   };
 
   const handleSync = async (knowledgeName: string, id: number) => {
@@ -91,8 +78,8 @@ export default function DocumentForm(props: IProps) {
   };
 
   const handleFileChange = ({ file, fileList }: UploadChangeParam) => {
-    if (!form.getFieldsValue().documentName) {
-      form.setFieldValue('documentName', file.name);
+    if (!form.getFieldsValue().docName) {
+      form.setFieldValue('docName', file.name);
     }
     if (fileList.length === 0) {
       form.setFieldValue('originFileObj', null);
@@ -108,47 +95,7 @@ export default function DocumentForm(props: IProps) {
     return Upload.LIST_IGNORE;
   };
 
-  const documentTypeList = [
-    {
-      type: 'text',
-      title: t('Text'),
-      subTitle: t('Fill your raw text'),
-      iconType: 'TEXT',
-    },
-    {
-      type: 'webPage',
-      title: t('URL'),
-      subTitle: t('Fetch_the_content_of_a_URL'),
-      iconType: 'WEBPAGE',
-    },
-    {
-      type: 'file',
-      title: t('Document'),
-      subTitle: t('Upload_a_document'),
-      iconType: 'DOCUMENT',
-    },
-  ];
-
-  const renderChooseType = () => {
-    return (
-      <>
-        {documentTypeList.map((type, index) => (
-          <Card
-            key={index}
-            className="mt-4 mb-4 cursor-pointer"
-            onClick={() => {
-              handleChooseType(type);
-            }}
-          >
-            <div className="font-semibold">
-              {renderDocTypeIcon(type.iconType)} {type.title}
-            </div>
-            <div>{type.subTitle}</div>
-          </Card>
-        ))}
-      </>
-    );
-  };
+  const renderChooseType = () => {};
 
   const renderText = () => {
     return (
@@ -162,7 +109,7 @@ export default function DocumentForm(props: IProps) {
         </Form.Item>
 
         <Form.Item<FieldType> label={`${t('Text')}:`} name="text" rules={[{ required: true, message: t('Please_input_the_description') }]}>
-          <TextArea rows={4} maxLength={6} />
+          <TextArea rows={4} />
         </Form.Item>
       </>
     );
@@ -197,7 +144,7 @@ export default function DocumentForm(props: IProps) {
   };
 
   const renderFormContainer = () => {
-    switch (documentType) {
+    switch (docType) {
       case 'webPage':
         return renderWebPage();
       case 'file':
@@ -207,9 +154,7 @@ export default function DocumentForm(props: IProps) {
     }
   };
 
-  return step === StepMap['ChooseType'] ? (
-    renderChooseType()
-  ) : (
+  return (
     <Spin spinning={spinning}>
       <Form
         form={form}
@@ -221,7 +166,7 @@ export default function DocumentForm(props: IProps) {
         autoComplete="off"
         onFinish={handleFinish}
       >
-        <Form.Item<FieldType> label={`${t('Name')}:`} name="documentName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
+        <Form.Item<FieldType> label={`${t('Name')}:`} name="docName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
           <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
         </Form.Item>
         {renderFormContainer()}
@@ -229,7 +174,12 @@ export default function DocumentForm(props: IProps) {
           <Switch className="bg-slate-400" defaultChecked />
         </Form.Item>
         <Form.Item>
-          <Button onClick={handleBackBtn} className="mr-4">{`${t('Back')}`}</Button>
+          <Button
+            onClick={() => {
+              handleStepChange({ label: 'back' });
+            }}
+            className="mr-4"
+          >{`${t('Back')}`}</Button>
           <Button type="primary" htmlType="submit">
             {t('Finish')}
           </Button>

@@ -26,7 +26,7 @@ export default function ArgumentsModal({ space, argumentsShow, setArgumentsShow 
 
   useEffect(() => {
     fetchArguments();
-  }, []);
+  }, [space.name]);
 
   const renderEmbeddingForm = () => {
     return (
