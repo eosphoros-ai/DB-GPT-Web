@@ -12,11 +12,11 @@ function ChunkList() {
   const { t } = useTranslation();
   const [chunkList, setChunkList] = useState<any>([]);
   const {
-    query: { id, knowledgeName },
+    query: { id, spaceName },
   } = useRouter();
   const fetchChunks = async () => {
     const [_, data] = await apiInterceptors(
-      getChunkList(knowledgeName as string, {
+      getChunkList(spaceName as string, {
         document_id: id as string,
         page: 1,
         page_size,
@@ -25,8 +25,10 @@ function ChunkList() {
     setChunkList(data?.data);
   };
   useEffect(() => {
-    knowledgeName && id && fetchChunks();
-  }, [id, knowledgeName]);
+    console.log(id, spaceName);
+
+    spaceName && id && fetchChunks();
+  }, [id, spaceName]);
 
   return (
     <div className="h-full overflow-y-scroll">
@@ -41,7 +43,7 @@ function ChunkList() {
             path: '/knowledge',
           },
           {
-            title: knowledgeName,
+            title: spaceName,
           },
         ]}
       />

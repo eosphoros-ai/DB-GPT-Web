@@ -125,7 +125,7 @@ export default function DocPanel(props: IProps) {
                         className="mr-2 !text-lg"
                         style={{ color: '#1b7eff', fontSize: '20px' }}
                         onClick={() => {
-                          router.push(`/knowledge/${space.name}/${document.id}`);
+                          router.push(`/knowledge/chunk/?spaceName=${space.name}&id=${document.id}`);
                         }}
                       />
                     </Tooltip>
