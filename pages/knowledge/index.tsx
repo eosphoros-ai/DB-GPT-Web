@@ -33,7 +33,7 @@ const Knowledge = () => {
           >
             Create
           </Button>
-          <div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-5">
+          <div className="flex flex-wrap">
             {spaceList?.map((space: ISpace) => (
               <SpaceCard key={space.id} space={space} />
             ))}

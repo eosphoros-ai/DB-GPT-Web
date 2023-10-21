@@ -74,12 +74,12 @@ export default function SpaceCard(props: IProps) {
       }}
     >
       <Popover
-        className="dark:hover:border-white transition-all hover:shadow-md bg-[#FFFFFF] dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full min-[width]:80"
+        className="dark:hover:border-white transition-all hover:shadow-md bg-[#FFFFFF] dark:bg-[#484848] cursor-pointer rounded-[10px] border border-gray-200 border-solid"
         placement="bottom"
         trigger="click"
         content={<DocumentContainer space={space} />}
       >
-        <Badge className="min-w-min" count={space.docs || 0}>
+        <Badge className="mr-4 mb-4 min-w-[200px] sm:w-60 lg:w-72" count={space.docs || 0}>
           <div className="flex justify-between mx-6 mt-3">
             <div className="text-lg font-bold text-black truncate">
               {renderVectorIcon(space.vector_type)}
