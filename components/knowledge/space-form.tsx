@@ -1,36 +1,37 @@
-import { addKnowledge, apiInterceptors } from '@/client/api';
+import { addSpace, apiInterceptors } from '@/client/api';
+import { StepChangeParams } from '@/types/knowledge';
 import { Button, Form, Input, Spin } from 'antd';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type FieldType = {
-  knowledgeName: string;
+  spaceName: string;
   owner: string;
   description: string;
 };
 
 type IProps = {
-  handleAddKnowledge: (name: string) => void;
+  handleStepChange: (params: StepChangeParams) => void;
 };
 
-export default function AddKnowledge(props: IProps) {
+export default function SpaceForm(props: IProps) {
   const { t } = useTranslation();
-  const { handleAddKnowledge } = props;
+  const { handleStepChange } = props;
   const [spinning, setSpinning] = useState<boolean>(false);
 
   const handleFinish = async (fieldsValue: FieldType) => {
-    const { knowledgeName, owner, description } = fieldsValue;
+    const { spaceName, owner, description } = fieldsValue;
     setSpinning(true);
     const [_, data, res] = await apiInterceptors(
-      addKnowledge({
-        name: knowledgeName,
+      addSpace({
+        name: spaceName,
         vector_type: 'Chroma',
         owner,
         desc: description,
       }),
     );
     setSpinning(false);
-    res?.success && handleAddKnowledge(knowledgeName);
+    res?.success && handleStepChange({ label: 'forward', spaceName });
   };
   return (
     <Spin spinning={spinning}>
@@ -45,7 +46,7 @@ export default function AddKnowledge(props: IProps) {
       >
         <Form.Item<FieldType>
           label={t('Knowledge_Space_Name')}
-          name="knowledgeName"
+          name="spaceName"
           rules={[
             { required: true, message: t('Please_input_the_name') },
             () => ({

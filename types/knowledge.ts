@@ -1,4 +1,6 @@
-export interface IKnowLedge {
+import { type } from 'os';
+
+export interface ISpace {
   context?: any;
   desc: string;
   docs: string | number;
@@ -56,7 +58,7 @@ export type IDocument = {
   chunk_size: string | number;
   gmt_created: string;
   gmt_modified: string;
-  id: string;
+  id: number;
   last_sync: string;
   result: string;
   space: string;
@@ -94,4 +96,10 @@ export type IChunkList = {
 
 export type ArgumentsParams = {
   argument: string;
+};
+
+export type StepChangeParams = {
+  label: 'forward' | 'back' | 'finish';
+  spaceName?: string;
+  docType?: string;
 };

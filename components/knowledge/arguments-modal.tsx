@@ -4,29 +4,29 @@ import { useTranslation } from 'react-i18next';
 
 import { AlertFilled, FileSearchOutlined } from '@ant-design/icons';
 import { apiInterceptors, getArguments, saveArguments } from '@/client/api';
-import { IArguments } from '@/types/knowledge';
+import { IArguments, ISpace } from '@/types/knowledge';
 
 const { TextArea } = Input;
 
 interface IProps {
-  knowledge: any;
+  space: ISpace;
   argumentsShow: boolean;
   setArgumentsShow: (argumentsShow: boolean) => void;
 }
 
-export default function ArgumentsModal({ knowledge, argumentsShow, setArgumentsShow }: IProps) {
+export default function ArgumentsModal({ space, argumentsShow, setArgumentsShow }: IProps) {
   const { t } = useTranslation();
   const [newSpaceArguments, setNewSpaceArguments] = useState<IArguments | null>();
   const [spinning, setSpinning] = useState<boolean>(false);
 
   const fetchArguments = async () => {
-    const [_, data] = await apiInterceptors(getArguments(knowledge.name));
+    const [_, data] = await apiInterceptors(getArguments(space.name));
     setNewSpaceArguments(data);
   };
 
   useEffect(() => {
     fetchArguments();
-  }, []);
+  }, [space.name]);
 
   const renderEmbeddingForm = () => {
     return (
@@ -122,7 +122,7 @@ export default function ArgumentsModal({ knowledge, argumentsShow, setArgumentsS
   const handleSubmit = async (fieldsValue: IArguments) => {
     setSpinning(true);
     const [_, data, res] = await apiInterceptors(
-      saveArguments(knowledge.name, {
+      saveArguments(space.name, {
         argument: JSON.stringify(fieldsValue),
       }),
     );

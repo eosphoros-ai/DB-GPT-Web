@@ -145,7 +145,7 @@ const resources = {
       Upload: 'Upload',
       Market_Plugins: 'Market Plugin',
       My_Plugins: 'My Plugins',
-      Del_Knowledge_Tips: 'Do you want delete the knowledge',
+      Del_Knowledge_Tips: 'Do you want delete the Space',
       Del_Document_Tips: 'Do you want delete the Document',
       Tips: 'Tips',
       Limit_Upload_File_Count_Tips: 'Only one file can be uploaded at a time',
