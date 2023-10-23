@@ -39,7 +39,7 @@ export const getDbSupportType = () => {
   return GET<null, DbSupportTypeResponse>('/api/v1/chat/db/support/type');
 };
 export const postDbDelete = (dbName: string) => {
-  return POST(`/chat/db/delete?db_name=${dbName}`, undefined);
+  return POST(`/api/v1/chat/db/delete?db_name=${dbName}`);
 };
 export const postDbEdit = (data: PostDbParams) => {
   return POST<PostDbParams, null>('/api/v1/chat/db/edit', data);

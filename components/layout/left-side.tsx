@@ -15,7 +15,7 @@ import {
   useColorScheme,
   IconButton,
   Tooltip,
-} from '@/lib/mui';
+} from '@mui/joy';
 import Article from '@mui/icons-material/Article';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
