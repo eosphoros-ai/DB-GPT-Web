@@ -20,7 +20,6 @@ export default function LineChart({ chart }: { chart: ChartData }) {
                 height: 300,
                 type: 'view',
                 data: chart.values,
-
                 children: [
                   {
                     type: 'line',
