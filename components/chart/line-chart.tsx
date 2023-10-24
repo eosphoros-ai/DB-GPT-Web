@@ -1,7 +1,6 @@
 import { ChartData } from '@/types/chat';
 import { Card, CardContent, Typography } from '@mui/joy';
-import { useEffect, useRef } from 'react';
-import { Chart } from '@berryv/g2-rect';
+import { Chart } from '@berryv/g2-react';
 
 export default function LineChart({ chart }: { chart: ChartData }) {
   return (
@@ -18,33 +17,37 @@ export default function LineChart({ chart }: { chart: ChartData }) {
             <Chart
               options={{
                 autoFit: true,
+                height: 300,
                 type: 'view',
                 data: chart.values,
-                encode: {
-                  x: 'name',
-                  y: 'value',
-                  color: 'type',
-                  shape: 'smooth',
-                },
+
                 children: [
                   {
-                    type: 'interval',
-                    legend: {
-                      position: 'bottom',
+                    type: 'line',
+                    encode: {
+                      x: 'name',
+                      y: 'value',
+                      color: 'type',
+                      shape: 'smooth',
                     },
                   },
                   {
                     type: 'area',
+                    encode: {
+                      x: 'name',
+                      y: 'value',
+                      color: 'type',
+                      shape: 'smooth',
+                    },
                     legend: false,
                     style: {
                       fillOpacity: 0.15,
                     },
                   },
                 ],
-                animation: {
-                  appear: {
-                    animation: 'wave-in',
-                    duration: 3000,
+                axis: {
+                  x: {
+                    labelAutoRotate: false,
                   },
                 },
               }}

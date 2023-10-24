@@ -1,5 +1,5 @@
 import { ChartData } from '@/types/chat';
-import { Chart } from '@berryv/g2-rect';
+import { Chart } from '@berryv/g2-react';
 import { Card, CardContent, Typography } from '@mui/joy';
 
 export default function BarChart({ chart }: { key: string; chart: ChartData }) {
@@ -16,17 +16,14 @@ export default function BarChart({ chart }: { key: string; chart: ChartData }) {
           <div className="h-[300px]">
             <Chart
               options={{
-                type: 'interval',
                 autoFit: true,
+                height: 300,
+                type: 'interval',
                 data: chart.values,
                 encode: { x: 'name', y: 'value', color: 'type' },
-                legend: {
-                  position: 'bottom',
-                },
-                animation: {
-                  appear: {
-                    animation: 'wave-in',
-                    duration: 3000,
+                axis: {
+                  x: {
+                    labelAutoRotate: false,
                   },
                 },
               }}
