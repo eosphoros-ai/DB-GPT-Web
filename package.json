@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.5",
-    "@antv/g2plot": "^2.4.31",
+    "@antv/g2": "^5.1.6",
+    "@berryv/g2-rect": "^0.2.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@monaco-editor/react": "^4.5.2",
     "@mui/icons-material": "^5.11.16",
