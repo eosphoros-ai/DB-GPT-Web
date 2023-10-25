@@ -15,9 +15,9 @@ export default function LineChart({ chart }: { chart: ChartData }) {
           </Typography>
           <div className="h-[300px]">
             <Chart
+              style={{ height: '100%' }}
               options={{
                 autoFit: true,
-                height: 300,
                 type: 'view',
                 data: chart.values,
                 children: [

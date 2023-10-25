@@ -15,9 +15,9 @@ export default function BarChart({ chart }: { key: string; chart: ChartData }) {
           </Typography>
           <div className="h-[300px]">
             <Chart
+              style={{ height: '100%' }}
               options={{
                 autoFit: true,
-                height: 300,
                 type: 'interval',
                 data: chart.values,
                 encode: { x: 'name', y: 'value', color: 'type' },
