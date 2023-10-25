@@ -1,35 +1,8 @@
 import { ChartData } from '@/types/chat';
-import { Column } from '@antv/g2plot';
+import { Chart } from '@berryv/g2-react';
 import { Card, CardContent, Typography } from '@mui/joy';
-import { useEffect, useRef } from 'react';
 
 export default function BarChart({ chart }: { key: string; chart: ChartData }) {
-  const ref = useRef(null);
-  const chartInstanceRef = useRef<{ chart: Column | null }>({ chart: null });
-  useEffect(() => {
-    if (ref.current) {
-      if (chartInstanceRef.current.chart) {
-        chartInstanceRef.current.chart.destroy();
-      }
-      chartInstanceRef.current.chart = new Column(ref.current, {
-        data: chart.values,
-        xField: 'name',
-        yField: 'value',
-        seriesField: 'type',
-        legend: {
-          position: 'bottom',
-        },
-        animation: {
-          appear: {
-            animation: 'wave-in',
-            duration: 3000,
-          },
-        },
-      });
-      chartInstanceRef.current.chart.render();
-    }
-  }, [chart.values]);
-
   return (
     <div className="flex-1 min-w-0">
       <Card className="h-full" sx={{ background: 'transparent' }}>
@@ -40,7 +13,22 @@ export default function BarChart({ chart }: { key: string; chart: ChartData }) {
           <Typography gutterBottom level="body3">
             {chart.chart_desc}
           </Typography>
-          <div className="h-[300px]" ref={ref}></div>
+          <div className="h-[300px]">
+            <Chart
+              style={{ height: '100%' }}
+              options={{
+                autoFit: true,
+                type: 'interval',
+                data: chart.values,
+                encode: { x: 'name', y: 'value', color: 'type' },
+                axis: {
+                  x: {
+                    labelAutoRotate: false,
+                  },
+                },
+              }}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
