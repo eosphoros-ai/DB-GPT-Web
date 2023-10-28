@@ -15,7 +15,33 @@ export type FailedTuple = [Error | AxiosError, null, null, null];
 
 const ins = axios.create({
   baseURL: process.env.API_BASE_URL ?? '',
-  timeout: 10000,
+});
+
+const LONG_TIME_API: string[] = [
+  '/db/add',
+  '/db/test/connect',
+  '/db/summary',
+  '/params/file/load',
+  '/chat/prepare',
+  '/model/start',
+  '/model/stop',
+  '/editor/sql/run',
+  '/sql/editor/submit',
+  '/editor/chart/run',
+  '/chart/editor/submit',
+  '/document/upload',
+  '/document/sync',
+  '/agent/install',
+  '/agent/uninstall',
+  '/personal/agent/upload',
+];
+
+ins.interceptors.request.use((request) => {
+  const isLongTimeApi = LONG_TIME_API.some((item) => request.url?.endsWith(item));
+
+  request.timeout = isLongTimeApi ? 60000 : 10000;
+
+  return request;
 });
 
 export const GET = <Params = any, Response = any, D = any>(url: string, params?: Params, config?: AxiosRequestConfig<D>) => {
