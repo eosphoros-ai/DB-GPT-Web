@@ -17,7 +17,7 @@ function DBCard({ info, onClick }: Props) {
   return (
     <div
       className={`relative flex flex-col py-4 px-4 w-72 h-32 cursor-pointer rounded-lg justify-between text-black bg-white border-gray-200 border hover:shadow-md dark:border-gray-600 dark:bg-black dark:text-white dark:hover:border-white transition-all ${
-        info.disabled ? 'grayscale' : ''
+        info.disabled ? 'grayscale cursor-no-drop' : ''
       }`}
       onClick={handleClick}
     >
@@ -25,9 +25,6 @@ function DBCard({ info, onClick }: Props) {
         <DBIcon src={info.icon} label={info.label} />
         <div className="flex flex-col">
           <h2 className="text-sm font-semibold">{info.label}</h2>
-          {info.disabled && (
-            <div className="mt-[2px] rounded-full font-normal bg-gray-100 text-xs h-5 flex items-center px-2 dark:bg-gray-800">Comming soon</div>
-          )}
         </div>
       </div>
       <Tooltip title={info.desc}>
