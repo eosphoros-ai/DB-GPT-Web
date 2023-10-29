@@ -1,6 +1,6 @@
 import { ModelType } from '@/types/chat';
 
-export const ICON_MAP: Record<ModelType, { label: string; icon: string }> = {
+export const MODEL_ICON_MAP: Record<ModelType, { label: string; icon: string }> = {
   proxyllm: { label: 'Proxy LLM', icon: '/models/chatgpt.png' },
   'flan-t5-base': { label: 'flan-t5-base', icon: '/models/google.png' },
   'vicuna-13b': { label: 'vicuna-13b', icon: '/models/vicuna.jpeg' },
@@ -34,4 +34,8 @@ export const ICON_MAP: Record<ModelType, { label: string; icon: string }> = {
   'llama-cpp': { label: 'ggml-model-q4_0.bin', icon: '/models/huggingface.svg' },
   'internlm-7b': { label: 'internlm-chat-7b-v1_1', icon: '/models/internlm.png' },
   'internlm-7b-8k': { label: 'internlm-chat-7b-8k', icon: '/models/internlm.png' },
+};
+
+export const VECTOR_ICON_MAP: Record<string, string> = {
+  Chroma: '/models/chroma-logo.png',
 };

@@ -3,19 +3,20 @@ import { useRouter } from 'next/router';
 import { Breadcrumb, Card, Empty } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { apiInterceptors, getChunkList } from '@/client/api';
-import { renderDocTypeIcon } from '@/components/knowledge/document';
+import DocIcon from '@/components/knowledge/doc-icon';
 
 const page_size = 20;
-function Detail() {
+
+function ChunkList() {
   const router = useRouter();
   const { t } = useTranslation();
   const [chunkList, setChunkList] = useState<any>([]);
   const {
-    query: { id, knowledgeName },
+    query: { id, spaceName },
   } = useRouter();
   const fetchChunks = async () => {
     const [_, data] = await apiInterceptors(
-      getChunkList(knowledgeName as string, {
+      getChunkList(spaceName as string, {
         document_id: id as string,
         page: 1,
         page_size,
@@ -24,8 +25,10 @@ function Detail() {
     setChunkList(data?.data);
   };
   useEffect(() => {
-    knowledgeName && id && fetchChunks();
-  }, [id, knowledgeName]);
+    console.log(id, spaceName);
+
+    spaceName && id && fetchChunks();
+  }, [id, spaceName]);
 
   return (
     <div className="h-full overflow-y-scroll">
@@ -40,7 +43,7 @@ function Detail() {
             path: '/knowledge',
           },
           {
-            title: knowledgeName,
+            title: spaceName,
           },
         ]}
       />
@@ -51,7 +54,7 @@ function Detail() {
               key={chunk.id}
               title={
                 <>
-                  {renderDocTypeIcon(chunk.doc_type)}
+                  <DocIcon type={chunk.doc_type} />
                   <span>{chunk.doc_name}</span>
                 </>
               }
@@ -70,4 +73,4 @@ function Detail() {
   );
 }
 
-export default Detail;
+export default ChunkList;

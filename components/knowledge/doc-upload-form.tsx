@@ -1,34 +1,25 @@
-import { Button, Card, Form, Input, Spin, Switch, Upload, message } from 'antd';
+import { Button, Form, Input, Switch, Upload, message, Spin } from 'antd';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { renderDocTypeIcon } from './document';
 import { InboxOutlined } from '@ant-design/icons';
 import { apiInterceptors, addDocument, uploadDocument, syncDocument } from '@/client/api';
 import { RcFile, UploadChangeParam } from 'antd/es/upload';
-
-const StepMap = {
-  ChooseType: 1,
-  AddDataSourceForm: 2,
-};
-
-type IProps = {
-  handleChooseType: (item: any) => void;
-  documentType: string;
-  step: number;
-  handleBackBtn: () => void;
-  knowledgeName?: string;
-  fetchDocuments?: () => void;
-  setIsAddShow?: (isAddShow: boolean) => void;
-};
+import { StepChangeParams } from '@/types/knowledge';
 
 type FileParams = {
   file: RcFile;
   fileList: FileList;
 };
 
+type IProps = {
+  handleStepChange: (params: StepChangeParams) => void;
+  spaceName: string;
+  docType: string;
+};
+
 type FieldType = {
   synchChecked: boolean;
-  documentName: string;
+  docName: string;
   textSource: string;
   originFileObj: FileParams;
   text: string;
@@ -38,22 +29,21 @@ type FieldType = {
 const { Dragger } = Upload;
 const { TextArea } = Input;
 
-export default function AddDatasource(props: IProps) {
-  const { handleChooseType, documentType, step, handleBackBtn, knowledgeName, fetchDocuments, setIsAddShow } = props;
+export default function DocUploadForm(props: IProps) {
+  const { handleStepChange, spaceName, docType } = props;
   const { t } = useTranslation();
   const [form] = Form.useForm();
-
   const [spinning, setSpinning] = useState<boolean>(false);
 
   const handleFinish = async (data: FieldType) => {
-    const { synchChecked, documentName, textSource, originFileObj, text, webPageUrl } = data;
+    const { synchChecked, docName, textSource, originFileObj, text, webPageUrl } = data;
     let res;
     setSpinning(true);
-    switch (documentType) {
+    switch (docType) {
       case 'webPage':
         res = await apiInterceptors(
-          addDocument(knowledgeName as string, {
-            doc_name: documentName,
+          addDocument(spaceName as string, {
+            doc_name: docName,
             content: webPageUrl,
             doc_type: 'URL',
           }),
@@ -61,17 +51,16 @@ export default function AddDatasource(props: IProps) {
         break;
       case 'file':
         const formData = new FormData();
-        formData.append('doc_name', documentName || originFileObj.file.name);
+        formData.append('doc_name', docName || originFileObj.file.name);
         formData.append('doc_file', originFileObj.file);
         formData.append('doc_type', 'DOCUMENT');
-        formData.append('space_name', knowledgeName as string);
 
-        res = await apiInterceptors(uploadDocument(knowledgeName as string, formData));
+        res = await apiInterceptors(uploadDocument(spaceName as string, formData));
         break;
       default:
         res = await apiInterceptors(
-          addDocument(knowledgeName as string, {
-            doc_name: documentName,
+          addDocument(spaceName as string, {
+            doc_name: docName,
             source: textSource,
             content: text,
             doc_type: 'TEXT',
@@ -79,15 +68,22 @@ export default function AddDatasource(props: IProps) {
         );
         break;
     }
-    synchChecked && handleSync?.(knowledgeName as string, res?.[1] as number);
+    synchChecked && handleSync?.(spaceName as string, res?.[1] as number);
     setSpinning(false);
-    if (!res[2]?.success) return;
-    setIsAddShow?.(false);
-    fetchDocuments?.();
+    handleStepChange({ label: 'finish' });
   };
 
   const handleSync = async (knowledgeName: string, id: number) => {
     await apiInterceptors(syncDocument(knowledgeName, { doc_ids: [id] }));
+  };
+
+  const handleFileChange = ({ file, fileList }: UploadChangeParam) => {
+    if (!form.getFieldsValue().docName) {
+      form.setFieldValue('docName', file.name);
+    }
+    if (fileList.length === 0) {
+      form.setFieldValue('originFileObj', null);
+    }
   };
 
   const beforeUpload = () => {
@@ -99,58 +95,9 @@ export default function AddDatasource(props: IProps) {
     return Upload.LIST_IGNORE;
   };
 
-  const handleFileChange = ({ file, fileList }: UploadChangeParam) => {
-    if (!form.getFieldsValue().documentName) {
-      form.setFieldValue('documentName', file.name);
-    }
-    if (fileList.length === 0) {
-      form.setFieldValue('originFileObj', null);
-    }
-  };
+  const renderChooseType = () => {};
 
-  const documentTypeList = [
-    {
-      type: 'text',
-      title: t('Text'),
-      subTitle: t('Fill your raw text'),
-      iconType: 'TEXT',
-    },
-    {
-      type: 'webPage',
-      title: t('URL'),
-      subTitle: t('Fetch_the_content_of_a_URL'),
-      iconType: 'WEBPAGE',
-    },
-    {
-      type: 'file',
-      title: t('Document'),
-      subTitle: t('Upload_a_document'),
-      iconType: 'DOCUMENT',
-    },
-  ];
-
-  const renderChooseType = () => {
-    return (
-      <>
-        {documentTypeList.map((item, index) => (
-          <Card
-            key={index}
-            className="mt-4 mb-4 cursor-pointer"
-            onClick={() => {
-              handleChooseType(item);
-            }}
-          >
-            <div className="font-semibold">
-              {renderDocTypeIcon(item.iconType)} {item.title}
-            </div>
-            <div>{item.subTitle}</div>
-          </Card>
-        ))}
-      </>
-    );
-  };
-
-  const renderAddText = () => {
+  const renderText = () => {
     return (
       <>
         <Form.Item<FieldType>
@@ -162,13 +109,13 @@ export default function AddDatasource(props: IProps) {
         </Form.Item>
 
         <Form.Item<FieldType> label={`${t('Text')}:`} name="text" rules={[{ required: true, message: t('Please_input_the_description') }]}>
-          <TextArea rows={4} maxLength={6} />
+          <TextArea rows={4} />
         </Form.Item>
       </>
     );
   };
 
-  const renderAddWebPage = () => {
+  const renderWebPage = () => {
     return (
       <>
         <Form.Item<FieldType> label={`${t('Web_Page_URL')}:`} name="webPageUrl" rules={[{ required: true, message: t('Please_input_the_owner') }]}>
@@ -178,7 +125,7 @@ export default function AddDatasource(props: IProps) {
     );
   };
 
-  const renderAddDocument = () => {
+  const renderDocument = () => {
     return (
       <>
         <Form.Item<FieldType> name="originFileObj" rules={[{ required: true, message: t('Please_input_the_owner') }]}>
@@ -197,22 +144,29 @@ export default function AddDatasource(props: IProps) {
   };
 
   const renderFormContainer = () => {
-    switch (documentType) {
+    switch (docType) {
       case 'webPage':
-        return renderAddWebPage();
+        return renderWebPage();
       case 'file':
-        return renderAddDocument();
+        return renderDocument();
       default:
-        return renderAddText();
+        return renderText();
     }
   };
 
-  return step === StepMap['ChooseType'] ? (
-    renderChooseType()
-  ) : (
+  return (
     <Spin spinning={spinning}>
-      <Form form={form} size="large" className="mt-4" layout="vertical" name="basic" autoComplete="off" onFinish={handleFinish}>
-        <Form.Item<FieldType> label={`${t('Name')}:`} name="documentName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
+      <Form
+        form={form}
+        size="large"
+        className="mt-4"
+        layout="vertical"
+        name="basic"
+        initialValues={{ remember: true }}
+        autoComplete="off"
+        onFinish={handleFinish}
+      >
+        <Form.Item<FieldType> label={`${t('Name')}:`} name="docName" rules={[{ required: true, message: t('Please_input_the_name') }]}>
           <Input className="mb-5 h-12" placeholder={t('Please_input_the_name')} />
         </Form.Item>
         {renderFormContainer()}
@@ -220,7 +174,12 @@ export default function AddDatasource(props: IProps) {
           <Switch className="bg-slate-400" defaultChecked />
         </Form.Item>
         <Form.Item>
-          <Button onClick={handleBackBtn} className="mr-4">{`${t('Back')}`}</Button>
+          <Button
+            onClick={() => {
+              handleStepChange({ label: 'back' });
+            }}
+            className="mr-4"
+          >{`${t('Back')}`}</Button>
           <Button type="primary" htmlType="submit">
             {t('Finish')}
           </Button>

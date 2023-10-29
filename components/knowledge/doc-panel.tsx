@@ -1,53 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Space, Divider, Empty, Spin, Tag, Tooltip, Modal } from 'antd';
-import {
-  DeleteFilled,
-  InteractionFilled,
-  PlusOutlined,
-  ToolFilled,
-  FileTextFilled,
-  FileWordTwoTone,
-  IeCircleFilled,
-  EyeFilled,
-  ExclamationCircleFilled,
-} from '@ant-design/icons';
+import { DeleteFilled, InteractionFilled, PlusOutlined, ToolFilled, EyeFilled, WarningOutlined } from '@ant-design/icons';
 import { apiInterceptors, delDocument, getDocumentList, syncDocument } from '@/client/api';
-import { IKnowLedge } from '@/types/knowledge';
+import { IDocument, ISpace } from '@/types/knowledge';
 import moment from 'moment';
-import ArgumentsModal from './add-modal';
-import SpaceParameterModal from './arguments';
+import ArgumentsModal from './arguments-modal';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
+import DocIcon from './doc-icon';
 
 interface IProps {
-  knowledge: IKnowLedge;
-  setDocumentCount: (count: string) => void;
+  space: ISpace;
+  onAddDoc: (spaceName: string) => void;
+  onDeleteDoc: () => void;
 }
 
 const { confirm } = Modal;
 
-export const renderDocTypeIcon = (type: string) => {
-  if (type === 'TEXT') return <FileTextFilled className="text-[#2AA3FF] mr-2 !text-lg" />;
-  if (type === 'DOCUMENT') return <FileWordTwoTone className="text-[#2AA3FF] mr-2 !text-lg" />;
-  return <IeCircleFilled className="text-[#2AA3FF] mr-2 !text-lg" />;
-};
-
-export default function CollapseContainer(props: IProps) {
+export default function DocPanel(props: IProps) {
+  const { space } = props;
   const { t } = useTranslation();
   const router = useRouter();
   const page_size = 20;
 
-  const { knowledge, setDocumentCount } = props;
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [documents, setDocuments] = useState<any>([]);
-  const [isAddDocumentShow, setIsAddDocumentShow] = useState<boolean>(false);
   const [argumentsShow, setArgumentsShow] = useState<boolean>(false);
 
   const showDeleteConfirm = (row: any) => {
     confirm({
       title: t('Tips'),
-      icon: <ExclamationCircleFilled />,
+      icon: <WarningOutlined />,
       content: `${t('Del_Document_Tips')}?`,
       okText: 'Yes',
       okType: 'danger',
@@ -61,28 +44,27 @@ export default function CollapseContainer(props: IProps) {
   async function fetchDocuments() {
     setIsLoading(true);
     const [_, data] = await apiInterceptors(
-      getDocumentList(knowledge?.name, {
+      getDocumentList(space.name, {
         page: 1,
         page_size,
       }),
     );
-
-    setDocuments(data?.data);
-    setDocumentCount(String(data?.total));
     setIsLoading(false);
+    setDocuments(data?.data);
   }
 
-  const handleSync = async (knowledgeName: string, id: number) => {
-    await apiInterceptors(syncDocument(knowledgeName, { doc_ids: [id] }));
+  const handleSync = async (spaceName: string, id: number) => {
+    await apiInterceptors(syncDocument(spaceName, { doc_ids: [id] }));
   };
 
   const handleDelete = async (row: any) => {
-    await apiInterceptors(delDocument(knowledge?.name, { doc_name: row.doc_name }));
+    await apiInterceptors(delDocument(space.name, { doc_name: row.doc_name }));
     fetchDocuments();
+    props.onDeleteDoc();
   };
 
   const handleAddDocument = () => {
-    setIsAddDocumentShow(true);
+    props.onAddDoc(space.name);
   };
 
   const handleArguments = () => {
@@ -117,22 +99,22 @@ export default function CollapseContainer(props: IProps) {
 
   useEffect(() => {
     fetchDocuments();
-  }, [knowledge]);
+  }, [space]);
 
-  const renderCardList = () => {
-    if (documents.length > 0) {
+  const renderDocumentCard = () => {
+    if (documents?.length > 0) {
       return (
         <div className="max-h-96 mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-5 overflow-auto">
-          {documents.map((item: any) => {
+          {documents.map((document: IDocument) => {
             return (
               <Card
-                key={item.id}
+                key={document.id}
                 className=" dark:bg-[#484848] relative  shrink-0 grow-0 cursor-pointer rounded-[10px] border border-gray-200 border-solid w-full"
                 title={
-                  <Tooltip title={item.doc_name}>
+                  <Tooltip title={document.doc_name}>
                     <div className="truncate ">
-                      {renderDocTypeIcon(item.doc_type)}
-                      <span>{item.doc_name}</span>
+                      <DocIcon type={document.doc_type} />
+                      <span>{document.doc_name}</span>
                     </div>
                   </Tooltip>
                 }
@@ -143,7 +125,7 @@ export default function CollapseContainer(props: IProps) {
                         className="mr-2 !text-lg"
                         style={{ color: '#1b7eff', fontSize: '20px' }}
                         onClick={() => {
-                          router.push(`/knowledge/${knowledge.name}/${item.id}`);
+                          router.push(`/knowledge/chunk/?spaceName=${space.name}&id=${document.id}`);
                         }}
                       />
                     </Tooltip>
@@ -152,7 +134,7 @@ export default function CollapseContainer(props: IProps) {
                         className="mr-2 !text-lg"
                         style={{ color: '#1b7eff', fontSize: '20px' }}
                         onClick={() => {
-                          handleSync(knowledge.name, item.id);
+                          handleSync(space.name, document.id);
                         }}
                       />
                     </Tooltip>
@@ -160,7 +142,7 @@ export default function CollapseContainer(props: IProps) {
                       <DeleteFilled
                         className="text-[#ff1b2e] !text-lg"
                         onClick={() => {
-                          showDeleteConfirm(item);
+                          showDeleteConfirm(document);
                         }}
                       />
                     </Tooltip>
@@ -168,10 +150,10 @@ export default function CollapseContainer(props: IProps) {
                 }
               >
                 <p className="mt-2 font-semibold ">{t('Size')}:</p>
-                <p>{item.chunk_size} chunks</p>
+                <p>{document.chunk_size} chunks</p>
                 <p className="mt-2 font-semibold ">{t('Last_Synch')}:</p>
-                <p>{moment(item.last_sync).format('YYYY-MM-DD HH:MM:SS')}</p>
-                <p className="mt-2 mb-2">{renderResultTag(item.status, item.result)}</p>
+                <p>{moment(document.last_sync).format('YYYY-MM-DD HH:MM:SS')}</p>
+                <p className="mt-2 mb-2">{renderResultTag(document.status, document.result)}</p>
               </Card>
             );
           })}
@@ -198,17 +180,8 @@ export default function CollapseContainer(props: IProps) {
         </Button>
       </Space>
       <Divider />
-      <Spin spinning={isLoading}>{renderCardList()}</Spin>
-      <ArgumentsModal
-        syncDocuments={handleSync}
-        fetchDocuments={fetchDocuments}
-        setIsAddShow={setIsAddDocumentShow}
-        isAddShow={isAddDocumentShow}
-        type="document"
-        setDocuments={setDocuments}
-        knowLedge={knowledge}
-      />
-      <SpaceParameterModal knowledge={knowledge} argumentsShow={argumentsShow} setArgumentsShow={setArgumentsShow} />
+      <Spin spinning={isLoading}>{renderDocumentCard()}</Spin>
+      <ArgumentsModal space={space} argumentsShow={argumentsShow} setArgumentsShow={setArgumentsShow} />
     </div>
   );
 }

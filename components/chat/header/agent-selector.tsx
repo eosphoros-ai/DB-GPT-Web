@@ -1,11 +1,13 @@
 import { ChatContext } from '@/app/chat-context';
 import { apiInterceptors, postAgentMy } from '@/client/api';
 import { useRequest } from 'ahooks';
-import { Select } from 'antd';
+import { Button, Select } from 'antd';
+import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 function AgentSelector() {
+  const { push } = useRouter();
   const { t } = useTranslation();
   const { agentList, setAgentList } = useContext(ChatContext);
 
@@ -17,7 +19,18 @@ function AgentSelector() {
     return res ?? [];
   });
 
-  if (!data.length) return null;
+  if (!data.length) {
+    return (
+      <Button
+        type="primary"
+        onClick={() => {
+          push('/agent');
+        }}
+      >
+        {t('To_Plugin_Market')}
+      </Button>
+    );
+  }
 
   return (
     <Select

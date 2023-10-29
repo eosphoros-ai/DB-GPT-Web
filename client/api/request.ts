@@ -19,9 +19,8 @@ import {
   DocumentParams,
   IArguments,
   IChunkList,
-  IDocument,
   IDocumentResponse,
-  IKnowLedge,
+  ISpace,
 } from '@/types/knowledge';
 
 /** App */
@@ -123,8 +122,8 @@ export const saveArguments = (knowledgeName: string, data: ArgumentsParams) => {
   return POST<ArgumentsParams, IArguments>(`/knowledge/${knowledgeName}/argument/save`, data);
 };
 
-export const getKnowledgeList = () => {
-  return POST<any, Array<IKnowLedge>>('/knowledge/space/list', {});
+export const getSpaceList = () => {
+  return POST<any, Array<ISpace>>('/knowledge/space/list', {});
 };
 export const getDocumentList = (knowLedgeName: string, data: Record<string, number>) => {
   return POST<Record<string, number>, IDocumentResponse>(`/knowledge/${knowLedgeName}/document/list`, data);
@@ -134,12 +133,12 @@ export const addDocument = (knowledgeName: string, data: DocumentParams) => {
   return POST<DocumentParams, number>(`/knowledge/${knowledgeName}/document/add`, data);
 };
 
-export const addKnowledge = (data: AddKnowledgeParams) => {
+export const addSpace = (data: AddKnowledgeParams) => {
   return POST<AddKnowledgeParams, Array<any>>(`/knowledge/space/add`, data);
 };
 
-export const syncDocument = (knowLedgeName: string, data: Record<string, Array<number>>) => {
-  return POST<Record<string, Array<number>>, string | null>(`/knowledge/${knowLedgeName}/document/sync`, data);
+export const syncDocument = (spaceName: string, data: Record<string, Array<number>>) => {
+  return POST<Record<string, Array<number>>, string | null>(`/knowledge/${spaceName}/document/sync`, data);
 };
 
 export const uploadDocument = (knowLedgeName: string, data: FormData) => {
@@ -150,11 +149,11 @@ export const getChunkList = (spaceName: string, data: ChunkListParams) => {
   return POST<ChunkListParams, IChunkList>(`/knowledge/${spaceName}/chunk/list`, data);
 };
 
-export const delDocument = (knowledgeName: string, data: Record<string, string>) => {
-  return POST<Record<string, string>, null>(`/knowledge/${knowledgeName}/document/delete`, data);
+export const delDocument = (spaceName: string, data: Record<string, string>) => {
+  return POST<Record<string, string>, null>(`/knowledge/${spaceName}/document/delete`, data);
 };
 
-export const delKnowledge = (data: Record<string, string>) => {
+export const delSpace = (data: Record<string, string>) => {
   return POST<Record<string, string>, null>(`/knowledge/space/delete`, data);
 };
 

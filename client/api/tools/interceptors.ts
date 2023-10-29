@@ -24,7 +24,6 @@ export const apiInterceptors = <T = any, D = any>(promise: Promise<ApiResponse<T
             message: `Request error`,
             description: data?.err_msg ?? 'The interface is abnormal. Please try again later',
           });
-          throw new Error(data?.err_msg || 'The interface is abnormal. Please try again later');
         }
       }
       return [null, data.data, data, response];
