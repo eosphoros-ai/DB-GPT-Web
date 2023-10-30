@@ -1,140 +1,140 @@
-import { useState, useMemo } from 'react';
-import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
+import { useState, useEffect } from 'react';
+import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
-import { Menu, Table, Space, message, Button, Tooltip } from 'antd';
-import PromptModal from '@/components/prompt/prompt-modal';
+import { Menu, Table, Button, Tooltip, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import GroupsIcon from '@mui/icons-material/Groups';
 import PersonIcon from '@mui/icons-material/Person';
-import { useRequest } from 'ahooks';
-import { sendSpacePostRequest } from '@/utils/request';
-import { PromptProps } from '@/types/db'
 import { useTranslation } from 'react-i18next';
+import { addPrompt, apiInterceptors, getPromptList, updatePrompt } from '@/client/api';
+import { IPrompt } from '@/types/prompt';
+import PromptForm from '@/components/prompt/prompt-form';
+import { TFunction } from 'i18next';
 
+const getItems = (t: TFunction) => [
+  {
+    label: t('Public') + ' Prompts',
+    key: 'common',
+    icon: <GroupsIcon />,
+  },
+  {
+    label: t('Private') + ' Prompts',
+    key: 'private',
+    icon: <PersonIcon />,
+  },
+];
+
+const getColumns = (t: TFunction, handleEdit: (prompt: IPrompt) => void): ColumnsType<IPrompt> => [
+  {
+    title: t('Prompt_Info_Name'),
+    dataIndex: 'prompt_name',
+    key: 'prompt_name',
+  },
+  {
+    title: t('Prompt_Info_Scene'),
+    dataIndex: 'chat_scene',
+    key: 'chat_scene',
+  },
+  {
+    title: t('Prompt_Info_Sub_Scene'),
+    dataIndex: 'sub_chat_scene',
+    key: 'sub_chat_scene',
+  },
+  {
+    title: t('Prompt_Info_Content'),
+    dataIndex: 'content',
+    key: 'content',
+    render: (content) => (
+      <Tooltip placement="topLeft" title={content}>
+        {content}
+      </Tooltip>
+    ),
+  },
+  {
+    title: t('Operation'),
+    dataIndex: 'operate',
+    key: 'operate',
+    render: (_, record) => (
+      <Button
+        onClick={() => {
+          handleEdit(record);
+        }}
+        type="primary"
+      >
+        {t('Edit')}
+      </Button>
+    ),
+  },
+];
 
 const Prompt = () => {
   const { t } = useTranslation();
 
-  const items: MenuProps['items'] = [
-    {
-      label: t('Public') + ' Prompts',
-      key: 'common',
-      icon: <GroupsIcon />,
-    },
-    {
-      label: t('Private') + ' Prompts',
-      key: 'private',
-      icon: <PersonIcon />,
-    },
-  ];
+  const [promptType, setPromptType] = useState<string>('common');
+  const [promptList, setPromptList] = useState<Array<IPrompt>>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [prompt, setPrompt] = useState<IPrompt>();
+  const [showModal, setShowModal] = useState<boolean>(false);
 
-  const getColumns = (current: string, mutate: Function): ColumnsType<PromptProps> => [
-    {
-      title: t('Prompt_Info_Name'),
-      dataIndex: 'prompt_name',
-      key: 'prompt_name',
-    },
-    {
-      title: t('Prompt_Info_Scene'),
-      dataIndex: 'chat_scene',
-      key: 'chat_scene',
-    },
-    {
-      title: t('Prompt_Info_Sub_Scene'),
-      dataIndex: 'sub_chat_scene',
-      key: 'sub_chat_scene',
-    },
-    {
-      title: t('Prompt_Info_Content'),
-      dataIndex: 'content',
-      key: 'content',
-      render: (content) => (
-        <Tooltip placement="topLeft" title={content}>
-          {content}
-        </Tooltip>
-      ),
-    },
-    {
-      title: t('Operation'),
-      dataIndex: 'operate',
-      key: 'operate',
-      render: (_, record) => (
-        <Space size="middle">
-          <PromptModal prompt_type={current} item={record} mutate={mutate}>
-            <a>{t('Edit')}</a>
-          </PromptModal>
-        </Space>
-      ),
-    },
-  ];
-
-  const [current, setCurrent] = useState('common');
-  const [tableParams, setTableParams] = useState<any>({
-    pagination: {
+  const getPrompts = async () => {
+    setLoading(true);
+    const body = {
+      prompt_type: promptType,
       current: 1,
-      pageSize: 1000, // When pagination is needed, change it to 10.
-      hideOnSinglePage: true, // Hide the paginator when it's a single page.
+      pageSize: 1000,
+      hideOnSinglePage: true,
       showQuickJumper: true,
-      showTotal: (total: number, range: Array<number>) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-    },
-  });
-
-  const { data, loading, run, mutate } = useRequest(
-    (params = tableParams, prompt_type = current) => {
-      const body = {
-        prompt_type,
-        ...params.pagination,
-      };
-      return sendSpacePostRequest('/prompt/list', body);
-    },
-    {
-      onSuccess: (res: any) => {
-        setTableParams((prevParams: any) => ({
-          ...prevParams,
-          pagination: {
-            ...prevParams.pagination,
-            total: res?.totalCount || res?.data?.length,
-          },
-        }));
-      },
-      onError: (err) => {
-        message.error(err?.message);
-      },
-    },
-  );
-
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    const params: any = {
-      ...tableParams,
-      pagination: {
-        ...tableParams.pagination,
-        ...pagination,
-      },
     };
-    setTableParams(params);
-    run(params, current);
+    const [_, data] = await apiInterceptors(getPromptList(body));
+    setPromptList(data as IPrompt[]);
+    setLoading(false);
   };
 
-  const columns = useMemo(() => getColumns(current, mutate), [current, mutate]);
+  const handleAddPrompt = async (prompt: IPrompt) => {
+    await apiInterceptors(addPrompt({ ...prompt, prompt_type: promptType }));
+    getPrompts();
+    handleClose();
+  };
 
-  const onClick: MenuProps['onClick'] = (e) => {
+  const handleUpdatePrompt = async (prompt: IPrompt) => {
+    await apiInterceptors(updatePrompt({ ...prompt, prompt_type: promptType }));
+    getPrompts();
+    handleClose();
+  };
+
+  const handleEditBtn = (prompt: IPrompt) => {
+    setPrompt(prompt);
+    setShowModal(true);
+  };
+
+  const handleAddBtn = () => {
+    setShowModal(true);
+    setPrompt(undefined);
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
+  };
+
+  useEffect(() => {
+    getPrompts();
+  }, [promptType]);
+
+  const handleMenuChange: MenuProps['onClick'] = (e) => {
     const type = e.key;
-    setCurrent(type);
-    run(tableParams, type);
+    setPromptType(type);
   };
 
   return (
     <div>
-      <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
+      <Menu onClick={handleMenuChange} selectedKeys={[promptType]} mode="horizontal" items={getItems(t)} />
       <div className="px-6 py-4">
         <div className="flex flex-row-reverse mb-4">
-          <PromptModal prompt_type={current} mutate={mutate} setTableParams={setTableParams} pageSize={tableParams.pagination.pageSize}>
-            <Button className="flex items-center">
-              <PlusOutlined />
-              {t('Add')} Prompts
-            </Button>
-          </PromptModal>
-          {current === 'common' && (
+          <Button className="flex items-center" onClick={handleAddBtn}>
+            <PlusOutlined />
+            {t('Add')} Prompts
+          </Button>
+          {promptType === 'common' && (
             <Button className="mr-2 flex items-center" disabled>
               <PlusOutlined />
               {t('Add')} Prompts {t('template')}
@@ -142,15 +142,16 @@ const Prompt = () => {
           )}
         </div>
         <Table
-          columns={columns}
-          dataSource={data?.data}
+          columns={getColumns(t, handleEditBtn)}
+          dataSource={promptList}
           loading={loading}
           rowKey={(record) => record.prompt_name}
-          pagination={tableParams.pagination}
-          onChange={handleTableChange}
           scroll={{ y: 600 }}
         />
       </div>
+      <Modal title={`${prompt ? t('Edit') : t('Add')} Prompts`} destroyOnClose open={showModal} onCancel={handleClose} footer={null}>
+        <PromptForm handleClose={handleClose} prompt={prompt} handleAddPrompt={handleAddPrompt} handleUpdatePrompt={handleUpdatePrompt} />
+      </Modal>
     </div>
   );
 };
