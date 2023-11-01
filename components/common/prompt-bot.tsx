@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { List, FloatButton, Popover, Tooltip, Form, message, Select } from 'antd';
+import { List, FloatButton, Popover, Tooltip, Form, message, Select, ConfigProvider } from 'antd';
 import { useRequest } from 'ahooks';
 import { sendSpacePostRequest } from '@/utils/request';
 import { useTranslation } from 'react-i18next';
@@ -82,36 +82,46 @@ const PromptBot: React.FC<PromptBotProps> = ({ submit }) => {
   };
 
   return (
-    <Popover
-      title={
-        <Form.Item label={'Prompt ' + t('Type')}>
-          <Select
-            style={{ width: 130 }}
-            value={current}
-            onChange={handleChange}
-            options={[
-              {
-                label: t('Public') + ' Prompts',
-                value: 'common',
-              },
-              {
-                label: t('Private') + ' Prompts',
-                value: 'private',
-              },
-            ]}
-          />
-        </Form.Item>
-      }
-      content={<SelectTable {...{ data, loading, submit, close }} />}
-      placement="topRight"
-      trigger="click"
-      open={open}
-      onOpenChange={handleOpenChange}
+    <ConfigProvider
+      theme={{
+        components: {
+          Popover: {
+            minWidth: 250,
+          },
+        },
+      }}
     >
-      <Tooltip title={t('Click_Select') + ' Prompt'}>
-        <FloatButton className="bottom-32" />
-      </Tooltip>
-    </Popover>
+      <Popover
+        title={
+          <Form.Item label={'Prompt ' + t('Type')}>
+            <Select
+              style={{ width: 150 }}
+              value={current}
+              onChange={handleChange}
+              options={[
+                {
+                  label: t('Public') + ' Prompts',
+                  value: 'common',
+                },
+                {
+                  label: t('Private') + ' Prompts',
+                  value: 'private',
+                },
+              ]}
+            />
+          </Form.Item>
+        }
+        content={<SelectTable {...{ data, loading, submit, close }} />}
+        placement="topRight"
+        trigger="click"
+        open={open}
+        onOpenChange={handleOpenChange}
+      >
+        <Tooltip title={t('Click_Select') + ' Prompt'}>
+          <FloatButton className="bottom-32" />
+        </Tooltip>
+      </Popover>
+    </ConfigProvider>
   );
 };
 

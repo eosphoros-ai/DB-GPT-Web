@@ -150,7 +150,13 @@ const Prompt = () => {
         />
       </div>
       <Modal title={`${prompt ? t('Edit') : t('Add')} Prompts`} destroyOnClose open={showModal} onCancel={handleClose} footer={null}>
-        <PromptForm handleClose={handleClose} prompt={prompt} handleAddPrompt={handleAddPrompt} handleUpdatePrompt={handleUpdatePrompt} />
+        <PromptForm
+          promptList={promptList}
+          handleClose={handleClose}
+          prompt={prompt}
+          handleAddPrompt={handleAddPrompt}
+          handleUpdatePrompt={handleUpdatePrompt}
+        />
       </Modal>
     </div>
   );

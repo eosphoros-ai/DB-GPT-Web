@@ -223,9 +223,9 @@ export const getPromptList = (data: PromptParams) => {
 };
 
 export const updatePrompt = (data: UpdatePromptParams) => {
-  return POST<UpdatePromptParams, Array<any>>('/prompt/update', data);
+  return POST<UpdatePromptParams, []>('/prompt/update', data);
 };
 
 export const addPrompt = (data: UpdatePromptParams) => {
-  return POST<UpdatePromptParams, Array<any>>('/prompt/add', data);
+  return POST<UpdatePromptParams, []>('/prompt/add', data);
 };
