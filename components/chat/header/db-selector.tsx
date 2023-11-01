@@ -1,6 +1,6 @@
 import { ChatContext } from '@/app/chat-context';
 import { apiInterceptors, postChatModeParamsList } from '@/client/api';
-import DBSvg from '@/components/icons/db-svg';
+import { DBSvg } from '@/components/icons';
 import Icon from '@ant-design/icons';
 import { useAsyncEffect } from 'ahooks';
 import { Select } from 'antd';
