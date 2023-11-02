@@ -4,6 +4,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import ReactMarkdown from 'react-markdown';
 import { Button, Image, Tag, message } from 'antd';
 import copy from 'copy-to-clipboard';
+import { AutoChart } from '@/components/chart';
 
 type MarkdownComponent = Parameters<typeof ReactMarkdown>['0']['components'];
 
@@ -102,7 +103,26 @@ const basicComponents: MarkdownComponent = {
   },
 };
 
-const extraComponents: MarkdownComponent = {};
+const extraComponents: MarkdownComponent = {
+  'chart-view': function ({ children }) {
+    const [json] = children as string[];
+    let data;
+    try {
+      data = JSON.parse(json);
+    } catch (e) {
+      data = {
+        type: 'table',
+        sql: '',
+        data: [],
+      };
+    }
+    return (
+      <div>
+        <AutoChart data={data?.data} />
+      </div>
+    );
+  },
+};
 
 const markdownComponents = {
   ...basicComponents,
