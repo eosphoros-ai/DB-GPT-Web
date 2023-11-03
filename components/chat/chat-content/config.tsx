@@ -120,8 +120,9 @@ const basicComponents: MarkdownComponent = {
           <span className="font-semibold">{referenceData.title}</span>
         </p>
         {references.map((reference: Reference, index: number) => (
-          <p key={`file_${index}`} className="text-sm text-blue-400 dark:text-blue-400 font-normal block ml-4">
-            <span className="mr-4">{reference.name}</span>
+          <p key={`file_${index}`} className="text-sm font-normal block ml-2 h-6 leading-6 overflow-hidden">
+            <span className="inline-block w-6">[{index + 1}]</span>
+            <span className="mr-4 text-blue-400">{reference.name}</span>
             {reference?.pages?.map((page, index) => (
               <>
                 <span key={`file_page_${index}`}>{page}</span>
