@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, Ref } from 'react';
 import type { ColumnsType } from 'antd/es/table';
-import type { MenuProps } from 'antd';
+import type { FormInstance, MenuProps } from 'antd';
 import { Menu, Table, Button, Tooltip, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import GroupsIcon from '@mui/icons-material/Groups';
 import PersonIcon from '@mui/icons-material/Person';
 import { useTranslation } from 'react-i18next';
-import { addPrompt, apiInterceptors, getPromptList, updatePrompt } from '@/client/api';
+import { addPrompt, apiInterceptors, getPromptList, postScenes, updatePrompt } from '@/client/api';
 import { IPrompt } from '@/types/prompt';
 import PromptForm from '@/components/prompt/prompt-form';
 import { TFunction } from 'i18next';
@@ -67,6 +67,8 @@ const getColumns = (t: TFunction, handleEdit: (prompt: IPrompt) => void): Column
   },
 ];
 
+type FormType = Ref<FormInstance<any>> | undefined;
+
 const Prompt = () => {
   const { t } = useTranslation();
 
@@ -75,6 +77,8 @@ const Prompt = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [prompt, setPrompt] = useState<IPrompt>();
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [scenes, setScenes] = useState<Array<Record<string, string>>>();
+  const formRef = useRef<FormType>();
 
   const getPrompts = async () => {
     setLoading(true);
@@ -90,14 +94,17 @@ const Prompt = () => {
     setLoading(false);
   };
 
-  const handleAddPrompt = async (prompt: IPrompt) => {
-    await apiInterceptors(addPrompt({ ...prompt, prompt_type: promptType }));
-    getPrompts();
-    handleClose();
+  const getScenes = async () => {
+    const [, res] = await apiInterceptors(postScenes());
+    setScenes(res?.map((scene) => ({ value: scene.chat_scene, label: scene.scene_name })));
   };
 
-  const handleUpdatePrompt = async (prompt: IPrompt) => {
-    await apiInterceptors(updatePrompt({ ...prompt, prompt_type: promptType }));
+  const onFinish = async (newPrompt: IPrompt) => {
+    if (prompt) {
+      await apiInterceptors(updatePrompt({ ...newPrompt, prompt_type: promptType }));
+    } else {
+      await apiInterceptors(addPrompt({ ...newPrompt, prompt_type: promptType }));
+    }
     getPrompts();
     handleClose();
   };
@@ -116,14 +123,15 @@ const Prompt = () => {
     setShowModal(false);
   };
 
-  useEffect(() => {
-    getPrompts();
-  }, [promptType]);
-
   const handleMenuChange: MenuProps['onClick'] = (e) => {
     const type = e.key;
     setPromptType(type);
   };
+
+  useEffect(() => {
+    getPrompts();
+    getScenes();
+  }, [promptType]);
 
   return (
     <div>
@@ -149,14 +157,19 @@ const Prompt = () => {
           scroll={{ y: 600 }}
         />
       </div>
-      <Modal title={`${prompt ? t('Edit') : t('Add')} Prompts`} destroyOnClose open={showModal} onCancel={handleClose} footer={null}>
-        <PromptForm
-          promptList={promptList}
-          handleClose={handleClose}
-          prompt={prompt}
-          handleAddPrompt={handleAddPrompt}
-          handleUpdatePrompt={handleUpdatePrompt}
-        />
+      <Modal
+        title={`${prompt ? t('Edit') : t('Add')} Prompts`}
+        destroyOnClose
+        open={showModal}
+        onCancel={handleClose}
+        cancelText={t('cancel')}
+        okText={t('submit')}
+        onOk={() => {
+          // @ts-ignore
+          formRef.current?.submit();
+        }}
+      >
+        <PromptForm scenes={scenes} ref={formRef as FormType} prompt={prompt} onFinish={onFinish} />
       </Modal>
     </div>
   );
