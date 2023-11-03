@@ -17,8 +17,6 @@ export type AutoChartProps = {
   };
   /** 用户自定义的推荐规则 */
   ruleConfig?: RuleConfig;
-  /** 用户自定义的图表类型，包括图表基础信息，推荐逻辑等 */
-  customCharts?: CustomChart[];
 };
 
 export type ChartKnowledge = PureChartKnowledge & { toSpec?: any };

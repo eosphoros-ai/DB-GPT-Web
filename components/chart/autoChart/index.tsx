@@ -4,27 +4,26 @@ import { customizeAdvisor, getVisAdvices } from './advisor/pipeline';
 import { useEffect, useMemo, useState } from 'react';
 import { defaultAdvicesFilter } from './advisor/utils';
 import { AutoChartProps, ChartType, CustomAdvisorConfig, CustomChart, Specification } from './types';
-import { defaultCharts } from './charts';
+import { customCharts } from './charts';
 import { Empty } from 'antd';
 import { VisToolbar } from './toolbar';
 
 export const AutoChart = (props: AutoChartProps) => {
-  const { data, chartType, scopeOfCharts, ruleConfig, customCharts } = props;
+  const { data, chartType, scopeOfCharts, ruleConfig } = props;
 
   const [advisor, setAdvisor] = useState<Advisor>();
   const [advices, setAdvices] = useState<Advice[]>([]);
   const [renderChartType, setRenderChartType] = useState<ChartType>();
 
   useEffect(() => {
-    const input_charts: CustomChart[] = defaultCharts;
-    const allChartIds = [...input_charts.map((c) => c.chartType)];
+    const input_charts: CustomChart[] = customCharts;
     const advisorConfig: CustomAdvisorConfig = {
       charts: input_charts,
       scopeOfCharts: undefined,
       ruleConfig,
     };
     setAdvisor(customizeAdvisor(advisorConfig));
-  }, [ruleConfig, scopeOfCharts, defaultCharts]);
+  }, [ruleConfig, scopeOfCharts, customCharts]);
 
   useEffect(() => {
     if (data && advisor) {
@@ -74,3 +73,5 @@ export const AutoChart = (props: AutoChartProps) => {
 
   return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'暂无合适的可视化视图'} />;
 };
+
+export * from './helpers';

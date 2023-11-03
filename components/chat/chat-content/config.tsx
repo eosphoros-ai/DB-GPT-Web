@@ -4,8 +4,9 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import ReactMarkdown from 'react-markdown';
 import { Button, Image, Table, Tag, message } from 'antd';
 import copy from 'copy-to-clipboard';
-import { AutoChart } from '@/components/chart';
+import { AutoChart, BackEndChartType, getChartType } from '@/components/chart';
 import { format } from 'sql-formatter';
+import { Datum } from '@antv/ava';
 
 type MarkdownComponent = Parameters<typeof ReactMarkdown>['0']['components'];
 
@@ -107,7 +108,11 @@ const basicComponents: MarkdownComponent = {
 const extraComponents: MarkdownComponent = {
   'chart-view': function ({ children }) {
     const [json] = children as string[];
-    let data;
+    let data: {
+      data: Datum[];
+      type: BackEndChartType;
+      sql: string;
+    };
     try {
       data = JSON.parse(json);
     } catch (e) {
@@ -127,10 +132,11 @@ const extraComponents: MarkdownComponent = {
           };
         })
       : [];
+
     return (
       <div>
         <div>{format(data?.sql, { language: 'mysql' })}</div>
-        <AutoChart data={data?.data} />
+        <AutoChart data={data?.data} chartType={getChartType(data?.type)} />
         <Table dataSource={data?.data} columns={columns} />
       </div>
     );
