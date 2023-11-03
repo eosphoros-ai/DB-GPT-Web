@@ -2,9 +2,10 @@ import { CopyOutlined, LinkOutlined, SyncOutlined } from '@ant-design/icons';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import ReactMarkdown from 'react-markdown';
-import { Button, Image, Tag, message } from 'antd';
+import { Button, Image, Table, Tag, message } from 'antd';
 import copy from 'copy-to-clipboard';
 import { AutoChart } from '@/components/chart';
+import { format } from 'sql-formatter';
 
 type MarkdownComponent = Parameters<typeof ReactMarkdown>['0']['components'];
 
@@ -116,9 +117,21 @@ const extraComponents: MarkdownComponent = {
         data: [],
       };
     }
+
+    const columns = data?.data?.[0]
+      ? Object.keys(data?.data?.[0])?.map((item) => {
+          return {
+            title: item,
+            dataIndex: item,
+            key: item,
+          };
+        })
+      : [];
     return (
       <div>
+        <div>{format(data?.sql, { language: 'mysql' })}</div>
         <AutoChart data={data?.data} />
+        <Table dataSource={data?.data} columns={columns} />
       </div>
     );
   },

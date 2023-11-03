@@ -51,7 +51,7 @@ export const AutoChart = (props: AutoChartProps) => {
       const chartTypeInput = renderChartType ?? advices[0].type;
       const spec: Specification = advices?.find((item: Advice) => item.type === chartTypeInput)?.spec ?? undefined;
       if (spec) {
-        return <Chart options={spec} />;
+        return <Chart key={chartTypeInput} options={spec} />;
       }
     }
   }, [advices, data, renderChartType]);
