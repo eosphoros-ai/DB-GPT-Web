@@ -1,8 +1,7 @@
 import { ChatContext } from '@/app/chat-context';
 import { apiInterceptors, delDialogue } from '@/client/api';
 import { STORAGE_LANG_KEY, STORAGE_THEME_KEY } from '@/utils';
-import DarkSvg from '@/components/icons/dark-svg';
-import SunnySvg from '@/components/icons/sunny-svg';
+import { DarkSvg, SunnySvg, ModelSvg } from '@/components/icons';
 import { useColorScheme } from '@mui/joy';
 import { IChatDialogueSchema } from '@/types/chat';
 import Icon, {
@@ -27,7 +26,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ModelSvg from '@/components/icons/model-svg';
 
 type SettingItem = {
   key: string;
