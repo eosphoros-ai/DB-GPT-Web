@@ -11,6 +11,8 @@ import { SceneResponse } from '@/types/chat';
 import CompletionInput from '@/components/common/completion-input';
 import { useTranslation } from 'react-i18next';
 import { STORAGE_INIT_MESSAGE_KET } from '@/utils';
+import Icon from '@ant-design/icons/lib/components/Icon';
+import { ColorfulDB, ColorfulPlugin, ColorfulDashboard, ColorfulData, ColorfulExcel, ColorfulDoc } from '@/components/icons';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -44,6 +46,25 @@ const Home: NextPage = () => {
     }
   };
 
+  function renderSceneIcon(scene: string) {
+    switch (scene) {
+      case 'chat_knowledge':
+        return <Icon className="w-16 h-16 mr-2" component={ColorfulDoc} />;
+      case 'chat_with_db_execute':
+        return <Icon className="w-16 h-16 mr-2" component={ColorfulData} />;
+      case 'chat_excel':
+        return <Icon className="w-16 h-16 mr-2" component={ColorfulExcel} />;
+      case 'chat_with_db_qa':
+        return <Icon className="w-16 h-16 mr-2" component={ColorfulDB} />;
+      case 'chat_dashboard':
+        return <Icon className="w-16 h-16 mr-2" component={ColorfulDashboard} />;
+      case 'chat_agent':
+        return <Icon className="w-16 h-16 mr-2" component={ColorfulPlugin} />;
+      default:
+        return null;
+    }
+  }
+
   return (
     <div className="mx-auto h-full justify-center flex max-w-3xl flex-col px-4">
       <div className="my-0 mx-auto">
@@ -60,16 +81,20 @@ const Home: NextPage = () => {
         {t('Quick_Start')}
       </Divider>
       <Spin spinning={chatSceneLoading}>
-        <div className="flex flex-wrap -m-1 md:-m-3">
-          {scenesList.map((item) => (
-            <div className="w-full sm:w-1/2 lg:w-1/3 p-1 md:p-3" key={item.chat_scene}>
-              <div
-                className="cursor-pointer flex items-center justify-center w-full h-12 rounded font-semibold text-sm bg-[#E6F4FF] text-[#1677FE] dark:text-gray-100 dark:bg-[#4E4F56]"
-                onClick={() => {
-                  handleNewChat(item);
-                }}
-              >
-                {item.scene_name}
+        <div className="flex flex-wrap justify-center">
+          {scenesList.map((scene) => (
+            <div
+              key={scene.chat_scene}
+              className="flex flex-row justify-center items-center mr-4 mb-4 w-72 min-h-min cursor-pointer border border-gray-300 rounded-lg p-6"
+              style={{ background: 'linear-gradient(154.77deg,#f9feff 7.42%,#fcfdff 62.25%)' }}
+              onClick={() => {
+                handleNewChat(scene);
+              }}
+            >
+              {renderSceneIcon(scene.chat_scene)}
+              <div className="flex flex-col">
+                <h2 className="text-lg text-black font-sans font-semibold">{scene.scene_name}</h2>
+                <p className="text-gray-600 ">{scene.scene_describe}</p>
               </div>
             </div>
           ))}
