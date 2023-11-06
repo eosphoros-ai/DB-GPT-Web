@@ -22,6 +22,7 @@ import {
   IDocumentResponse,
   ISpace,
 } from '@/types/knowledge';
+import { UpdatePromptParams, IPrompt, PromptParams } from '@/types/prompt';
 
 /** App */
 export const postScenes = () => {
@@ -214,4 +215,17 @@ export const postChatFeedBackForm = ({ data, config }: { data: ChatFeedBackSchem
     },
     ...config,
   });
+};
+
+/** prompt */
+export const getPromptList = (data: PromptParams) => {
+  return POST<PromptParams, Array<IPrompt>>('/prompt/list', data);
+};
+
+export const updatePrompt = (data: UpdatePromptParams) => {
+  return POST<UpdatePromptParams, []>('/prompt/update', data);
+};
+
+export const addPrompt = (data: UpdatePromptParams) => {
+  return POST<UpdatePromptParams, []>('/prompt/add', data);
 };
