@@ -130,8 +130,11 @@ const Prompt = () => {
 
   useEffect(() => {
     getPrompts();
-    getScenes();
   }, [promptType]);
+
+  useEffect(() => {
+    getScenes();
+  }, []);
 
   return (
     <div>
