@@ -90,7 +90,7 @@ const Prompt = () => {
       showQuickJumper: true,
     };
     const [_, data] = await apiInterceptors(getPromptList(body));
-    setPromptList(data as IPrompt[]);
+    setPromptList(data!);
     setLoading(false);
   };
 
