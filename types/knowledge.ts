@@ -90,8 +90,8 @@ type IChunk = {
 };
 export type IChunkList = {
   data: Array<IChunk>;
-  page: string | number;
-  total: string | number;
+  page: number;
+  total: number;
 };
 
 export type ArgumentsParams = {
