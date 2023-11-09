@@ -26,7 +26,7 @@ export const ChartSelector: React.FC<ChartSelectorProps> = ({ optionalChartTypes
     <Select
       value={tempChartType}
       placeholder={'切换图表类型'}
-      style={{ width: '110px' }}
+      style={{ width: '180px' }}
       onChange={(value) => {
         onSelectChange?.(value);
       }}

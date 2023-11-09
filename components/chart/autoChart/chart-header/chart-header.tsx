@@ -1,7 +1,5 @@
 import React, { useRef, forwardRef, useImperativeHandle } from 'react';
-
 import { Row, Col } from 'antd';
-
 import type { ForwardRefRenderFunction } from 'react';
 import type { ChartHeaderProps, ChartHeaderRef } from './types';
 
@@ -21,9 +19,11 @@ const ChartHeader: ForwardRefRenderFunction<ChartHeaderRef, ChartHeaderProps> = 
   return (
     <div className={prefixCls} ref={container}>
       {title || toolbar ? (
-        <Row justify="space-between" className={`${prefixCls}-main`}>
+        <Row justify="start" className={`${prefixCls}-main`}>
           <Col className={`${prefixCls}-title`}>{title}</Col>
-          <Col className={`${prefixCls}-toolbar`}>{toolbar}</Col>
+          <Col className={`${prefixCls}-toolbar`} style={{ marginLeft: 24 }}>
+            {toolbar}
+          </Col>
         </Row>
       ) : null}
       {description && <Row className={`${prefixCls}-desc`}>{description}</Row>}
