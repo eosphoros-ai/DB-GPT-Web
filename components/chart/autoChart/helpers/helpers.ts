@@ -8,7 +8,7 @@ export type BackEndChartType =
   | 'response_scatter_chart'
   | 'response_area_chart'
   | 'response_heatmap_chart'
-  | 'table';
+  | 'response_table';
 
 export type FrontEndChartType = ChartId | CustomChartsType;
 

@@ -105,7 +105,7 @@ const extraComponents: MarkdownComponent = {
       data = JSON.parse(json);
     } catch (e) {
       data = {
-        type: 'table',
+        type: 'response_table',
         sql: '',
         data: [],
       };
@@ -121,28 +121,27 @@ const extraComponents: MarkdownComponent = {
         })
       : [];
 
-    const TabItems: TabsProps['items'] = [
-      {
-        key: 'chart',
-        label: 'Chart',
-        children: <AutoChart data={data?.data} chartType={getChartType(data?.type)} />,
-      },
-      {
-        key: 'sql',
-        label: 'SQL',
+    const ChartItem = {
+      key: 'chart',
+      label: 'Chart',
+      children: <AutoChart data={data?.data} chartType={getChartType(data?.type)} />,
+    };
+    const SqlItem = {
+      key: 'sql',
+      label: 'SQL',
 
-        children: <CodePreview code={format(data?.sql, { language: 'mysql' }) as string} language={'sql'} />,
-      },
-      {
-        key: 'data',
-        label: 'Data',
-        children: <Table dataSource={data?.data} columns={columns} />,
-      },
-    ];
+      children: <CodePreview code={format(data?.sql, { language: 'mysql' }) as string} language={'sql'} />,
+    };
+    const DataItem = {
+      key: 'data',
+      label: 'Data',
+      children: <Table dataSource={data?.data} columns={columns} />,
+    };
+    const TabItems: TabsProps['items'] = data?.type === 'response_table' ? [DataItem, SqlItem] : [ChartItem, SqlItem, DataItem];
 
     return (
       <div>
-        <Tabs defaultActiveKey="chart" items={TabItems} size="small" />
+        <Tabs defaultActiveKey={data?.type === 'response_table' ? 'data' : 'chart'} items={TabItems} size="small" />
       </div>
     );
   },
