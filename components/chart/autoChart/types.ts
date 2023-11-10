@@ -9,7 +9,7 @@ export type RuleConfig = AdvisorConfig['ruleCfg'];
 export type AutoChartProps = {
   data: Datum[];
   /** 首要指定的图表类型 */
-  chartType?: ChartType;
+  chartType: ChartType[];
   /** 控制哪些图表包括在推荐范围内，哪些排除掉 */
   scopeOfCharts?: {
     exclude?: string[];

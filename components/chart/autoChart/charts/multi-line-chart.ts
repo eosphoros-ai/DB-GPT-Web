@@ -1,5 +1,5 @@
 import { hasSubset, intersects } from '../advisor/utils';
-
+import { processDateEncode } from './util';
 import type { ChartKnowledge, CustomChart, GetChartConfigProps, Specification } from '../types';
 
 /* 生成图表绘制所需 config 的函数 */
@@ -27,7 +27,7 @@ const getChartSpec = (data: GetChartConfigProps['data'], dataProps: GetChartConf
     const singleLine: Specification = {
       type: 'line',
       encode: {
-        x: field4X.name,
+        x: processDateEncode(field4X.name as string, dataProps),
         y: field.name,
       },
     };

@@ -104,6 +104,7 @@ const extraComponents: MarkdownComponent = {
     try {
       data = JSON.parse(json);
     } catch (e) {
+      console.log(e, json);
       data = {
         type: 'response_table',
         sql: '',
@@ -129,7 +130,6 @@ const extraComponents: MarkdownComponent = {
     const SqlItem = {
       key: 'sql',
       label: 'SQL',
-
       children: <CodePreview code={format(data?.sql, { language: 'mysql' }) as string} language={'sql'} />,
     };
     const DataItem = {

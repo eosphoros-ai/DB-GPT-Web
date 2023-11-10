@@ -10,25 +10,26 @@ export type BackEndChartType =
   | 'response_heatmap_chart'
   | 'response_table';
 
-export type FrontEndChartType = ChartId | CustomChartsType;
+type ChartType = ChartId | CustomChartsType;
 
-export const getChartType = (backendChartType: BackEndChartType): FrontEndChartType | undefined => {
+export const getChartType = (backendChartType: BackEndChartType): ChartType[] => {
   if (backendChartType === 'response_line_chart') {
-    return 'multi_line_chart';
+    return ['multi_line_chart', 'multi_measure_line_chart'];
   }
   if (backendChartType === 'response_bar_chart') {
-    return 'multi_measure_column_chart';
+    return ['multi_measure_column_chart'];
   }
   if (backendChartType === 'response_pie_chart') {
-    return 'pie_chart';
+    return ['pie_chart'];
   }
   if (backendChartType === 'response_scatter_chart') {
-    return 'scatter_plot';
+    return ['scatter_plot'];
   }
   if (backendChartType === 'response_area_chart') {
-    return 'area_chart';
+    return ['area_chart'];
   }
   if (backendChartType === 'response_heatmap_chart') {
-    return 'heatmap';
+    return ['heatmap'];
   }
+  return [];
 };

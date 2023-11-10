@@ -34,13 +34,14 @@ export const AutoChart = (props: AutoChartProps) => {
       const filteredAdvices = defaultAdvicesFilter({
         advices: avaAdvices,
       });
+
+      filteredAdvices.sort((a, b) => {
+        return chartType.indexOf(b.type) - chartType?.indexOf(a.type);
+      });
+
       setAdvices(filteredAdvices);
 
-      const initType =
-        filteredAdvices.find((item: Advice) => {
-          return item.type === chartType;
-        })?.type ?? filteredAdvices[0]?.type;
-      setRenderChartType(initType as ChartType);
+      setRenderChartType(filteredAdvices[0]?.type as ChartType);
     }
   }, [data, advisor, chartType]);
 
