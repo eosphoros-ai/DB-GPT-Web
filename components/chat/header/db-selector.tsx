@@ -25,6 +25,7 @@ function DBSelector() {
   }, [dbOpts, setDbParam, dbParam]);
 
   if (!dbOpts.length) return null;
+  console.log(1111, dbOpts);
 
   return (
     <Select

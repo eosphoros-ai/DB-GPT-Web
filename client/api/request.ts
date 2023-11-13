@@ -21,6 +21,7 @@ import {
   IChunkList,
   IDocumentResponse,
   ISpace,
+  SummaryParams,
 } from '@/types/knowledge';
 import { UpdatePromptParams, IPrompt, PromptParams } from '@/types/prompt';
 
@@ -156,6 +157,10 @@ export const delDocument = (spaceName: string, data: Record<string, string>) => 
 
 export const delSpace = (data: Record<string, string>) => {
   return POST<Record<string, string>, null>(`/knowledge/space/delete`, data);
+};
+
+export const summaryKnowledge = (data: SummaryParams) => {
+  return POST<SummaryParams, []>('/knowledge/document/summary', data);
 };
 
 /** models */

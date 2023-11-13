@@ -2,6 +2,7 @@ import { SendOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
 import { PropsWithChildren, useState } from 'react';
 import PromptBot from './prompt-bot';
+import SpaceUpload from '../chat/header/doc-upload';
 
 type TextAreaProps = Omit<Parameters<typeof Input.TextArea>[0], 'value' | 'onPressEnter' | 'onChange' | 'onSubmit'>;
 
@@ -15,6 +16,7 @@ function CompletionInput({ children, loading, onSubmit, ...props }: PropsWithChi
 
   return (
     <>
+      <SpaceUpload />
       <Input.TextArea
         className="flex-1"
         size="large"

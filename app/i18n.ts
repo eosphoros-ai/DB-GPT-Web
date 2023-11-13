@@ -150,6 +150,7 @@ const resources = {
       Tips: 'Tips',
       Limit_Upload_File_Count_Tips: 'Only one file can be uploaded at a time',
       To_Plugin_Market: 'Go to the Plugin Market',
+      Summary: 'Summary',
     },
   },
   zh: {
@@ -299,6 +300,7 @@ const resources = {
       Tips: '提示',
       Limit_Upload_File_Count_Tips: '一次只能上传一个文件',
       To_Plugin_Market: '前往插件市场',
+      Summary: '总结',
     },
   },
 };

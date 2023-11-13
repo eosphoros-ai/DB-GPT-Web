@@ -103,3 +103,9 @@ export type StepChangeParams = {
   spaceName?: string;
   docType?: string;
 };
+
+export type SummaryParams = {
+  doc_id: number;
+  model_name: string;
+  conv_uid: string;
+};

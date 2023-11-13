@@ -117,6 +117,16 @@ export default function ArgumentsModal({ space, argumentsShow, setArgumentsShow 
       ),
       children: renderPromptForm(),
     },
+    {
+      key: 'Summary',
+      label: (
+        <div>
+          <AlertFilled />
+          {t('Summary')}
+        </div>
+      ),
+      children: renderPromptForm(),
+    },
   ];
 
   const handleSubmit = async (fieldsValue: IArguments) => {
