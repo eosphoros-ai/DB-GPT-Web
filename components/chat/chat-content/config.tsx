@@ -94,17 +94,16 @@ const basicComponents: MarkdownComponent = {
 };
 
 const extraComponents: MarkdownComponent = {
-  'chart-view': function ({ children }) {
-    const [json] = children as string[];
+  'chart-view': function ({ content }) {
     let data: {
       data: Datum[];
       type: BackEndChartType;
       sql: string;
     };
     try {
-      data = JSON.parse(json);
+      data = JSON.parse(content as string);
     } catch (e) {
-      console.log(e, json);
+      console.log(e, content);
       data = {
         type: 'response_table',
         sql: '',
