@@ -17,8 +17,12 @@ export default function DocList() {
   }, [dbParam]);
 
   async function fetchDocuments() {
+    if (!dbParam) {
+      return null;
+    }
+
     const [_, data] = await apiInterceptors(
-      getDocumentList(dbParam!, {
+      getDocumentList(dbParam, {
         page: 1,
         page_size,
       }),

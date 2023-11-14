@@ -19,7 +19,7 @@ function CompletionInput({ children, loading, onSubmit, scene, ...props }: Props
 
   return (
     <div className="flex-1 relative">
-      <DocList />
+      {showUpload && <DocList />}
       {showUpload && <SpaceUpload className="absolute z-10 top-2 left-2" />}
       <Input.TextArea
         className={`flex-1 ${showUpload ? 'pl-10' : ''} pr-10`}
