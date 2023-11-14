@@ -81,7 +81,7 @@ const Home: NextPage = () => {
         <Divider className="!text-[#878c93] !my-6" plain>
           {t('Quick_Start')}
         </Divider>
-        <Spin spinning={loading}>
+        <Spin spinning={chatSceneLoading}>
           <div className="flex flex-wrap -m-1 md:-m-2">
             {scenesList.map((scene) => (
               <div
