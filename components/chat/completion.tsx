@@ -4,7 +4,7 @@ import MonacoEditor from './monaco-editor';
 import ChatContent from './chat-content';
 import ChatFeedback from './chat-feedback';
 import { ChatContext } from '@/app/chat-context';
-import { IChatDialogueMessageSchema } from '@/types/chat';
+import { FeedBack, IChatDialogueMessageSchema } from '@/types/chat';
 import classNames from 'classnames';
 import { Empty, Modal, message, Tooltip } from 'antd';
 import { renderModelIcon } from './header/model-selector';
@@ -17,6 +17,7 @@ import { STORAGE_INIT_MESSAGE_KET } from '@/utils';
 import { Button, IconButton } from '@mui/joy';
 import { CopyOutlined } from '@ant-design/icons';
 import { getInitMessage } from '@/utils';
+import { apiInterceptors, getChatFeedBackSelect } from '@/client/api';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
@@ -34,6 +35,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
   const [jsonModalOpen, setJsonModalOpen] = useState(false);
   const [showMessages, setShowMessages] = useState(messages);
   const [jsonValue, setJsonValue] = useState<string>('');
+  const [select_param, setSelectParam] = useState<FeedBack>();
 
   const scrollableRef = useRef<HTMLDivElement>(null);
 
@@ -109,6 +111,16 @@ const Completion = ({ messages, onSubmit }: Props) => {
   }, [isChartChat, messages]);
 
   useEffect(() => {
+    apiInterceptors(getChatFeedBackSelect())
+      .then((res) => {
+        setSelectParam(res[1]!);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
     setTimeout(() => {
       scrollableRef.current?.scrollTo(0, scrollableRef.current.scrollHeight);
     }, 50);
@@ -134,6 +146,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
                   {content.role === 'view' && (
                     <div className="flex w-full flex-row-reverse pt-2 md:pt-4 border-t border-gray-200 mt-2 md:mt-4">
                       <ChatFeedback
+                        select_param={select_param}
                         conv_index={Math.ceil((index + 1) / 2)}
                         question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
                         knowledge_space={spaceNameOriginal || dbParam || ''}

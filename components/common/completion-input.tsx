@@ -2,7 +2,8 @@ import { SendOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
 import { PropsWithChildren, useMemo, useState } from 'react';
 import PromptBot from './prompt-bot';
-import SpaceUpload from '../chat/header/doc-upload';
+import SpaceUpload from '../chat/doc-upload';
+import DocList from '../chat/doc-list';
 
 type TextAreaProps = Omit<Parameters<typeof Input.TextArea>[0], 'value' | 'onPressEnter' | 'onChange' | 'onSubmit'>;
 
@@ -18,6 +19,7 @@ function CompletionInput({ children, loading, onSubmit, scene, ...props }: Props
 
   return (
     <div className="flex-1 relative">
+      <DocList />
       {showUpload && <SpaceUpload className="absolute z-10 top-2 left-2" />}
       <Input.TextArea
         className={`flex-1 ${showUpload ? 'pl-10' : ''} pr-10`}

@@ -14,13 +14,13 @@ export default function DocUpload(props: IProps) {
   const { t } = useTranslation();
   const { history, setHistory, chatId, model, dbParam } = useContext(ChatContext);
   const chat = useChat({ queryAgentURL: '/knowledge/document/summary' });
-
-  const handleFileChange = () => {};
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSync = async (knowledgeName: string, id: number) => {
     await apiInterceptors(syncDocument(knowledgeName, { doc_ids: [id] }));
   };
   const handleUpload = async (data: any) => {
+    setLoading(true);
     const formData = new FormData();
     formData.append('doc_name', data.file.name);
     formData.append('doc_file', data.file);
@@ -29,9 +29,14 @@ export default function DocUpload(props: IProps) {
     const res = await apiInterceptors(uploadDocument(dbParam || 'default', formData));
 
     await handleSync(dbParam || 'default', res?.[1] as number);
-    const tempHistory: ChatHistoryResponse = [...history, { role: 'view', context: '', model_name: model, order: 0, time_stamp: 0 }];
+    const tempHistory: ChatHistoryResponse = [
+      ...history,
+      { role: 'human', context: '', model_name: model, order: 0, time_stamp: 0 },
+      { role: 'view', context: '', model_name: model, order: 0, time_stamp: 0 },
+    ];
     const index = tempHistory.length - 1;
     setHistory([...tempHistory]);
+    setLoading(false);
     chat({
       data: {
         doc_id: res?.[1],
@@ -50,11 +55,10 @@ export default function DocUpload(props: IProps) {
       showUploadList={false}
       maxCount={1}
       multiple={false}
-      onChange={handleFileChange}
       className={`${props.className}`}
       accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md"
     >
-      <Button size="small" shape="circle" icon={<UploadOutlined />}></Button>
+      <Button loading={loading} size="small" shape="circle" icon={<UploadOutlined />}></Button>
     </Upload>
   );
 }

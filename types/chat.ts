@@ -86,3 +86,10 @@ export type ModelType =
   | (string & {});
 
 export type LLMOption = { label: string; icon: string };
+
+export type FeedBack = {
+  information: string;
+  just_fun: string;
+  others: string;
+  work_study: string;
+};

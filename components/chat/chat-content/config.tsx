@@ -1,4 +1,4 @@
-import { CopyOutlined, LinkOutlined, SyncOutlined } from '@ant-design/icons';
+import { CopyOutlined, LinkOutlined, ReadOutlined, SyncOutlined } from '@ant-design/icons';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import ReactMarkdown from 'react-markdown';
@@ -98,6 +98,17 @@ const basicComponents: MarkdownComponent = {
       <blockquote className="py-4 px-6 border-l-4 border-blue-600 rounded bg-white my-2 text-gray-500 dark:bg-slate-800 dark:text-gray-200 dark:border-white shadow-sm">
         {children}
       </blockquote>
+    );
+  },
+  summary({ children }) {
+    return (
+      <div>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+          <ReadOutlined className="mr-2" />
+          <span className="font-semibold">doc Summary</span>
+        </p>
+        <div>{children}</div>
+      </div>
     );
   },
 };

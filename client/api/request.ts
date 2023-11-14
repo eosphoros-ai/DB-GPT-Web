@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
 import { DbListResponse, DbSupportTypeResponse, PostDbParams, ChatFeedBackSchema } from '@/types/db';
-import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chat';
+import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse, FeedBack } from '@/types/chat';
 import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
 import {
   GetEditorSQLRoundRequest,
@@ -208,7 +208,7 @@ export const postAgentUpload = (user = '', data: FormData, config?: Omit<AxiosRe
 
 /** chat feedback **/
 export const getChatFeedBackSelect = () => {
-  return GET<null, Record<string, string>>(`/api/v1/feedback/select`, undefined);
+  return GET<null, FeedBack>(`/api/v1/feedback/select`, undefined);
 };
 export const getChatFeedBackItme = (conv_uid: string, conv_index: number) => {
   return GET<null, Record<string, string>>(`/api/v1/feedback/find?conv_uid=${conv_uid}&conv_index=${conv_index}`, undefined);
