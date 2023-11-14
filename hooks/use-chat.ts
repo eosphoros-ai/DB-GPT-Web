@@ -16,7 +16,7 @@ type ChatParams = {
   onError?: (content: string, error?: Error) => void;
 };
 
-const useChat = ({ queryAgentURL = 'api/v1/chat/completions' }: Props) => {
+const useChat = ({ queryAgentURL = '/api/v1/chat/completions' }: Props) => {
   const ctrl = useMemo(() => new AbortController(), []);
 
   const chat = useCallback(

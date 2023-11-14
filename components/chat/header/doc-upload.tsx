@@ -13,7 +13,7 @@ interface IProps {
 export default function DocUpload(props: IProps) {
   const { t } = useTranslation();
   const { history, setHistory, chatId, model, dbParam } = useContext(ChatContext);
-  const chat = useChat({ queryAgentURL: 'knowledge/document/summary' });
+  const chat = useChat({ queryAgentURL: '/knowledge/document/summary' });
 
   const handleFileChange = () => {};
 
