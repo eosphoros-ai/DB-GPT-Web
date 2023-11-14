@@ -1,7 +1,6 @@
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { apiInterceptors, getDialogueList, getUsableModels } from '@/client/api';
 import { useRequest } from 'ahooks';
-import { useRouter } from 'next/router';
 import { DialogueListResponse, IChatDialogueSchema } from '@/types/chat';
 import { useSearchParams } from 'next/navigation';
 

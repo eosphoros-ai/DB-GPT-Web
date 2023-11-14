@@ -1,6 +1,6 @@
 import { useRequest } from 'ahooks';
 import { useContext, useState } from 'react';
-import { Divider, Spin } from 'antd';
+import { Divider, Spin, Tag } from 'antd';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { NextPage } from 'next';
@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { STORAGE_INIT_MESSAGE_KET } from '@/utils';
 import Icon from '@ant-design/icons/lib/components/Icon';
 import { ColorfulDB, ColorfulPlugin, ColorfulDashboard, ColorfulData, ColorfulExcel, ColorfulDoc } from '@/components/icons';
+import classNames from 'classnames';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -40,6 +41,7 @@ const Home: NextPage = () => {
   };
 
   const handleNewChat = async (scene: SceneResponse) => {
+    if (scene.show_disable) return;
     const [, res] = await apiInterceptors(newDialogue({ chat_mode: 'chat_normal' }));
     if (res) {
       router.push(`/chat?scene=${scene.chat_scene}&id=${res.conv_uid}${model ? `&model=${model}` : ''}`);
@@ -49,66 +51,75 @@ const Home: NextPage = () => {
   function renderSceneIcon(scene: string) {
     switch (scene) {
       case 'chat_knowledge':
-        return <Icon className="w-16 h-16 mr-2" component={ColorfulDoc} />;
+        return <Icon className="w-10 h-10 mr-4 p-1 bg-white rounded" component={ColorfulDoc} />;
       case 'chat_with_db_execute':
-        return <Icon className="w-16 h-16 mr-2" component={ColorfulData} />;
+        return <Icon className="w-10 h-10 mr-4 p-1 bg-white rounded" component={ColorfulData} />;
       case 'chat_excel':
-        return <Icon className="w-16 h-16 mr-2" component={ColorfulExcel} />;
+        return <Icon className="w-10 h-10 mr-4 p-1 bg-white rounded" component={ColorfulExcel} />;
       case 'chat_with_db_qa':
-        return <Icon className="w-16 h-16 mr-2" component={ColorfulDB} />;
+        return <Icon className="w-10 h-10 mr-4 p-1 bg-white rounded" component={ColorfulDB} />;
       case 'chat_dashboard':
-        return <Icon className="w-16 h-16 mr-2" component={ColorfulDashboard} />;
+        return <Icon className="w-10 h-10 mr-4 p-1 bg-white rounded" component={ColorfulDashboard} />;
       case 'chat_agent':
-        return <Icon className="w-16 h-16 mr-2" component={ColorfulPlugin} />;
+        return <Icon className="w-10 h-10 mr-4 p-1 bg-white rounded" component={ColorfulPlugin} />;
       default:
         return null;
     }
   }
 
   return (
-    <div className="mx-auto h-full justify-center flex max-w-3xl flex-col px-4">
-      <div className="my-0 mx-auto">
+    <div className="px-4 h-screen flex flex-col justify-center items-center overflow-hidden">
+      <div className="max-w-3xl max-h-screen overflow-y-auto">
         <Image
           src="/LOGO.png"
           alt="Revolutionizing Database Interactions with Private LLM Technology"
           width={856}
           height={160}
-          className="w-full"
+          className="w-full mt-4"
           unoptimized
         />
-      </div>
-      <Divider className="!text-[#878c93] !my-6" plain>
-        {t('Quick_Start')}
-      </Divider>
-      <Spin spinning={chatSceneLoading}>
-        <div className="flex flex-wrap justify-center">
-          {scenesList.map((scene) => (
-            <div
-              key={scene.chat_scene}
-              className="flex flex-row justify-center items-center mr-4 mb-4 w-72 min-h-min cursor-pointer border border-gray-300 rounded-lg p-6"
-              style={{ background: 'linear-gradient(154.77deg,#f9feff 7.42%,#fcfdff 62.25%)' }}
-              onClick={() => {
-                handleNewChat(scene);
-              }}
-            >
-              {renderSceneIcon(scene.chat_scene)}
-              <div className="flex flex-col">
-                <h2 className="text-lg text-black font-sans font-semibold">{scene.scene_name}</h2>
-                <p className="text-gray-600 ">{scene.scene_describe}</p>
+        <Divider className="!text-[#878c93] !my-6" plain>
+          {t('Quick_Start')}
+        </Divider>
+        <Spin spinning={chatSceneLoading}>
+          <div className="flex flex-wrap -m-1 md:-m-2">
+            {scenesList.map((scene) => (
+              <div
+                key={scene.chat_scene}
+                className="w-full sm:w-1/2 p-1 md:p-2"
+                onClick={() => {
+                  handleNewChat(scene);
+                }}
+              >
+                <div
+                  className={classNames(
+                    'flex flex-row justify-center min-h-min border bg-slate-50 border-gray-300 dark:bg-black bg-opacity-50 border-opacity-50 text-gray-950 dark:text-white rounded p-4 cursor-pointer',
+                    { 'grayscale !cursor-no-drop': scene.show_disable },
+                  )}
+                >
+                  {renderSceneIcon(scene.chat_scene)}
+                  <div className="flex flex-col flex-1">
+                    <h2 className="flex items-center text-lg font-sans font-semibold">
+                      {scene.scene_name}
+                      {scene.show_disable && <Tag className="ml-2">Comming soon</Tag>}
+                    </h2>
+                    <p className="opacity-80 line-clamp-2">{scene.scene_describe}</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </Spin>
+        <div className="mt-8 mb-2">
+          <ModelSelector
+            onChange={(newModel: string) => {
+              setModel(newModel);
+            }}
+          />
         </div>
-      </Spin>
-      <div className="mt-8 mb-2">
-        <ModelSelector
-          onChange={(newModel: string) => {
-            setModel(newModel);
-          }}
-        />
-      </div>
-      <div className="flex">
-        <CompletionInput loading={loading} onSubmit={submit} />
+        <div className="flex flex-1 w-full mb-4">
+          <CompletionInput loading={loading} onSubmit={submit} />
+        </div>
       </div>
     </div>
   );

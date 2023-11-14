@@ -12,6 +12,8 @@ import '../nprogress.css';
 import '../app/i18n';
 import { STORAGE_LANG_KEY, STORAGE_THEME_KEY } from '@/utils';
 import { ConfigProvider, theme } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import enUS from 'antd/locale/en_US';
 
 type ThemeMode = ReturnType<typeof useColorScheme>['mode'];
 
@@ -57,10 +59,15 @@ function CssWrapper({ children }: { children: React.ReactElement }) {
 function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const { isMenuExpand } = useContext(ChatContext);
   const { mode } = useColorScheme();
+  const { i18n } = useTranslation();
 
   return (
     <ConfigProvider
+      locale={i18n.language === 'en' ? enUS : zhCN}
       theme={{
+        token: {
+          borderRadius: 4,
+        },
         algorithm: mode === 'dark' ? theme.darkAlgorithm : undefined,
       }}
     >
