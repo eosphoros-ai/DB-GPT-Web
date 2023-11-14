@@ -1,12 +1,15 @@
+import { Empty, Row, Col, Select, Tooltip } from 'antd';
 import { Advice, Advisor } from '@antv/ava';
 import { Chart } from '@berryv/g2-react';
+import { DownOutlined } from '@ant-design/icons';
+import i18n from '@/app/i18n';
 import { customizeAdvisor, getVisAdvices } from './advisor/pipeline';
 import { useEffect, useMemo, useState } from 'react';
 import { defaultAdvicesFilter } from './advisor/utils';
 import { AutoChartProps, ChartType, CustomAdvisorConfig, CustomChart, Specification } from './types';
 import { customCharts } from './charts';
-import { Empty } from 'antd';
-import { VisToolbar } from './toolbar';
+
+const { Option } = Select;
 
 export const AutoChart = (props: AutoChartProps) => {
   const { data, chartType, scopeOfCharts, ruleConfig } = props;
@@ -23,7 +26,7 @@ export const AutoChart = (props: AutoChartProps) => {
       ruleConfig,
     };
     setAdvisor(customizeAdvisor(advisorConfig));
-  }, [ruleConfig, scopeOfCharts, customCharts]);
+  }, [ruleConfig, scopeOfCharts]);
 
   useEffect(() => {
     if (data && advisor) {
@@ -46,7 +49,7 @@ export const AutoChart = (props: AutoChartProps) => {
   }, [data, advisor, chartType]);
 
   const visComponent = useMemo(() => {
-    /* 如果存在有效建议，进入渲染流程 */
+    /* Advices exist, render the chart. */
     if (advices?.length > 0) {
       const chartTypeInput = renderChartType ?? advices[0].type;
       const spec: Specification = advices?.find((item: Advice) => item.type === chartTypeInput)?.spec ?? undefined;
@@ -54,20 +57,39 @@ export const AutoChart = (props: AutoChartProps) => {
         return <Chart key={chartTypeInput} options={spec} />;
       }
     }
-  }, [advices, data, renderChartType]);
+  }, [advices, renderChartType]);
 
-  if (visComponent) {
+  if (renderChartType) {
     return (
       <div>
-        <VisToolbar
-          chartType={renderChartType}
-          optionalChartTypes={advices?.map((item: Advice) => item.type)}
-          onSelectChange={({ type, value }) => {
-            setRenderChartType(value as ChartType);
-          }}
-          config={{ title: '自动推荐', chartSelector: true }}
-        />
-        <div className={`auto-chart-content`}> {visComponent}</div>
+        <Row justify="start">
+          <Col>{i18n.t('Advices')}</Col>
+          <Col style={{ marginLeft: 24 }}>
+            <Select
+              value={renderChartType}
+              placeholder={'Chart Switcher'}
+              style={{ width: '180px' }}
+              onChange={(value) => setRenderChartType(value)}
+              size={'small'}
+            >
+              {advices?.map((item) => {
+                const name = i18n.t(item.type);
+
+                return (
+                  <Option key={item.type} value={item.type}>
+                    <Tooltip title={name} placement={'right'}>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <DownOutlined />
+                        <div style={{ marginLeft: '2px' }}>{name}</div>
+                      </div>
+                    </Tooltip>
+                  </Option>
+                );
+              })}
+            </Select>
+          </Col>
+        </Row>
+        <div className="auto-chart-content">{visComponent}</div>
       </div>
     );
   }

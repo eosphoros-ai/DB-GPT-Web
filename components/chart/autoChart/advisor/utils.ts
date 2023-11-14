@@ -1,7 +1,6 @@
 import { isNull } from 'lodash';
 import type { Advice } from '@antv/ava';
 
-/** 无法在 AVA 逻辑内判断是否符合要求的图表，在这个方法中处理 */
 export function defaultAdvicesFilter(props: { advices: Advice[] }) {
   const { advices } = props;
   return advices;

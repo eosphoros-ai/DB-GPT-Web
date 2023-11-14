@@ -1,7 +1,6 @@
-import { Advisor } from '@antv/ava';
-
+import { Advisor, CkbConfig } from '@antv/ava';
 import type { Advice, AdviseParams, AdvisorConfig, ChartKnowledgeBase } from '@antv/ava';
-import type { CkbConfig, CustomAdvisorConfig, RuleConfig, Specification, VisProps } from '../helpers/getVisAdvice/types';
+import type { CustomAdvisorConfig, RuleConfig, Specification } from '../types';
 
 export type CustomRecommendConfig = {
   customCKB?: Partial<AdvisorConfig['ckbCfg']>;
@@ -64,17 +63,12 @@ export const customizeAdvisor = (props: CustomAdvisorConfig): Advisor => {
   return myAdvisor;
 };
 
-type GetVisProps = {
-  data: VisProps['data'];
-  myChartAdvisor: Advisor;
-  dataMetaMap?: VisProps['dataMetaMap'];
-};
-
 /** 主推荐流程 */
-export const getVisAdvices = (props: GetVisProps): Advice[] => {
+export const getVisAdvices = (props: any): Advice[] => {
   const { data, dataMetaMap, myChartAdvisor } = props;
-  /** 若输入中有信息能够获取列的类型（ Interval, Nominal, Time ）,则将这个 信息传给 Advisor
-   *  主要是读取 levelOfMeasureMents 这个字段，即 dataMetaMap[item].levelOfMeasurements
+  /**
+   * 若输入中有信息能够获取列的类型（ Interval, Nominal, Time ）,则将这个 信息传给 Advisor
+   * 主要是读取 levelOfMeasureMents 这个字段，即 dataMetaMap[item].levelOfMeasurements
    */
   const customDataProps = dataMetaMap
     ? Object.keys(dataMetaMap).map((item) => {

@@ -2,13 +2,12 @@ import { hasSubset, intersects } from '../advisor/utils';
 import { processDateEncode } from './util';
 import type { ChartKnowledge, CustomChart, GetChartConfigProps, Specification } from '../types';
 
-/* 生成图表绘制所需 config 的函数 */
 const getChartSpec = (data: GetChartConfigProps['data'], dataProps: GetChartConfigProps['dataProps']) => {
-  // @ts-ignore 跟 ava 内置类型相关的提示，比较难除掉
   try {
+    // @ts-ignore
     const field4Y = dataProps?.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
     const field4Nominal = dataProps?.find((field) =>
-      // @ts-ignore 跟 ava 内置类型相关的提示，比较难除掉
+      // @ts-ignore
       hasSubset(field.levelOfMeasurements, ['Nominal']),
     );
     if (!field4Nominal || !field4Y) return null;
