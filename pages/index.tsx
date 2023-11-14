@@ -1,5 +1,6 @@
+import { useRequest } from 'ahooks';
 import { useContext, useState } from 'react';
-import { Divider, Tag } from 'antd';
+import { Divider, Spin, Tag } from 'antd';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { NextPage } from 'next';
@@ -14,57 +15,20 @@ import Icon from '@ant-design/icons/lib/components/Icon';
 import { ColorfulDB, ColorfulPlugin, ColorfulDashboard, ColorfulData, ColorfulExcel, ColorfulDoc } from '@/components/icons';
 import classNames from 'classnames';
 
-const sceneList: SceneResponse[] = [
-  {
-    chat_scene: 'chat_with_db_execute',
-    scene_name: 'Chat Data',
-    scene_describe: 'Dialogue with your private data through natural language.',
-    param_title: 'DB Select',
-    show_disable: false,
-  },
-  {
-    chat_scene: 'chat_excel',
-    scene_name: 'Chat Excel',
-    scene_describe: 'Dialogue with your excel, use natural language.',
-    param_title: 'File Select',
-    show_disable: false,
-  },
-  {
-    chat_scene: 'chat_with_db_qa',
-    scene_name: 'Chat DB',
-    scene_describe: 'Have a Professional Conversation with Metadata.',
-    param_title: 'DB Select',
-    show_disable: false,
-  },
-  {
-    chat_scene: 'chat_knowledge',
-    scene_name: 'Chat Knowledge',
-    scene_describe: 'Dialogue through natural language and private documents and knowledge bases.',
-    param_title: 'Knowledge Space Select',
-    show_disable: false,
-  },
-  {
-    chat_scene: 'chat_dashboard',
-    scene_name: 'Dashboard',
-    scene_describe: 'Provide you with professional analysis reports through natural language.',
-    param_title: 'DB Select',
-    show_disable: true,
-  },
-  {
-    chat_scene: 'chat_agent',
-    scene_name: 'Agent Chat',
-    scene_describe: 'Use tools through dialogue to accomplish your goals.',
-    param_title: 'Plugin Select',
-    show_disable: false,
-  },
-];
-
 const Home: NextPage = () => {
   const router = useRouter();
   const { model, setModel } = useContext(ChatContext);
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(false);
+  const [chatSceneLoading, setChatSceneLoading] = useState<boolean>(false);
+
+  const { data: scenesList = [] } = useRequest(async () => {
+    setChatSceneLoading(true);
+    const [, res] = await apiInterceptors(postScenes());
+    setChatSceneLoading(false);
+    return res ?? [];
+  });
 
   const submit = async (message: string) => {
     setLoading(true);
@@ -117,33 +81,35 @@ const Home: NextPage = () => {
         <Divider className="!text-[#878c93] !my-6" plain>
           {t('Quick_Start')}
         </Divider>
-        <div className="flex flex-wrap -m-1 md:-m-2">
-          {sceneList.map((scene) => (
-            <div
-              key={scene.chat_scene}
-              className="w-full sm:w-1/2 p-1 md:p-2"
-              onClick={() => {
-                handleNewChat(scene);
-              }}
-            >
+        <Spin spinning={loading}>
+          <div className="flex flex-wrap -m-1 md:-m-2">
+            {scenesList.map((scene) => (
               <div
-                className={classNames(
-                  'flex flex-row justify-center min-h-min border bg-slate-50 border-gray-300 dark:bg-black bg-opacity-50 border-opacity-50 text-gray-950 dark:text-white rounded p-4 cursor-pointer',
-                  { 'grayscale !cursor-no-drop': scene.show_disable },
-                )}
+                key={scene.chat_scene}
+                className="w-full sm:w-1/2 p-1 md:p-2"
+                onClick={() => {
+                  handleNewChat(scene);
+                }}
               >
-                {renderSceneIcon(scene.chat_scene)}
-                <div className="flex flex-col flex-1">
-                  <h2 className="flex items-center text-lg font-sans font-semibold">
-                    {scene.scene_name}
-                    {scene.show_disable && <Tag className="ml-2">Comming soon</Tag>}
-                  </h2>
-                  <p className="opacity-80 line-clamp-2">{scene.scene_describe}</p>
+                <div
+                  className={classNames(
+                    'flex flex-row justify-center min-h-min border bg-slate-50 border-gray-300 dark:bg-black bg-opacity-50 border-opacity-50 text-gray-950 dark:text-white rounded p-4 cursor-pointer',
+                    { 'grayscale !cursor-no-drop': scene.show_disable },
+                  )}
+                >
+                  {renderSceneIcon(scene.chat_scene)}
+                  <div className="flex flex-col flex-1">
+                    <h2 className="flex items-center text-lg font-sans font-semibold">
+                      {scene.scene_name}
+                      {scene.show_disable && <Tag className="ml-2">Comming soon</Tag>}
+                    </h2>
+                    <p className="opacity-80 line-clamp-2">{scene.scene_describe}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Spin>
         <div className="mt-8 mb-2">
           <ModelSelector
             onChange={(newModel: string) => {
