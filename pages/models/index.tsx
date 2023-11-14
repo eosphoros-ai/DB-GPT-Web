@@ -21,9 +21,9 @@ function Models() {
   }, []);
 
   return (
-    <div className="p-8 h-full">
+    <div className="p-4 md:p-6 h-full">
       <Button
-        className="mb-8"
+        className="mb-4"
         type="primary"
         onClick={() => {
           setIsModalOpen(true);
@@ -31,7 +31,7 @@ function Models() {
       >
         {t('create_model')}
       </Button>
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap -m-1 md:-m-2">
         {models.map((item) => (
           <ModelCard info={item} key={item.model_name} />
         ))}

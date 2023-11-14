@@ -1,6 +1,6 @@
 function ColorfulData() {
   return (
-    <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="13568" width="200" height="200">
+    <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="13568" className="w-full h-full">
       <path
         d="M185.66 459H70.5c-5.54 0-10 4.48-10 10v373.26c0 5.52 4.46 10 10 10h115.16c5.52 0 10-4.48 10-10V469c0-5.52-4.48-10-10-10z m-10 373.26H80.5V479h95.16v353.26z"
         fill="#23130D"
