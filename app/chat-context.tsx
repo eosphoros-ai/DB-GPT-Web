@@ -1,8 +1,7 @@
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { apiInterceptors, getDialogueList, getUsableModels } from '@/client/api';
 import { useRequest } from 'ahooks';
-import { useRouter } from 'next/router';
-import { DialogueListResponse, IChatDialogueSchema } from '@/types/chat';
+import { ChatHistoryResponse, DialogueListResponse, IChatDialogueSchema } from '@/types/chat';
 import { useSearchParams } from 'next/navigation';
 
 interface IChatContext {
@@ -23,6 +22,8 @@ interface IChatContext {
   queryDialogueList: () => void;
   refreshDialogList: () => void;
   currentDialogue?: DialogueListResponse[0];
+  history: ChatHistoryResponse;
+  setHistory: (val: ChatHistoryResponse) => void;
 }
 
 const ChatContext = createContext<IChatContext>({
@@ -40,6 +41,8 @@ const ChatContext = createContext<IChatContext>({
   setDbParam: () => void 0,
   queryDialogueList: () => {},
   refreshDialogList: () => {},
+  history: [],
+  setHistory: () => {},
 });
 
 const ChatContextProvider = ({ children }: { children: React.ReactElement }) => {
@@ -52,6 +55,7 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
   const [isMenuExpand, setIsMenuExpand] = useState<boolean>(scene !== 'chat_dashboard');
   const [dbParam, setDbParam] = useState<string>(db_param);
   const [agentList, setAgentList] = useState<string[]>([]);
+  const [history, setHistory] = useState<ChatHistoryResponse>([]);
 
   const {
     run: queryDialogueList,
@@ -94,6 +98,8 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     queryDialogueList,
     refreshDialogList,
     currentDialogue,
+    history,
+    setHistory,
   };
   return <ChatContext.Provider value={contextValue}>{children}</ChatContext.Provider>;
 };

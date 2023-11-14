@@ -1,6 +1,6 @@
 import { SendOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useMemo, useState } from 'react';
 import PromptBot from './prompt-bot';
 import SpaceUpload from '../chat/header/doc-upload';
 
@@ -9,16 +9,18 @@ type TextAreaProps = Omit<Parameters<typeof Input.TextArea>[0], 'value' | 'onPre
 interface Props {
   loading?: boolean;
   onSubmit: (val: string) => void;
+  scene?: string;
 }
 
-function CompletionInput({ children, loading, onSubmit, ...props }: PropsWithChildren<Props & TextAreaProps>) {
+function CompletionInput({ children, loading, onSubmit, scene, ...props }: PropsWithChildren<Props & TextAreaProps>) {
   const [userInput, setUserInput] = useState('');
+  const showUpload = useMemo(() => scene === 'chat_knowledge', [scene]);
 
   return (
-    <>
-      <SpaceUpload />
+    <div className="flex-1 relative">
+      {showUpload && <SpaceUpload className="absolute z-10 top-2 left-2" />}
       <Input.TextArea
-        className="flex-1"
+        className={`flex-1 ${showUpload ? 'pl-10' : ''} pr-10`}
         size="large"
         value={userInput}
         autoSize={{ minRows: 1, maxRows: 4 }}
@@ -45,7 +47,7 @@ function CompletionInput({ children, loading, onSubmit, ...props }: PropsWithChi
         }}
       />
       <Button
-        className="ml-2 flex items-center justify-center"
+        className="ml-2 flex items-center justify-center absolute right-2 bottom-0"
         size="large"
         type="text"
         loading={loading}
@@ -60,7 +62,7 @@ function CompletionInput({ children, loading, onSubmit, ...props }: PropsWithChi
         }}
       />
       {children}
-    </>
+    </div>
   );
 }
 

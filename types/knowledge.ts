@@ -38,9 +38,15 @@ export type Prompt = {
   scene: string;
   template: string;
 };
+
+export type Summary = {
+  max_iteration: number;
+  concurrency_limit: number;
+};
 export type IArguments = {
   embedding: Embedding;
   prompt: Prompt;
+  summary: Summary;
 };
 
 export type DocumentParams = {

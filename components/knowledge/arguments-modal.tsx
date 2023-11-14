@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Tabs, Button, Input, Form, Col, Row, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { AlertFilled, FileSearchOutlined } from '@ant-design/icons';
+import { AlertFilled, BookOutlined, FileSearchOutlined } from '@ant-design/icons';
 import { apiInterceptors, getArguments, saveArguments } from '@/client/api';
 import { IArguments, ISpace } from '@/types/knowledge';
 
@@ -96,6 +96,19 @@ export default function ArgumentsModal({ space, argumentsShow, setArgumentsShow 
     );
   };
 
+  const renderSummary = () => {
+    return (
+      <>
+        <Form.Item<IArguments> rules={[{ required: true }]} label={t('max_iteration')} name={['summary', 'max_iteration']}>
+          <Input className="mb-2" />
+        </Form.Item>
+        <Form.Item<IArguments> rules={[{ required: true }]} label={t('concurrency_limit')} name={['summary', 'concurrency_limit']}>
+          <Input className="mb-2" />
+        </Form.Item>
+      </>
+    );
+  };
+
   const items = [
     {
       key: 'Embedding',
@@ -121,11 +134,11 @@ export default function ArgumentsModal({ space, argumentsShow, setArgumentsShow 
       key: 'Summary',
       label: (
         <div>
-          <AlertFilled />
+          <BookOutlined />
           {t('Summary')}
         </div>
       ),
-      children: renderPromptForm(),
+      children: renderSummary(),
     },
   ];
 

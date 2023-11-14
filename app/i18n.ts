@@ -73,6 +73,8 @@ const resources = {
       structure_or_format:
         'A pre-defined structure or format for the prompt, which can help ensure that the AI system generates responses that are consistent with the desired style or tone.',
       max_token: 'max_token',
+      max_iteration: 'max_iteration',
+      concurrency_limit: 'concurrency_limit',
       The_maximum_number_of_tokens: 'The maximum number of tokens or words allowed in a prompt',
       Theme: 'Theme',
       Port: 'Port',
@@ -223,6 +225,8 @@ const resources = {
       template: '模板',
       structure_or_format: '预定义的提示结构或格式，有助于确保人工智能系统生成与所需风格或语气一致的响应。',
       max_token: '最大令牌',
+      max_iteration: '最大迭代',
+      concurrency_limit: '并发限制',
       The_maximum_number_of_tokens: '提示中允许的最大标记或单词数',
       Theme: '主题',
       Port: '端口',
