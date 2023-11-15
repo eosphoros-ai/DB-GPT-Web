@@ -36,8 +36,8 @@ export default function DocUpload(props: IProps) {
     ];
     const index = tempHistory.length - 1;
     setHistory([...tempHistory]);
-    setLoading(false);
-    chat({
+
+    await chat({
       data: {
         doc_id: res?.[1],
         model_name: 'proxyllm',
@@ -48,6 +48,7 @@ export default function DocUpload(props: IProps) {
         setHistory([...tempHistory]);
       },
     });
+    setLoading(false);
   };
   return (
     <Upload
