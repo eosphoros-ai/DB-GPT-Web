@@ -18,6 +18,7 @@ import { Button, IconButton } from '@mui/joy';
 import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
 import { getInitMessage } from '@/utils';
 import { apiInterceptors, getChatFeedBackSelect } from '@/client/api';
+import useSummary from '@/hooks/use-summary';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
@@ -25,7 +26,7 @@ type Props = {
 };
 
 const Completion = ({ messages, onSubmit }: Props) => {
-  const { dbParam, currentDialogue, scene, model, refreshDialogList, chatId, agentList } = useContext(ChatContext);
+  const { dbParam, currentDialogue, scene, model, refreshDialogList, chatId, agentList, docId } = useContext(ChatContext);
   const { t } = useTranslation();
   const searchParams = useSearchParams();
 
@@ -40,6 +41,8 @@ const Completion = ({ messages, onSubmit }: Props) => {
   const scrollableRef = useRef<HTMLDivElement>(null);
 
   const isChartChat = useMemo(() => scene === 'chat_dashboard', [scene]);
+
+  const summary = useSummary();
 
   const selectParam = useMemo(() => {
     switch (scene) {
@@ -86,6 +89,15 @@ const Completion = ({ messages, onSubmit }: Props) => {
     } else {
       messageApi.open({ type: 'error', content: t('Copry_error') });
     }
+  };
+
+  const handleRetry = async () => {
+    if (isLoading || !docId) {
+      return;
+    }
+    setIsLoading(true);
+    await summary(docId);
+    setIsLoading(false);
   };
 
   useAsyncEffect(async () => {
@@ -145,10 +157,10 @@ const Completion = ({ messages, onSubmit }: Props) => {
                 >
                   {content.role === 'view' && (
                     <div className="flex w-full pt-2 md:pt-4 border-t border-gray-200 mt-2 md:mt-4 pl-2">
-                      {scene === 'chat_knowledge' ? (
-                        <Button slots={{ root: IconButton }} slotProps={{ root: { variant: 'plain', color: 'primary' } }}>
+                      {scene === 'chat_knowledge' && content.retry ? (
+                        <Button onClick={handleRetry} slots={{ root: IconButton }} slotProps={{ root: { variant: 'plain', color: 'primary' } }}>
                           <RedoOutlined />
-                          &nbsp;Retry
+                          &nbsp;<span className="text-sm">Retry</span>
                         </Button>
                       ) : null}
                       <div className="flex w-full flex-row-reverse">
@@ -194,7 +206,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
       >
         <div className="flex flex-wrap w-full py-2 sm:pt-6 sm:pb-10 items-center">
           {model && <div className="mr-2 flex">{renderModelIcon(model)}</div>}
-          <CompletionInput scene={scene} loading={isLoading} onSubmit={handleChat} />
+          <CompletionInput scene={scene} loading={isLoading} onSubmit={handleChat} setLoading={setIsLoading} />
         </div>
       </div>
       <Modal

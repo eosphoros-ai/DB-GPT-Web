@@ -24,6 +24,8 @@ interface IChatContext {
   currentDialogue?: DialogueListResponse[0];
   history: ChatHistoryResponse;
   setHistory: (val: ChatHistoryResponse) => void;
+  docId?: number;
+  setDocId: (docId: number) => void;
 }
 
 const ChatContext = createContext<IChatContext>({
@@ -43,6 +45,8 @@ const ChatContext = createContext<IChatContext>({
   refreshDialogList: () => {},
   history: [],
   setHistory: () => {},
+  docId: undefined,
+  setDocId: () => {},
 });
 
 const ChatContextProvider = ({ children }: { children: React.ReactElement }) => {
@@ -56,6 +60,7 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
   const [dbParam, setDbParam] = useState<string>(db_param);
   const [agentList, setAgentList] = useState<string[]>([]);
   const [history, setHistory] = useState<ChatHistoryResponse>([]);
+  const [docId, setDocId] = useState<number>();
 
   const {
     run: queryDialogueList,
@@ -100,6 +105,8 @@ const ChatContextProvider = ({ children }: { children: React.ReactElement }) => 
     currentDialogue,
     history,
     setHistory,
+    docId,
+    setDocId,
   };
   return <ChatContext.Provider value={contextValue}>{children}</ChatContext.Provider>;
 };

@@ -1,17 +1,19 @@
 import { ChatContext } from '@/app/chat-context';
 import { apiInterceptors, syncDocument, uploadDocument } from '@/client/api';
-import useChat from '@/hooks/use-chat';
-import { ChatHistoryResponse } from '@/types/chat';
-import { UploadOutlined } from '@ant-design/icons';
+
+import useSummary from '@/hooks/use-summary';
+import { PaperClipOutlined } from '@ant-design/icons';
 import { Button, Upload } from 'antd';
 import React, { useContext, useState } from 'react';
 
 interface IProps {
   className?: string;
+  setLoading?: (data: boolean) => void;
 }
 export default function DocUpload(props: IProps) {
-  const { history, setHistory, chatId, model, dbParam } = useContext(ChatContext);
-  const chat = useChat({ queryAgentURL: '/knowledge/document/summary' });
+  const { dbParam, setDocId } = useContext(ChatContext);
+  const summary = useSummary();
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSync = async (knowledgeName: string, id: number) => {
@@ -30,29 +32,16 @@ export default function DocUpload(props: IProps) {
       setLoading(false);
       return;
     }
+    setDocId(res[1]);
 
     await handleSync(dbParam || 'default', res?.[1] as number);
-    const tempHistory: ChatHistoryResponse = [
-      ...history,
-      { role: 'human', context: '', model_name: model, order: 0, time_stamp: 0 },
-      { role: 'view', context: '', model_name: model, order: 0, time_stamp: 0 },
-    ];
-    const index = tempHistory.length - 1;
-    setHistory([...tempHistory]);
-
-    await chat({
-      data: {
-        doc_id: res?.[1],
-        model_name: 'proxyllm',
-      },
-      chatId,
-      onMessage: (message) => {
-        tempHistory[index].context = message;
-        setHistory([...tempHistory]);
-      },
-    });
     setLoading(false);
+    // sent message button loading
+    props.setLoading?.(true);
+    await summary(res[1]);
+    props.setLoading?.(false);
   };
+
   return (
     <Upload
       customRequest={handleUpload}
@@ -62,7 +51,7 @@ export default function DocUpload(props: IProps) {
       className={`${props.className}`}
       accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md"
     >
-      <Button loading={loading} size="small" shape="circle" icon={<UploadOutlined />}></Button>
+      <Button loading={loading} size="small" shape="circle" icon={<PaperClipOutlined />}></Button>
     </Upload>
   );
 }

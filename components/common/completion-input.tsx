@@ -11,16 +11,17 @@ interface Props {
   loading?: boolean;
   onSubmit: (val: string) => void;
   scene?: string;
+  setLoading?: (data: boolean) => void;
 }
 
-function CompletionInput({ children, loading, onSubmit, scene, ...props }: PropsWithChildren<Props & TextAreaProps>) {
+function CompletionInput({ children, loading, onSubmit, setLoading, scene, ...props }: PropsWithChildren<Props & TextAreaProps>) {
   const [userInput, setUserInput] = useState('');
   const showUpload = useMemo(() => scene === 'chat_knowledge', [scene]);
 
   return (
     <div className="flex-1 relative">
       {showUpload && <DocList />}
-      {showUpload && <SpaceUpload className="absolute z-10 top-2 left-2" />}
+      {showUpload && <SpaceUpload setLoading={setLoading} className="absolute z-10 top-2 left-2" />}
       <Input.TextArea
         className={`flex-1 ${showUpload ? 'pl-10' : ''} pr-10`}
         size="large"

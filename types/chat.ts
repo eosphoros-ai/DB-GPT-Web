@@ -48,6 +48,7 @@ export type IChatDialogueMessageSchema = {
   order: number;
   time_stamp: number | string | null;
   model_name: string;
+  retry?: boolean;
 };
 
 export type ModelType =

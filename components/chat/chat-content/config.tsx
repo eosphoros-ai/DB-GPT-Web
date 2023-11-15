@@ -103,7 +103,7 @@ const basicComponents: MarkdownComponent = {
   summary({ children }) {
     return (
       <div>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+        <p className="mb-2">
           <ReadOutlined className="mr-2" />
           <span className="font-semibold">doc Summary</span>
         </p>
