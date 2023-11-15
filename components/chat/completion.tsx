@@ -15,7 +15,7 @@ import CompletionInput from '../common/completion-input';
 import { useAsyncEffect } from 'ahooks';
 import { STORAGE_INIT_MESSAGE_KET } from '@/utils';
 import { Button, IconButton } from '@mui/joy';
-import { CopyOutlined } from '@ant-design/icons';
+import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
 import { getInitMessage } from '@/utils';
 import { apiInterceptors, getChatFeedBackSelect } from '@/client/api';
 
@@ -144,23 +144,31 @@ const Completion = ({ messages, onSubmit }: Props) => {
                   }}
                 >
                   {content.role === 'view' && (
-                    <div className="flex w-full flex-row-reverse pt-2 md:pt-4 border-t border-gray-200 mt-2 md:mt-4">
-                      <ChatFeedback
-                        select_param={select_param}
-                        conv_index={Math.ceil((index + 1) / 2)}
-                        question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
-                        knowledge_space={spaceNameOriginal || dbParam || ''}
-                      />
-                      <Tooltip title={t('Copy')}>
-                        <Button
-                          onClick={() => onCopyContext(content?.context)}
-                          slots={{ root: IconButton }}
-                          slotProps={{ root: { variant: 'plain', color: 'primary' } }}
-                          sx={{ borderRadius: 40 }}
-                        >
-                          <CopyOutlined />
+                    <div className="flex w-full pt-2 md:pt-4 border-t border-gray-200 mt-2 md:mt-4 pl-2">
+                      {scene === 'chat_knowledge' ? (
+                        <Button slots={{ root: IconButton }} slotProps={{ root: { variant: 'plain', color: 'primary' } }}>
+                          <RedoOutlined />
+                          &nbsp;Retry
                         </Button>
-                      </Tooltip>
+                      ) : null}
+                      <div className="flex w-full flex-row-reverse">
+                        <ChatFeedback
+                          select_param={select_param}
+                          conv_index={Math.ceil((index + 1) / 2)}
+                          question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
+                          knowledge_space={spaceNameOriginal || dbParam || ''}
+                        />
+                        <Tooltip title={t('Copy')}>
+                          <Button
+                            onClick={() => onCopyContext(content?.context)}
+                            slots={{ root: IconButton }}
+                            slotProps={{ root: { variant: 'plain', color: 'primary' } }}
+                            sx={{ borderRadius: 40 }}
+                          >
+                            <CopyOutlined />
+                          </Button>
+                        </Tooltip>
+                      </div>
                     </div>
                   )}
                 </ChatContent>

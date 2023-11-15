@@ -5,13 +5,11 @@ import { ChatHistoryResponse } from '@/types/chat';
 import { UploadOutlined } from '@ant-design/icons';
 import { Button, Upload } from 'antd';
 import React, { useContext, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 interface IProps {
   className?: string;
 }
 export default function DocUpload(props: IProps) {
-  const { t } = useTranslation();
   const { history, setHistory, chatId, model, dbParam } = useContext(ChatContext);
   const chat = useChat({ queryAgentURL: '/knowledge/document/summary' });
   const [loading, setLoading] = useState<boolean>(false);
