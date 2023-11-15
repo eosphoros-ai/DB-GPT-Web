@@ -28,6 +28,11 @@ export default function DocUpload(props: IProps) {
 
     const res = await apiInterceptors(uploadDocument(dbParam || 'default', formData));
 
+    if (!res[1]) {
+      setLoading(false);
+      return;
+    }
+
     await handleSync(dbParam || 'default', res?.[1] as number);
     const tempHistory: ChatHistoryResponse = [
       ...history,
