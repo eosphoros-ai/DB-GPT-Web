@@ -68,8 +68,8 @@ export type IDocument = {
 
 export type IDocumentResponse = {
   data: Array<IDocument>;
-  page: string | number;
-  total: string | number;
+  page: number;
+  total: number;
 };
 
 export type ChunkListParams = {
