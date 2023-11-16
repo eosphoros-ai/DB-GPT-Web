@@ -115,7 +115,7 @@ function Database() {
   };
 
   return (
-    <div className="relative p-6 px-12 bg-[#FAFAFA] dark:bg-transparent min-h-full overflow-y-auto">
+    <div className="relative p-4 md:p-6 bg-[#FAFAFA] dark:bg-transparent min-h-full overflow-y-auto">
       <MuiLoading visible={loading} />
       <div className="mb-4">
         <Button
@@ -129,9 +129,9 @@ function Database() {
           Create
         </Button>
       </div>
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap gap-2 md:gap-4">
         {dbTypeList.map((item) => (
-          <Badge className="mr-4 mb-4" key={item.value} count={dbListByType[item.value].length}>
+          <Badge key={item.value} count={dbListByType[item.value].length}>
             <DBCard
               info={item}
               onClick={() => {

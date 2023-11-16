@@ -78,7 +78,6 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
     let cacheIndex = 0;
     const result = value.replace(/<dbgpt-view[^>]*>[^<]*<\/dbgpt-view>/gi, (matchVal) => {
       try {
-        console.log(matchVal);
         const pluginVal = matchVal.replaceAll('\n', '\\n').replace(/<[^>]*>|<\/[^>]*>/gm, '');
         const pluginContext = JSON.parse(pluginVal) as DBGPTView;
         const replacement = `<custom-view>${cacheIndex}</custom-view>`;
@@ -135,7 +134,7 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
 
   return (
     <div
-      className={classNames('relative flex flex-wrap w-full px-2 sm:px-4 py-2 sm:py-6 rounded-xl break-words', {
+      className={classNames('relative flex flex-wrap w-full px-2 sm:px-4 py-2 sm:py-4 rounded-xl break-words', {
         'bg-slate-100 dark:bg-[#353539]': isRobot,
         'lg:w-full xl:w-full pl-0': ['chat_with_db_execute', 'chat_dashboard'].includes(scene),
       })}

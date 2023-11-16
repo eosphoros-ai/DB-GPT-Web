@@ -12,6 +12,7 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
   const [models, setModels] = useState<Array<SupportModel> | null>([]);
   const [selectedModel, setSelectedModel] = useState<SupportModel>();
   const [params, setParams] = useState<Array<SupportModelParams> | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [form] = Form.useForm();
 
   async function getModels() {
@@ -46,7 +47,8 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
       return;
     }
     delete values.model;
-    const [, res] = await apiInterceptors(
+    setLoading(true);
+    const [, , data] = await apiInterceptors(
       startModel({
         host: selectedModel.host,
         port: selectedModel.port,
@@ -55,44 +57,43 @@ function ModelForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (
         params: values,
       }),
     );
-    if (res === true) {
-      onSuccess();
+    setLoading(false);
+    if (data?.success === true) {
+      onSuccess && onSuccess();
       return message.success(t('start_model_success'));
     }
   }
 
   return (
-    <div className="">
-      <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={onFinish} form={form}>
-        <Form.Item label="Model" name="model" rules={[{ required: true, message: t('model_select_tips') }]}>
-          <Select showSearch onChange={handleChange}>
-            {models?.map((model) => (
-              <Option key={model.model} value={model.model} label={model.model} model={model} disabled={!model.enabled}>
-                {renderModelIcon(model.model)}
-                <Tooltip title={model.enabled ? model.model : t('download_model_tip')}>
-                  <span className="ml-2">{model.model}</span>
-                </Tooltip>
-                <Tooltip title={model.enabled ? `${model.host}:${model.port}` : t('download_model_tip')}>
-                  <p className="inline-block absolute right-4">
-                    <span>{model.host}:</span>
-                    <span>{model.port}</span>
-                  </p>
-                </Tooltip>
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-        <ModelParams params={params} form={form} />
-        <div className="flex justify-center">
-          <Button type="primary" htmlType="submit">
-            {t('submit')}
-          </Button>
-          <Button className="ml-10" onClick={onCancel}>
-            Cancel
-          </Button>
-        </div>
-      </Form>
-    </div>
+    <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={onFinish} form={form}>
+      <Form.Item label="Model" name="model" rules={[{ required: true, message: t('model_select_tips') }]}>
+        <Select showSearch onChange={handleChange}>
+          {models?.map((model) => (
+            <Option key={model.model} value={model.model} label={model.model} model={model} disabled={!model.enabled}>
+              {renderModelIcon(model.model)}
+              <Tooltip title={model.enabled ? model.model : t('download_model_tip')}>
+                <span className="ml-2">{model.model}</span>
+              </Tooltip>
+              <Tooltip title={model.enabled ? `${model.host}:${model.port}` : t('download_model_tip')}>
+                <p className="inline-block absolute right-4">
+                  <span>{model.host}:</span>
+                  <span>{model.port}</span>
+                </p>
+              </Tooltip>
+            </Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <ModelParams params={params} form={form} />
+      <div className="flex justify-center">
+        <Button type="primary" htmlType="submit" loading={loading}>
+          {t('submit')}
+        </Button>
+        <Button className="ml-10" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </Form>
   );
 }
 
