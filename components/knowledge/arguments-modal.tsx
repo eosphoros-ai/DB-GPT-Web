@@ -112,7 +112,7 @@ export default function ArgumentsModal({ space, argumentsShow, setArgumentsShow 
       label: (
         <div>
           <AlertFilled />
-          {t('Embedding')}
+          {t('Prompt')}
         </div>
       ),
       children: renderPromptForm(),

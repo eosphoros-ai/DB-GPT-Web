@@ -86,3 +86,8 @@ export type ModelType =
   | (string & {});
 
 export type LLMOption = { label: string; icon: string };
+
+export type Reference = {
+  name: string;
+  pages: Array<number>;
+};

@@ -132,7 +132,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
                   }}
                 >
                   {content.role === 'view' && (
-                    <div className="flex w-full flex-row-reverse pt-2 md:pt-4 border-t border-gray-200 mt-2 md:mt-4">
+                    <div className="flex w-full flex-row-reverse pt-2 border-t border-gray-200">
                       <ChatFeedback
                         conv_index={Math.ceil((index + 1) / 2)}
                         question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
