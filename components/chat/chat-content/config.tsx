@@ -2,7 +2,7 @@ import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import { LinkOutlined, SyncOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
-import { Button, Table, Image, Tag, message } from 'antd';
+import { Table, Image, Tag } from 'antd';
 import { format } from 'sql-formatter';
 import copy from 'copy-to-clipboard';
 import { Reference } from '@/types/chat';
