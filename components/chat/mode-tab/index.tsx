@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { ChatContext } from '@/app/chat-context';
 import { Radio } from 'antd';
 import Icon, { AppstoreFilled } from '@ant-design/icons';
-import StarsSvg from '@/components/icons/stars-svg';
+import { StarsSvg } from '@/components/icons';
 
 export default function ModeTab() {
   const { isContract, setIsContract, scene } = useContext(ChatContext);

@@ -1,8 +1,7 @@
 import { ChatContext } from '@/app/chat-context';
 import { apiInterceptors, delDialogue } from '@/client/api';
 import { STORAGE_LANG_KEY, STORAGE_THEME_KEY } from '@/utils';
-import DarkSvg from '@/components/icons/dark-svg';
-import SunnySvg from '@/components/icons/sunny-svg';
+import { DarkSvg, SunnySvg, ModelSvg } from '@/components/icons';
 import { useColorScheme } from '@mui/joy';
 import { IChatDialogueSchema } from '@/types/chat';
 import Icon, {
@@ -27,7 +26,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ModelSvg from '@/components/icons/model-svg';
 
 type SettingItem = {
   key: string;
@@ -263,7 +261,7 @@ function SideBar() {
   }
 
   return (
-    <div className="flex flex-col h-screen border-r dark:bg-[#1A1E26]">
+    <div className="flex flex-col h-screen border-r dark:border-gray-700">
       {/* LOGO */}
       <Link href="/" className="p-2">
         <Image src={logo} alt="DB-GPT" width={239} height={60} className="w-full h-full" />
@@ -276,7 +274,7 @@ function SideBar() {
         <span>New Chat</span>
       </Link>
       {/* Chat List */}
-      <div className="flex-1 overflow-y-scroll py-4 px-2 border-t">
+      <div className="flex-1 overflow-y-scroll py-4 px-2 border-t dark:border-gray-700">
         {dialogueList?.map((item) => {
           const active = item.conv_uid === chatId && item.chat_mode === scene;
 
@@ -307,7 +305,7 @@ function SideBar() {
         })}
       </div>
       {/* Settings */}
-      <div className="pt-2 pb-4 border-t">
+      <div className="py-2 border-t dark:border-gray-700">
         <div className="px-2">
           {routes.map((item) => (
             <Link key={item.key} href={item.path} className={`${menuItemStyle(pathname === item.path)}`}>
@@ -318,7 +316,7 @@ function SideBar() {
             </Link>
           ))}
         </div>
-        <div className="flex items-center justify-around py-4 border-t border-dashed">
+        <div className="flex items-center justify-around py-4 border-t border-dashed dark:border-gray-700">
           {settings.map((item) => (
             <Tooltip key={item.key} title={item.name}>
               <div className="flex-1 flex items-center justify-center cursor-pointer text-xl" onClick={item.onClick}>

@@ -1,10 +1,13 @@
-import { CopyOutlined, LinkOutlined, SyncOutlined } from '@ant-design/icons';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { Tabs } from 'antd';
+import type { TabsProps } from 'antd';
+import { LinkOutlined, SyncOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
-import { Button, Image, Tag, message } from 'antd';
+import { Button, Table, Image, Tag, message } from 'antd';
 import copy from 'copy-to-clipboard';
 import { Reference } from '@/types/chat';
+import { AutoChart, BackEndChartType, getChartType } from '@/components/chart';
+import { CodePreview } from './code-preview';
+import { Datum } from '@antv/ava';
 
 type MarkdownComponent = Parameters<typeof ReactMarkdown>['0']['components'];
 
@@ -12,20 +15,7 @@ const basicComponents: MarkdownComponent = {
   code({ inline, node, className, children, style, ...props }) {
     const match = /language-(\w+)/.exec(className || '');
     return !inline && match ? (
-      <div className="relative">
-        <Button
-          className="absolute right-3 top-2 text-gray-300 hover:!text-gray-200 bg-gray-700"
-          type="text"
-          icon={<CopyOutlined />}
-          onClick={() => {
-            const success = copy(children as string);
-            message[success ? 'success' : 'error'](success ? 'Copy success' : 'Copy failed');
-          }}
-        />
-        <SyntaxHighlighter language={match?.[1] ?? 'javascript'} style={oneDark}>
-          {children as string}
-        </SyntaxHighlighter>
-      </div>
+      <CodePreview code={children as string} language={match?.[1] ?? 'javascript'} />
     ) : (
       <code {...props} style={style} className="px-[6px] py-[2px] rounded bg-gray-700 text-gray-100 dark:bg-gray-100 dark:text-gray-800 text-sm">
         {children}
@@ -136,7 +126,59 @@ const basicComponents: MarkdownComponent = {
   },
 };
 
-const extraComponents: MarkdownComponent = {};
+const extraComponents: MarkdownComponent = {
+  'chart-view': function ({ content }) {
+    let data: {
+      data: Datum[];
+      type: BackEndChartType;
+      sql: string;
+    };
+    try {
+      data = JSON.parse(content as string);
+    } catch (e) {
+      console.log(e, content);
+      data = {
+        type: 'response_table',
+        sql: '',
+        data: [],
+      };
+    }
+
+    const columns = data?.data?.[0]
+      ? Object.keys(data?.data?.[0])?.map((item) => {
+          return {
+            title: item,
+            dataIndex: item,
+            key: item,
+          };
+        })
+      : [];
+
+    const ChartItem = {
+      key: 'chart',
+      label: 'Chart',
+      children: <AutoChart data={data?.data} chartType={getChartType(data?.type)} />,
+    };
+    const SqlItem = {
+      key: 'sql',
+      label: 'SQL',
+      children: <CodePreview code={format(data?.sql, { language: 'mysql' }) as string} language={'sql'} />,
+    };
+    const DataItem = {
+      key: 'data',
+      label: 'Data',
+      children: <
+      dataSource={data?.data} columns={columns} />,
+    };
+    const TabItems: TabsProps['items'] = data?.type === 'response_table' ? [DataItem, SqlItem] : [ChartItem, SqlItem, DataItem];
+
+    return (
+      <div>
+        <Tabs defaultActiveKey={data?.type === 'response_table' ? 'data' : 'chart'} items={TabItems} size="small" />
+      </div>
+    );
+  },
+};
 
 const markdownComponents = {
   ...basicComponents,

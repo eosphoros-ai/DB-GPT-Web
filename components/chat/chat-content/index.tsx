@@ -78,7 +78,6 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
     let cacheIndex = 0;
     const result = value.replace(/<dbgpt-view[^>]*>[^<]*<\/dbgpt-view>/gi, (matchVal) => {
       try {
-        console.log(matchVal);
         const pluginVal = matchVal.replaceAll('\n', '\\n').replace(/<[^>]*>|<\/[^>]*>/gm, '');
         const pluginContext = JSON.parse(pluginVal) as DBGPTView;
         const replacement = `<custom-view>${cacheIndex}</custom-view>`;

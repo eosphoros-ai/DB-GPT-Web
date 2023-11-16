@@ -76,4 +76,5 @@ function Chart({ chartsData }: Props) {
   );
 }
 
+export * from './autoChart';
 export default Chart;

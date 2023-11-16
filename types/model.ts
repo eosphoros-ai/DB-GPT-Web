@@ -1,4 +1,5 @@
 export type IModelData = {
+  chat_scene: string;
   model_name: string;
   model_type: string;
   host: string;
