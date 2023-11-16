@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Card, Space, Divider, Empty, Spin, Tag, Tooltip, Modal } from 'antd';
 import { DeleteFilled, InteractionFilled, PlusOutlined, ToolFilled, EyeFilled, WarningOutlined } from '@ant-design/icons';
 import { apiInterceptors, delDocument, getDocumentList, syncDocument } from '@/client/api';
@@ -26,6 +26,8 @@ export default function DocPanel(props: IProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [documents, setDocuments] = useState<any>([]);
   const [argumentsShow, setArgumentsShow] = useState<boolean>(false);
+  const currentPageRef = useRef(1);
+  const scrollELeRef = useRef(null);
 
   const showDeleteConfirm = (row: any) => {
     confirm({
@@ -45,13 +47,30 @@ export default function DocPanel(props: IProps) {
     setIsLoading(true);
     const [_, data] = await apiInterceptors(
       getDocumentList(space.name, {
-        page: 1,
+        page: currentPageRef.current,
         page_size,
       }),
     );
     setIsLoading(false);
     setDocuments(data?.data);
   }
+
+  const loadMoreDocuments = async () => {
+    if (isLoading) {
+      return;
+    }
+    setIsLoading(true);
+    currentPageRef.current += 1;
+    const [_, data] = await apiInterceptors(
+      getDocumentList(space.name, {
+        page: currentPageRef.current,
+        page_size,
+      }),
+    );
+
+    setDocuments([...documents, ...data!.data]);
+    setIsLoading(false);
+  };
 
   const handleSync = async (spaceName: string, id: number) => {
     await apiInterceptors(syncDocument(spaceName, { doc_ids: [id] }));
@@ -101,10 +120,21 @@ export default function DocPanel(props: IProps) {
     fetchDocuments();
   }, [space]);
 
+  useEffect(() => {
+    console.log(11, scrollELeRef.current);
+
+    // scrollELeRef.current.addEventListener('scroll', () => {
+    //   if (scrollELeRef.scrollHeight - scrollELeRef.scrollTop === scrollELeRef.clientHeight) {
+    //     // 滚动到底部了
+    //     console.log('已滚动到底部');
+    //   }
+    // });
+  }, []);
+
   const renderDocumentCard = () => {
     if (documents?.length > 0) {
       return (
-        <div className="max-h-96 mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-5 overflow-auto">
+        <div ref={scrollELeRef} className="max-h-96 mt-3 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-5 overflow-auto">
           {documents.map((document: IDocument) => {
             return (
               <Card
