@@ -1,6 +1,7 @@
 import { ChatContext } from '@/app/chat-context';
 import { apiInterceptors, postChatModeParamsList } from '@/client/api';
 import { DBSvg } from '@/components/icons';
+import { IDB } from '@/types/chat';
 import Icon from '@ant-design/icons';
 import { useAsyncEffect } from 'ahooks';
 import { Select } from 'antd';
@@ -9,14 +10,14 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 function DBSelector() {
   const { scene, dbParam, setDbParam } = useContext(ChatContext);
 
-  const [dbMapper, setDBMapper] = useState<Record<string, string>>({});
+  const [dbMapper, setDBMapper] = useState<IDB[]>([]);
 
   useAsyncEffect(async () => {
     const [, res] = await apiInterceptors(postChatModeParamsList(scene as string));
-    setDBMapper(res ?? {});
+    setDBMapper(res ?? []);
   }, [scene]);
 
-  const dbOpts = useMemo(() => Object.entries(dbMapper).map(([k, v]) => ({ label: k, value: v })), [dbMapper]);
+  const dbOpts = useMemo(() => dbMapper.map((db: IDB) => ({ label: db.param, value: db.param })), [dbMapper]);
 
   useEffect(() => {
     if (dbOpts.length && !dbParam) {

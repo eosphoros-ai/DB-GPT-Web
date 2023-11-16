@@ -99,3 +99,8 @@ export type Reference = {
   name: string;
   pages: Array<number>;
 };
+
+export type IDB = {
+  param: string;
+  type: string;
+};

@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
 import { DbListResponse, DbSupportTypeResponse, PostDbParams, ChatFeedBackSchema } from '@/types/db';
-import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse, FeedBack } from '@/types/chat';
+import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse, FeedBack, IDB } from '@/types/chat';
 import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
 import {
   GetEditorSQLRoundRequest,
@@ -61,7 +61,7 @@ export const getUsableModels = () => {
   return GET<null, Array<string>>('/api/v1/model/types');
 };
 export const postChatModeParamsList = (chatMode: string) => {
-  return POST<null, Record<string, string>>(`/api/v1/chat/mode/params/list?chat_mode=${chatMode}`);
+  return POST<null, IDB[]>(`/api/v1/chat/mode/params/list?chat_mode=${chatMode}`);
 };
 export const postChatModeParamsInfoList = (chatMode: string) => {
   return POST<null, Record<string, string>>(`/api/v1/chat/mode/params/info?chat_mode=${chatMode}`);
