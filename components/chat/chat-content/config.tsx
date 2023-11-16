@@ -1,7 +1,7 @@
-import { CopyOutlined, LinkOutlined, ReadOutlined, SyncOutlined } from '@ant-design/icons';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { LinkOutlined, ReadOutlined, SyncOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
-import { Image, Tag, Tabs } from 'antd';
+import { Table, Image, Tag, Tabs, TabsProps } from 'antd';
+import { format } from 'sql-formatter';
 import { Reference } from '@/types/chat';
 import { AutoChart, BackEndChartType, getChartType } from '@/components/chart';
 import { CodePreview } from './code-preview';
@@ -131,7 +131,8 @@ const basicComponents: MarkdownComponent = {
         </p>
         <div>{children}</div>
       </div>
-    )},
+    );
+  },
 };
 
 const extraComponents: MarkdownComponent = {
@@ -175,8 +176,7 @@ const extraComponents: MarkdownComponent = {
     const DataItem = {
       key: 'data',
       label: 'Data',
-      children: <
-      dataSource={data?.data} columns={columns} />,
+      children: <Table dataSource={data?.data} columns={columns} />,
     };
     const TabItems: TabsProps['items'] = data?.type === 'response_table' ? [DataItem, SqlItem] : [ChartItem, SqlItem, DataItem];
 
