@@ -14,12 +14,12 @@ interface Props {
   loading?: boolean;
   onSubmit: (val: string) => void;
   scene?: string;
-  onFinish?: (val: boolean) => void;
+  handleFinish?: (val: boolean) => void;
 }
 
 const page_size = 20;
 
-function CompletionInput({ children, loading, onSubmit, scene, ...props }: PropsWithChildren<Props & TextAreaProps>) {
+function CompletionInput({ children, loading, onSubmit, handleFinish, scene, ...props }: PropsWithChildren<Props & TextAreaProps>) {
   const { dbParam } = useContext(ChatContext);
 
   const [userInput, setUserInput] = useState('');
@@ -46,7 +46,7 @@ function CompletionInput({ children, loading, onSubmit, scene, ...props }: Props
   return (
     <div className="flex-1 relative">
       {showUpload && <DocList documents={documents} dbParam={dbParam} />}
-      {showUpload && <DocUpload fetchDocuments={fetchDocuments} onFinish={props.onFinish} className="absolute z-10 top-2 left-2" />}
+      {showUpload && <DocUpload handleFinish={handleFinish} fetchDocuments={fetchDocuments} className="absolute z-10 top-2 left-2" />}
       <Input.TextArea
         className={`flex-1 ${showUpload ? 'pl-10' : ''} pr-10`}
         size="large"
