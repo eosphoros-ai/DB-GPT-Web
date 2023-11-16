@@ -1,9 +1,12 @@
 import { SendOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
-import { PropsWithChildren, useMemo, useState } from 'react';
+import { PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 import PromptBot from './prompt-bot';
-import SpaceUpload from '../chat/doc-upload';
+import DocUpload from '../chat/doc-upload';
 import DocList from '../chat/doc-list';
+import { IDocument } from '@/types/knowledge';
+import { ChatContext } from '@/app/chat-context';
+import { apiInterceptors, getDocumentList } from '@/client/api';
 
 type TextAreaProps = Omit<Parameters<typeof Input.TextArea>[0], 'value' | 'onPressEnter' | 'onChange' | 'onSubmit'>;
 
@@ -11,17 +14,39 @@ interface Props {
   loading?: boolean;
   onSubmit: (val: string) => void;
   scene?: string;
-  setLoading?: (data: boolean) => void;
+  setLoading: (val: boolean) => void;
 }
 
-function CompletionInput({ children, loading, onSubmit, setLoading, scene, ...props }: PropsWithChildren<Props & TextAreaProps>) {
+const page_size = 20;
+
+function CompletionInput({ children, loading, onSubmit, scene, ...props }: PropsWithChildren<Props & TextAreaProps>) {
+  const { dbParam } = useContext(ChatContext);
+
   const [userInput, setUserInput] = useState('');
   const showUpload = useMemo(() => scene === 'chat_knowledge', [scene]);
+  const [documents, setDocuments] = useState<IDocument[]>([]);
+
+  useEffect(() => {
+    showUpload && fetchDocuments();
+  }, [dbParam]);
+
+  async function fetchDocuments() {
+    if (!dbParam) {
+      return null;
+    }
+    const [_, data] = await apiInterceptors(
+      getDocumentList(dbParam, {
+        page: 1,
+        page_size,
+      }),
+    );
+    setDocuments(data?.data!);
+  }
 
   return (
     <div className="flex-1 relative">
-      {showUpload && <DocList />}
-      {showUpload && <SpaceUpload setLoading={setLoading} className="absolute z-10 top-2 left-2" />}
+      {showUpload && <DocList documents={documents} dbParam={dbParam} />}
+      {showUpload && <DocUpload fetchDocuments={fetchDocuments} setLoading={props.setLoading} className="absolute z-10 top-2 left-2" />}
       <Input.TextArea
         className={`flex-1 ${showUpload ? 'pl-10' : ''} pr-10`}
         size="large"

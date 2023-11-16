@@ -1,34 +1,17 @@
-import { ChatContext } from '@/app/chat-context';
-import { apiInterceptors, getDocumentList } from '@/client/api';
 import { IDocument } from '@/types/knowledge';
-import { FileTwoTone, ReadOutlined } from '@ant-design/icons';
+import { FileTwoTone } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 
-export default function DocList() {
-  const page_size = 20;
-  const { dbParam } = useContext(ChatContext);
-  const [documents, setDocuments] = useState<IDocument[]>([]);
+interface IProps {
+  documents: IDocument[];
+  dbParam?: string;
+}
+
+export default function DocList(props: IProps) {
+  const { documents, dbParam } = props;
   const router = useRouter();
-
-  useEffect(() => {
-    fetchDocuments();
-  }, [dbParam]);
-
-  async function fetchDocuments() {
-    if (!dbParam) {
-      return null;
-    }
-
-    const [_, data] = await apiInterceptors(
-      getDocumentList(dbParam, {
-        page: 1,
-        page_size,
-      }),
-    );
-    setDocuments(data?.data!);
-  }
 
   const handleClick = (id: number) => {
     router.push(`/knowledge/chunk/?spaceName=${dbParam}&id=${id}`);
