@@ -3,6 +3,7 @@ import type { TabsProps } from 'antd';
 import { LinkOutlined, SyncOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import { Button, Table, Image, Tag, message } from 'antd';
+import { format } from 'sql-formatter';
 import copy from 'copy-to-clipboard';
 import { Reference } from '@/types/chat';
 import { AutoChart, BackEndChartType, getChartType } from '@/components/chart';
@@ -167,8 +168,7 @@ const extraComponents: MarkdownComponent = {
     const DataItem = {
       key: 'data',
       label: 'Data',
-      children: <
-      dataSource={data?.data} columns={columns} />,
+      children: <Table dataSource={data?.data} columns={columns} />,
     };
     const TabItems: TabsProps['items'] = data?.type === 'response_table' ? [DataItem, SqlItem] : [ChartItem, SqlItem, DataItem];
 
