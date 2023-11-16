@@ -1,6 +1,6 @@
 function ColorfulDashboard() {
   return (
-    <svg viewBox="0 0 1059 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11020" width="200" height="200">
+    <svg viewBox="0 0 1059 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11020" className="w-full h-full">
       <path
         d="M617.931034 971.034483H335.448276c62.834759 0 70.62069-140.994207 70.62069-211.862069h247.172413c0 70.867862 7.785931 211.862069 70.62069 211.862069h-105.931035z"
         fill="#4DB5E3"

@@ -37,8 +37,8 @@ function ModelCard({ info }: Props) {
     }
   }
   return (
-    <div className="relative flex flex-col py-4 px-4 sm:w-1/2 lg:w-1/3 min-w-min rounded-lg justify-between text-black bg-white border-gray-200 border hover:shadow-md dark:border-gray-600 dark:bg-black dark:text-white dark:hover:border-white transition-all">
-      <div className="flex items-center">
+    <div className="relative flex flex-col p-1 md:p-2 sm:w-1/2 lg:w-1/3">
+      <div className="relative flex items-center p-4 min-w-min rounded-lg justify-between bg-white border-gray-200 border hover:shadow-md dark:border-gray-600 dark:bg-black dark:hover:border-white transition-all text-black dark:text-white">
         <div className="flex flex-col">
           {info.healthy && (
             <Tooltip title="Healthy">
@@ -62,19 +62,19 @@ function ModelCard({ info }: Props) {
             {renderModelIcon(info.model_name, { width: 32, height: 32 })}
             <div className="inline-block ml-2">
               <h3 className="text-lg font-semibold">{info.model_name}</h3>
-              <h3 className="text-sm text-gray-800 dark:text-gray-400">{info.model_type}</h3>
+              <h3 className="text-sm opacity-60">{info.model_type}</h3>
             </div>
           </div>
           <div className="text-sm mt-2">
             <p className="font-semibold">Host:</p>
-            <p className="text-gray-600">{info.host}</p>
+            <p className="opacity-60">{info.host}</p>
             <p className="font-semibold mt-2">Manage host:</p>
-            <p className="text-gray-600">
+            <p className="opacity-60">
               <span>{info.manager_host}:</span>
               <span>{info.manager_port}</span>
             </p>
             <p className="font-semibold mt-2">Last heart beat:</p>
-            <p className="text-gray-600">{moment(info.last_heartbeat).format('YYYY-MM-DD HH:MM:SS')}</p>
+            <p className="opacity-60">{moment(info.last_heartbeat).format('YYYY-MM-DD HH:MM:SS')}</p>
           </div>
         </div>
       </div>

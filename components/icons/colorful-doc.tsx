@@ -1,6 +1,6 @@
 function ColorfulDoc() {
   return (
-    <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="27999" width="200" height="200">
+    <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="27999" className="w-full h-full">
       <path
         d="M701.781333 199.68a22.869333 22.869333 0 0 1 22.698667 22.186667v349.696h45.738667l34.133333-392.533334a22.698667 22.698667 0 0 0-20.650667-24.576L315.221333 113.834667A22.869333 22.869333 0 0 0 290.133333 134.656l-5.632 65.024z"
         fill="#FFC670"

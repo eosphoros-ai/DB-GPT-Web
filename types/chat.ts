@@ -94,3 +94,8 @@ export type FeedBack = {
   others: string;
   work_study: string;
 };
+
+export type Reference = {
+  name: string;
+  pages: Array<number>;
+};
