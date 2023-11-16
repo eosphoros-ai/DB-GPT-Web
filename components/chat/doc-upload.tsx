@@ -50,7 +50,7 @@ export default function DocUpload(props: IProps) {
       showUploadList={false}
       maxCount={1}
       multiple={false}
-      className={`${props.className}`}
+      className="absolute z-10 top-2 left-2"
       accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.md"
     >
       <Button loading={loading} size="small" shape="circle" icon={<PaperClipOutlined />}></Button>

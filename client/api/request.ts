@@ -159,10 +159,6 @@ export const delSpace = (data: Record<string, string>) => {
   return POST<Record<string, string>, null>(`/knowledge/space/delete`, data);
 };
 
-export const summaryKnowledge = (data: SummaryParams) => {
-  return POST<SummaryParams, []>('/knowledge/document/summary', data);
-};
-
 /** models */
 export const getModelList = () => {
   return GET<null, Array<IModelData>>('/api/v1/worker/model/list');

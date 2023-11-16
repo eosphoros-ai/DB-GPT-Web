@@ -14,7 +14,7 @@ interface Props {
   loading?: boolean;
   onSubmit: (val: string) => void;
   scene?: string;
-  setLoading: (val: boolean) => void;
+  setLoading?: (val: boolean) => void;
 }
 
 const page_size = 20;
