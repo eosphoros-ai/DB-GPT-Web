@@ -30,7 +30,7 @@ const useSummary = () => {
         },
       });
     },
-    [history],
+    [history, model, docId, chatId],
   );
   return summary;
 };
