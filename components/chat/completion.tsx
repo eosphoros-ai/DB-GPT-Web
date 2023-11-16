@@ -206,7 +206,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
       >
         <div className="flex flex-wrap w-full py-2 sm:pt-6 sm:pb-10 items-center">
           {model && <div className="mr-2 flex">{renderModelIcon(model)}</div>}
-          <CompletionInput scene={scene} loading={isLoading} onSubmit={handleChat} setLoading={setIsLoading} />
+          <CompletionInput scene={scene} loading={isLoading} onSubmit={handleChat} onFinish={setIsLoading} />
         </div>
       </div>
       <Modal

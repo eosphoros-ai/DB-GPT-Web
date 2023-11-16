@@ -14,7 +14,7 @@ interface Props {
   loading?: boolean;
   onSubmit: (val: string) => void;
   scene?: string;
-  setLoading?: (val: boolean) => void;
+  onFinish?: (val: boolean) => void;
 }
 
 const page_size = 20;
@@ -46,7 +46,7 @@ function CompletionInput({ children, loading, onSubmit, scene, ...props }: Props
   return (
     <div className="flex-1 relative">
       {showUpload && <DocList documents={documents} dbParam={dbParam} />}
-      {showUpload && <DocUpload fetchDocuments={fetchDocuments} setLoading={props.setLoading} className="absolute z-10 top-2 left-2" />}
+      {showUpload && <DocUpload fetchDocuments={fetchDocuments} onFinish={props.onFinish} className="absolute z-10 top-2 left-2" />}
       <Input.TextArea
         className={`flex-1 ${showUpload ? 'pl-10' : ''} pr-10`}
         size="large"

@@ -8,7 +8,7 @@ import React, { useContext, useState } from 'react';
 
 interface IProps {
   className?: string;
-  setLoading?: (data: boolean) => void;
+  onFinish?: (data: boolean) => void;
   fetchDocuments: () => void;
 }
 export default function DocUpload(props: IProps) {
@@ -38,10 +38,9 @@ export default function DocUpload(props: IProps) {
     fetchDocuments();
     await handleSync(dbParam || 'default', res?.[1] as number);
     setLoading(false);
-    // sent message button loading
-    props.setLoading?.(true);
+    props.onFinish?.(true);
     await summary(res[1]);
-    props.setLoading?.(false);
+    props.onFinish?.(false);
   };
 
   return (
