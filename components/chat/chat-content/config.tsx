@@ -29,9 +29,7 @@ function matchCustomeTagValues(context: string) {
 
 const basicComponents: MarkdownComponent = {
   code({ inline, node, className, children, style, ...props }) {
-    const { context, matchValues } = useMemo(() => {
-      return matchCustomeTagValues(Array.isArray(children) ? children.join('\n') : children);
-    }, [children]);
+    const { context, matchValues } = matchCustomeTagValues(Array.isArray(children) ? children.join('\n') : children);
     const match = /language-(\w+)/.exec(className || '');
 
     return (
