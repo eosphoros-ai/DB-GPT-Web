@@ -10,6 +10,8 @@ import ModelSvg from './model-svg';
 import StarsSvg from './stars-svg';
 import SunnySvg from './sunny-svg';
 import Knowledge from './knowledge';
+import FileDone from './file-done';
+import FileSync from './file-sync';
 
 export {
   ColorfulDashboard,
@@ -24,4 +26,6 @@ export {
   StarsSvg,
   SunnySvg,
   Knowledge,
+  FileDone,
+  FileSync,
 };
