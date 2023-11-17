@@ -1,8 +1,7 @@
 import { ChatContext } from '@/app/chat-context';
 import { apiInterceptors, postChatModeParamsList } from '@/client/api';
-import { DBSvg } from '@/components/icons';
 import { IDB } from '@/types/chat';
-import Icon from '@ant-design/icons';
+import { FileTwoTone } from '@ant-design/icons';
 import { useAsyncEffect } from 'ahooks';
 import { Select } from 'antd';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -17,7 +16,7 @@ function DBSelector() {
     setDBMapper(res ?? []);
   }, [scene]);
 
-  const dbOpts = useMemo(() => dbMapper.map((db: IDB) => ({ label: db.param, value: db.param })), [dbMapper]);
+  const dbOpts = useMemo(() => dbMapper.map?.((db: IDB) => ({ label: db.param, value: db.param })), [dbMapper]);
 
   useEffect(() => {
     if (dbOpts.length && !dbParam) {
@@ -37,7 +36,7 @@ function DBSelector() {
     >
       {dbOpts.map((item) => (
         <Select.Option key={item.value}>
-          <Icon component={DBSvg} className="mr-1" />
+          <FileTwoTone className="mr-1" />
           {item.label}
         </Select.Option>
       ))}
