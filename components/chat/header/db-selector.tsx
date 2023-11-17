@@ -1,7 +1,8 @@
 import { ChatContext } from '@/app/chat-context';
 import { apiInterceptors, postChatModeParamsList } from '@/client/api';
+import { DBSvg, Knowledge } from '@/components/icons';
 import { IDB } from '@/types/chat';
-import { FileTwoTone } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import { useAsyncEffect } from 'ahooks';
 import { Select } from 'antd';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -36,7 +37,7 @@ function DBSelector() {
     >
       {dbOpts.map((item) => (
         <Select.Option key={item.value}>
-          <FileTwoTone className="mr-1" />
+          <Icon component={Knowledge} className="mr-1" />
           {item.label}
         </Select.Option>
       ))}

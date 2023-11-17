@@ -9,5 +9,19 @@ import DBSvg from './db-svg';
 import ModelSvg from './model-svg';
 import StarsSvg from './stars-svg';
 import SunnySvg from './sunny-svg';
+import Knowledge from './knowledge';
 
-export { ColorfulDashboard, ColorfulData, ColorfulDB, ColorfulDoc, ColorfulExcel, ColorfulPlugin, DarkSvg, DBSvg, ModelSvg, StarsSvg, SunnySvg };
+export {
+  ColorfulDashboard,
+  ColorfulData,
+  ColorfulDB,
+  ColorfulDoc,
+  ColorfulExcel,
+  ColorfulPlugin,
+  DarkSvg,
+  DBSvg,
+  ModelSvg,
+  StarsSvg,
+  SunnySvg,
+  Knowledge,
+};
