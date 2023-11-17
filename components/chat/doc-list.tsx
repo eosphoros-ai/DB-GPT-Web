@@ -3,6 +3,7 @@ import { FileTwoTone } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
 import React from 'react';
+import FileStatusIcon from '../common/FileStatusIcon';
 
 interface IProps {
   documents: IDocument[];
@@ -30,7 +31,7 @@ export default function DocList(props: IProps) {
             key={doc.id}
             className="shrink flex items-center mr-3"
           >
-            <FileTwoTone className="mr-2" />
+            <FileStatusIcon document={doc} />
             {doc.doc_name}
           </Button>
         );
