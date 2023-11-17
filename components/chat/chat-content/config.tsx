@@ -8,18 +8,45 @@ import { Reference } from '@/types/chat';
 import { AutoChart, BackEndChartType, getChartType } from '@/components/chart';
 import { CodePreview } from './code-preview';
 import { Datum } from '@antv/ava';
+import { useMemo } from 'react';
+import rehypeRaw from 'rehype-raw';
 
 type MarkdownComponent = Parameters<typeof ReactMarkdown>['0']['components'];
 
+const customeTags: (keyof JSX.IntrinsicElements)[] = ['custom-view', 'chart-view', 'references'];
+
+function matchCustomeTagValues(context: string) {
+  const matchValues = customeTags.reduce<string[]>((acc, tagName) => {
+    const tagReg = new RegExp(`<${tagName}[^>]*\/?>`, 'gi');
+    context = context.replace(tagReg, (matchVal) => {
+      acc.push(matchVal);
+      return '';
+    });
+    return acc;
+  }, []);
+  return { context, matchValues };
+}
+
 const basicComponents: MarkdownComponent = {
   code({ inline, node, className, children, style, ...props }) {
+    const { context, matchValues } = useMemo(() => {
+      return matchCustomeTagValues(Array.isArray(children) ? children.join('\n') : children);
+    }, [children]);
     const match = /language-(\w+)/.exec(className || '');
-    return !inline && match ? (
-      <CodePreview code={children as string} language={match?.[1] ?? 'javascript'} />
-    ) : (
-      <code {...props} style={style} className="px-[6px] py-[2px] rounded bg-gray-700 text-gray-100 dark:bg-gray-100 dark:text-gray-800 text-sm">
-        {children}
-      </code>
+
+    return (
+      <>
+        {!inline && match ? (
+          <CodePreview code={context} language={match?.[1] ?? 'javascript'} />
+        ) : (
+          <code {...props} style={style} className="px-[6px] py-[2px] rounded bg-gray-700 text-gray-100 dark:bg-gray-100 dark:text-gray-800 text-sm">
+            {children}
+          </code>
+        )}
+        <ReactMarkdown components={markdownComponents} rehypePlugins={[rehypeRaw]}>
+          {matchValues.join('\n')}
+        </ReactMarkdown>
+      </>
     );
   },
   ul({ children }) {
