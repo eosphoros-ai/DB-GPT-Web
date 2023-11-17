@@ -21,7 +21,7 @@ export default function DocPanel(props: IProps) {
   const { space } = props;
   const { t } = useTranslation();
   const router = useRouter();
-  const page_size = 20;
+  const page_size = 18;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [documents, setDocuments] = useState<any>([]);
@@ -185,7 +185,7 @@ export default function DocPanel(props: IProps) {
           {hasMore && (
             <Divider>
               <span className="cursor-pointer" onClick={loadMoreDocuments}>
-                加载更多
+                {t('Load_More')}
               </span>
             </Divider>
           )}

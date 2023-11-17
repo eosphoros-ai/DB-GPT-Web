@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Breadcrumb, Button, Card, Empty, List } from 'antd';
+import { Breadcrumb, Button, Card, Divider, Empty, List } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { apiInterceptors, getChunkList } from '@/client/api';
 import DocIcon from '@/components/knowledge/doc-icon';
@@ -19,9 +19,6 @@ function ChunkList() {
   } = useRouter();
 
   const hasMore = useMemo(() => {
-    console.log(chunkList?.length);
-    console.log(total);
-
     return chunkList?.length < total;
   }, [chunkList, total]);
 
@@ -78,35 +75,36 @@ function ChunkList() {
         ]}
       />
       <div className="flex justify-center flex-col">
-        <List>
+        <div>
           {chunkList?.length > 0 ? (
             chunkList?.map((chunk: any) => {
               return (
-                <List.Item key={chunk.id}>
-                  <Card
-                    title={
-                      <>
-                        <DocIcon type={chunk.doc_type} />
-                        <span>{chunk.doc_name}</span>
-                      </>
-                    }
-                  >
-                    <p className="font-semibold">{t('Content')}:</p>
-                    <p>{chunk?.content}</p>
-                    <p className="font-semibold">{t('Meta_Data')}: </p>
-                    <p>{chunk?.meta_info}</p>
-                  </Card>
-                </List.Item>
+                <Card
+                  key={chunk.id}
+                  title={
+                    <>
+                      <DocIcon type={chunk.doc_type} />
+                      <span>{chunk.doc_name}</span>
+                    </>
+                  }
+                >
+                  <p className="font-semibold">{t('Content')}:</p>
+                  <p>{chunk?.content}</p>
+                  <p className="font-semibold">{t('Meta_Data')}: </p>
+                  <p>{chunk?.meta_info}</p>
+                </Card>
               );
             })
           ) : (
             <Empty image={Empty.PRESENTED_IMAGE_DEFAULT}></Empty>
           )}
-        </List>
+        </div>
         {hasMore && (
-          <Button loading={loading} onClick={loaderMoreChunks} className="mx-12 mb-10">
-            加载更多
-          </Button>
+          <Divider>
+            <span className="cursor-pointer" onClick={loaderMoreChunks}>
+              {t('Load_more')}
+            </span>
+          </Divider>
         )}
       </div>
     </div>
