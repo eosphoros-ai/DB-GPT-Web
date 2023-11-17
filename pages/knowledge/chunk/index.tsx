@@ -20,7 +20,7 @@ function ChunkList() {
 
   const hasMore = useMemo(() => {
     return chunkList?.length < total;
-  }, [chunkList, total]);
+  }, [chunkList.length, total]);
 
   const fetchChunks = async () => {
     const [_, data] = await apiInterceptors(

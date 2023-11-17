@@ -26,12 +26,12 @@ export default function DocPanel(props: IProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [documents, setDocuments] = useState<any>([]);
   const [argumentsShow, setArgumentsShow] = useState<boolean>(false);
-  const [total, setTotal] = useState<number>();
+  const [total, setTotal] = useState<number>(0);
   const currentPageRef = useRef(1);
 
   const hasMore = useMemo(() => {
-    return documents?.length < total!;
-  }, [documents]);
+    return documents.length < total;
+  }, [documents.length, total]);
 
   const showDeleteConfirm = (row: any) => {
     confirm({
