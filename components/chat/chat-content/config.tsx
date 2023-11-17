@@ -4,7 +4,6 @@ import { LinkOutlined, SyncOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import { Table, Image, Tag } from 'antd';
 import { format } from 'sql-formatter';
-import copy from 'copy-to-clipboard';
 import { Reference } from '@/types/chat';
 import { AutoChart, BackEndChartType, getChartType } from '@/components/chart';
 import { CodePreview } from './code-preview';

@@ -49,7 +49,7 @@ function ChunkList() {
       }),
     );
 
-    setChunkList([...chunkList, ...data!.data]);
+    setChunkList([...chunkList, ...(data?.data || [])]);
     setLoading(false);
   };
 
