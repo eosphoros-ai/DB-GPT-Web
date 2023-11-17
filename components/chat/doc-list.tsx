@@ -1,6 +1,5 @@
 import { IDocument } from '@/types/knowledge';
-import { FileTwoTone } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { useRouter } from 'next/router';
 import React from 'react';
 import FileStatusIcon from '../common/FileStatusIcon';
@@ -24,16 +23,17 @@ export default function DocList(props: IProps) {
     <div className="absolute flex overflow-scroll h-12 top-[-35px] w-full z-10">
       {documents.map((doc) => {
         return (
-          <Button
-            onClick={() => {
-              handleClick(doc.id);
-            }}
-            key={doc.id}
-            className="shrink flex items-center mr-3"
-          >
-            <FileStatusIcon document={doc} />
-            {doc.doc_name}
-          </Button>
+          <Tooltip key={doc.id} title={doc.result}>
+            <Button
+              onClick={() => {
+                handleClick(doc.id);
+              }}
+              className="shrink flex items-center mr-3"
+            >
+              <FileStatusIcon document={doc} />
+              {doc.doc_name}
+            </Button>
+          </Tooltip>
         );
       })}
     </div>

@@ -7,8 +7,8 @@ interface IProps {
   document: IDocument;
 }
 
-export default function FileStatusIcon(props: IProps) {
-  switch (props.document.status) {
+export default function FileStatusIcon({ document }: IProps) {
+  switch (document.status) {
     case 'RUNNING':
       return <FileSync />;
     case 'FINISHED':
