@@ -22,9 +22,25 @@ export default function DocList(props: IProps) {
   return (
     <div className="absolute flex overflow-scroll h-12 top-[-35px] w-full z-10">
       {documents.map((doc) => {
+        let color;
+        switch (doc.status) {
+          case 'RUNNING':
+            color = '#2db7f5';
+            break;
+          case 'FINISHED':
+            color = '#87d068';
+            break;
+          case 'FAILED':
+            color = 'f50';
+            break;
+          default:
+            color = 'f50';
+            break;
+        }
         return (
           <Tooltip key={doc.id} title={doc.result}>
             <Button
+              style={{ color }}
               onClick={() => {
                 handleClick(doc.id);
               }}
