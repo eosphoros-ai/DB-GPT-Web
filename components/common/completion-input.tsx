@@ -1,6 +1,6 @@
 import { SendOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
-import { PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
+import { PropsWithChildren, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import PromptBot from './prompt-bot';
 import DocUpload from '../chat/doc-upload';
 import DocList from '../chat/doc-list';
@@ -13,18 +13,16 @@ type TextAreaProps = Omit<Parameters<typeof Input.TextArea>[0], 'value' | 'onPre
 interface Props {
   loading?: boolean;
   onSubmit: (val: string) => void;
-  scene?: string;
   handleFinish?: (val: boolean) => void;
 }
 
-const page_size = 20;
-
-function CompletionInput({ children, loading, onSubmit, handleFinish, scene, ...props }: PropsWithChildren<Props & TextAreaProps>) {
-  const { dbParam } = useContext(ChatContext);
+function CompletionInput({ children, loading, onSubmit, handleFinish, ...props }: PropsWithChildren<Props & TextAreaProps>) {
+  const { dbParam, scene } = useContext(ChatContext);
 
   const [userInput, setUserInput] = useState('');
   const showUpload = useMemo(() => scene === 'chat_knowledge', [scene]);
   const [documents, setDocuments] = useState<IDocument[]>([]);
+  const uploadCountRef = useRef(0);
 
   useEffect(() => {
     showUpload && fetchDocuments();
@@ -37,16 +35,21 @@ function CompletionInput({ children, loading, onSubmit, handleFinish, scene, ...
     const [_, data] = await apiInterceptors(
       getDocumentList(dbParam, {
         page: 1,
-        page_size,
+        page_size: uploadCountRef.current,
       }),
     );
     setDocuments(data?.data!);
   }
 
+  const onUploadFinish = () => {
+    uploadCountRef.current += 1;
+    fetchDocuments();
+  };
+
   return (
     <div className="flex-1 relative">
-      {showUpload && <DocList documents={documents} dbParam={dbParam} />}
-      {showUpload && <DocUpload handleFinish={handleFinish} fetchDocuments={fetchDocuments} className="absolute z-10 top-2 left-2" />}
+      <DocList documents={documents} dbParam={dbParam} />
+      {showUpload && <DocUpload handleFinish={handleFinish} onUploadFinish={onUploadFinish} className="absolute z-10 top-2 left-2" />}
       <Input.TextArea
         className={`flex-1 ${showUpload ? 'pl-10' : ''} pr-10`}
         size="large"

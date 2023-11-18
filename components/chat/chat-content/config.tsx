@@ -128,7 +128,7 @@ const basicComponents: MarkdownComponent = {
       <div>
         <p className="mb-2">
           <ReadOutlined className="mr-2" />
-          <span className="font-semibold">Doc Summary</span>
+          <span className="font-semibold">Document Summary</span>
         </p>
         <div>{children}</div>
       </div>

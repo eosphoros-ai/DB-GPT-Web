@@ -174,6 +174,7 @@ const resources = {
       multi_measure_column_chart: 'Multi Measure Column',
       multi_measure_line_chart: 'Multi Measure Line',
       Advices: 'Advices',
+      Retry: 'Retry',
     },
   },
   zh: {
@@ -347,6 +348,7 @@ const resources = {
       multi_measure_column_chart: '多指标柱形图',
       multi_measure_line_chart: '多指标折线图',
       Advices: '自动推荐',
+      Retry: '重试',
     },
   },
 };

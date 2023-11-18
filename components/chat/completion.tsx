@@ -125,7 +125,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
   useEffect(() => {
     apiInterceptors(getChatFeedBackSelect())
       .then((res) => {
-        setSelectParam(res[1]!);
+        setSelectParam(res[1] ?? {});
       })
       .catch((err) => {
         console.log(err);
@@ -160,7 +160,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
                       {scene === 'chat_knowledge' && content.retry ? (
                         <Button onClick={handleRetry} slots={{ root: IconButton }} slotProps={{ root: { variant: 'plain', color: 'primary' } }}>
                           <RedoOutlined />
-                          &nbsp;<span className="text-sm">Retry</span>
+                          &nbsp;<span className="text-sm">{t('Retry')}</span>
                         </Button>
                       ) : null}
                       <div className="flex w-full flex-row-reverse">
@@ -206,7 +206,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
       >
         <div className="flex flex-wrap w-full py-2 sm:pt-6 sm:pb-10 items-center">
           {model && <div className="mr-2 flex">{renderModelIcon(model)}</div>}
-          <CompletionInput scene={scene} loading={isLoading} onSubmit={handleChat} handleFinish={setIsLoading} />
+          <CompletionInput loading={isLoading} onSubmit={handleChat} handleFinish={setIsLoading} />
         </div>
       </div>
       <Modal

@@ -9,11 +9,11 @@ import React, { useContext, useState } from 'react';
 interface IProps {
   className?: string;
   handleFinish?: (data: boolean) => void;
-  fetchDocuments: () => void;
+  onUploadFinish: () => void;
 }
 export default function DocUpload(props: IProps) {
   const { dbParam, setDocId } = useContext(ChatContext);
-  const { fetchDocuments, handleFinish } = props;
+  const { onUploadFinish, handleFinish } = props;
   const summary = useSummary();
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -35,7 +35,7 @@ export default function DocUpload(props: IProps) {
       return;
     }
     setDocId(res[1]);
-    fetchDocuments();
+    onUploadFinish();
     await handleSync(dbParam || 'default', res?.[1] as number);
     setLoading(false);
     handleFinish?.(true);

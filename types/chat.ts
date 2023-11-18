@@ -89,10 +89,10 @@ export type ModelType =
 export type LLMOption = { label: string; icon: string };
 
 export type FeedBack = {
-  information: string;
-  just_fun: string;
-  others: string;
-  work_study: string;
+  information?: string;
+  just_fun?: string;
+  others?: string;
+  work_study?: string;
 };
 
 export type Reference = {
