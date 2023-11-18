@@ -26,7 +26,7 @@ import { FeedBack } from '@/types/chat';
 
 type Props = {
   conv_index: number;
-  question: string | any;
+  question: any;
   knowledge_space: string;
   select_param?: FeedBack;
 };
