@@ -31,10 +31,10 @@ export default function DocList(props: IProps) {
             color = '#87d068';
             break;
           case 'FAILED':
-            color = 'f50';
+            color = '#f50';
             break;
           default:
-            color = 'f50';
+            color = '#87d068';
             break;
         }
         return (
