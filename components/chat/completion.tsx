@@ -8,7 +8,7 @@ import { IChatDialogueMessageSchema } from '@/types/chat';
 import classNames from 'classnames';
 import { Empty, Modal, message, Tooltip } from 'antd';
 import { renderModelIcon } from './header/model-selector';
-import loadsh from 'lodash';
+import { cloneDeep } from 'lodash';
 import copy from 'copy-to-clipboard';
 import { useTranslation } from 'react-i18next';
 import CompletionInput from '../common/completion-input';
@@ -98,7 +98,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
   useEffect(() => {
     let tempMessage: IChatDialogueMessageSchema[] = messages;
     if (isChartChat) {
-      tempMessage = loadsh.cloneDeep(messages).map((item) => {
+      tempMessage = cloneDeep(messages).map((item) => {
         if (item?.role === 'view' && typeof item?.context === 'string') {
           item.context = handleJson2Obj(item?.context);
         }
@@ -132,7 +132,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
                   }}
                 >
                   {content.role === 'view' && (
-                    <div className="flex w-full flex-row-reverse pt-2 md:pt-4 border-t border-gray-200 mt-2 md:mt-4">
+                    <div className="flex w-full flex-row-reverse pt-2 border-t border-gray-200">
                       <ChatFeedback
                         conv_index={Math.ceil((index + 1) / 2)}
                         question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}

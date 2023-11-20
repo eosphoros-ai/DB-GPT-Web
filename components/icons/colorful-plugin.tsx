@@ -1,6 +1,6 @@
 function ColorfulPlugin() {
   return (
-    <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="34873" width="200" height="200">
+    <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="34873" className="w-full h-full">
       <path d="M392.32 403.84a48 48 0 0 1-48 48h-96a48 48 0 0 1-48-48V236.16h192z" fill="#EA5E5A" p-id="34874"></path>
       <path d="M259.84 176h24.32v24.32h-24.32zM307.84 176h24.32v24.32h-24.32z" fill="#34303D" p-id="34875"></path>
       <path d="M380.16 236.16h-24.32V152.32H236.16v83.84h-24.32V128h168.32v108.16z" fill="#34303D" p-id="34876"></path>
