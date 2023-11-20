@@ -127,7 +127,7 @@ const basicComponents: MarkdownComponent = {
 };
 
 const extraComponents: MarkdownComponent = {
-  'chart-view': function ({ content }) {
+  'chart-view': function ({ content, children }) {
     let data: {
       data: Datum[];
       type: BackEndChartType;
@@ -174,6 +174,7 @@ const extraComponents: MarkdownComponent = {
     return (
       <div>
         <Tabs defaultActiveKey={data?.type === 'response_table' ? 'data' : 'chart'} items={TabItems} size="small" />
+        {children}
       </div>
     );
   },
