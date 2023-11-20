@@ -8,7 +8,6 @@ import { Reference } from '@/types/chat';
 import { AutoChart, BackEndChartType, getChartType } from '@/components/chart';
 import { CodePreview } from './code-preview';
 import { Datum } from '@antv/ava';
-import { useMemo } from 'react';
 import rehypeRaw from 'rehype-raw';
 
 type MarkdownComponent = Parameters<typeof ReactMarkdown>['0']['components'];
