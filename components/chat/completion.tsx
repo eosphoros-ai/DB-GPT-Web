@@ -4,7 +4,7 @@ import MonacoEditor from './monaco-editor';
 import ChatContent from './chat-content';
 import ChatFeedback from './chat-feedback';
 import { ChatContext } from '@/app/chat-context';
-import { IChatDialogueMessageSchema } from '@/types/chat';
+import { FeedBack, IChatDialogueMessageSchema } from '@/types/chat';
 import classNames from 'classnames';
 import { Empty, Modal, message, Tooltip } from 'antd';
 import { renderModelIcon } from './header/model-selector';
@@ -15,8 +15,10 @@ import CompletionInput from '../common/completion-input';
 import { useAsyncEffect } from 'ahooks';
 import { STORAGE_INIT_MESSAGE_KET } from '@/utils';
 import { Button, IconButton } from '@mui/joy';
-import { CopyOutlined } from '@ant-design/icons';
+import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
 import { getInitMessage } from '@/utils';
+import { apiInterceptors, getChatFeedBackSelect } from '@/client/api';
+import useSummary from '@/hooks/use-summary';
 
 type Props = {
   messages: IChatDialogueMessageSchema[];
@@ -24,7 +26,7 @@ type Props = {
 };
 
 const Completion = ({ messages, onSubmit }: Props) => {
-  const { dbParam, currentDialogue, scene, model, refreshDialogList, chatId, agentList } = useContext(ChatContext);
+  const { dbParam, currentDialogue, scene, model, refreshDialogList, chatId, agentList, docId } = useContext(ChatContext);
   const { t } = useTranslation();
   const searchParams = useSearchParams();
 
@@ -34,10 +36,13 @@ const Completion = ({ messages, onSubmit }: Props) => {
   const [jsonModalOpen, setJsonModalOpen] = useState(false);
   const [showMessages, setShowMessages] = useState(messages);
   const [jsonValue, setJsonValue] = useState<string>('');
+  const [select_param, setSelectParam] = useState<FeedBack>();
 
   const scrollableRef = useRef<HTMLDivElement>(null);
 
   const isChartChat = useMemo(() => scene === 'chat_dashboard', [scene]);
+
+  const summary = useSummary();
 
   const selectParam = useMemo(() => {
     switch (scene) {
@@ -86,6 +91,15 @@ const Completion = ({ messages, onSubmit }: Props) => {
     }
   };
 
+  const handleRetry = async () => {
+    if (isLoading || !docId) {
+      return;
+    }
+    setIsLoading(true);
+    await summary(docId);
+    setIsLoading(false);
+  };
+
   useAsyncEffect(async () => {
     const initMessage = getInitMessage();
     if (initMessage && initMessage.id === chatId) {
@@ -107,6 +121,16 @@ const Completion = ({ messages, onSubmit }: Props) => {
     }
     setShowMessages(tempMessage.filter((item) => ['view', 'human'].includes(item.role)));
   }, [isChartChat, messages]);
+
+  useEffect(() => {
+    apiInterceptors(getChatFeedBackSelect())
+      .then((res) => {
+        setSelectParam(res[1] ?? {});
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -132,22 +156,31 @@ const Completion = ({ messages, onSubmit }: Props) => {
                   }}
                 >
                   {content.role === 'view' && (
-                    <div className="flex w-full flex-row-reverse pt-2 border-t border-gray-200">
-                      <ChatFeedback
-                        conv_index={Math.ceil((index + 1) / 2)}
-                        question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
-                        knowledge_space={spaceNameOriginal || dbParam || ''}
-                      />
-                      <Tooltip title={t('Copy')}>
-                        <Button
-                          onClick={() => onCopyContext(content?.context)}
-                          slots={{ root: IconButton }}
-                          slotProps={{ root: { variant: 'plain', color: 'primary' } }}
-                          sx={{ borderRadius: 40 }}
-                        >
-                          <CopyOutlined />
+                    <div className="flex w-full pt-2 md:pt-4 border-t border-gray-200 mt-2 md:mt-4 pl-2">
+                      {scene === 'chat_knowledge' && content.retry ? (
+                        <Button onClick={handleRetry} slots={{ root: IconButton }} slotProps={{ root: { variant: 'plain', color: 'primary' } }}>
+                          <RedoOutlined />
+                          &nbsp;<span className="text-sm">{t('Retry')}</span>
                         </Button>
-                      </Tooltip>
+                      ) : null}
+                      <div className="flex w-full flex-row-reverse">
+                        <ChatFeedback
+                          select_param={select_param}
+                          conv_index={Math.ceil((index + 1) / 2)}
+                          question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
+                          knowledge_space={spaceNameOriginal || dbParam || ''}
+                        />
+                        <Tooltip title={t('Copy')}>
+                          <Button
+                            onClick={() => onCopyContext(content?.context)}
+                            slots={{ root: IconButton }}
+                            slotProps={{ root: { variant: 'plain', color: 'primary' } }}
+                            sx={{ borderRadius: 40 }}
+                          >
+                            <CopyOutlined />
+                          </Button>
+                        </Tooltip>
+                      </div>
                     </div>
                   )}
                 </ChatContent>
@@ -171,9 +204,9 @@ const Completion = ({ messages, onSubmit }: Props) => {
           },
         )}
       >
-        <div className="flex flex-wrap w-full py-2 sm:pt-6 sm:pb-10">
-          {model && <div className="mr-2 flex items-center h-10">{renderModelIcon(model)}</div>}
-          <CompletionInput loading={isLoading} onSubmit={handleChat} />
+        <div className="flex flex-wrap w-full py-2 sm:pt-6 sm:pb-10 items-center">
+          {model && <div className="mr-2 flex">{renderModelIcon(model)}</div>}
+          <CompletionInput loading={isLoading} onSubmit={handleChat} handleFinish={setIsLoading} />
         </div>
       </div>
       <Modal

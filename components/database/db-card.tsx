@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Tooltip } from 'antd';
 import { DBOption } from '@/types/db';
-import DBIcon from './db-icon';
+import DBIcon from '../common/db-icon';
 
 interface Props {
   info: DBOption;

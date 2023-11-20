@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
 import { GET, POST } from '.';
 import { DbListResponse, DbSupportTypeResponse, PostDbParams, ChatFeedBackSchema } from '@/types/db';
-import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse } from '@/types/chat';
+import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse, FeedBack, IDB } from '@/types/chat';
 import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
 import {
   GetEditorSQLRoundRequest,
@@ -21,6 +21,7 @@ import {
   IChunkList,
   IDocumentResponse,
   ISpace,
+  SummaryParams,
 } from '@/types/knowledge';
 import { UpdatePromptParams, IPrompt, PromptParams } from '@/types/prompt';
 
@@ -60,7 +61,7 @@ export const getUsableModels = () => {
   return GET<null, Array<string>>('/api/v1/model/types');
 };
 export const postChatModeParamsList = (chatMode: string) => {
-  return POST<null, Record<string, string>>(`/api/v1/chat/mode/params/list?chat_mode=${chatMode}`);
+  return POST<null, IDB[]>(`/api/v1/chat/mode/params/list?chat_mode=${chatMode}`);
 };
 export const postChatModeParamsInfoList = (chatMode: string) => {
   return POST<null, Record<string, string>>(`/api/v1/chat/mode/params/info?chat_mode=${chatMode}`);
@@ -203,7 +204,7 @@ export const postAgentUpload = (user = '', data: FormData, config?: Omit<AxiosRe
 
 /** chat feedback **/
 export const getChatFeedBackSelect = () => {
-  return GET<null, Record<string, string>>(`/api/v1/feedback/select`, undefined);
+  return GET<null, FeedBack>(`/api/v1/feedback/select`, undefined);
 };
 export const getChatFeedBackItme = (conv_uid: string, conv_index: number) => {
   return GET<null, Record<string, string>>(`/api/v1/feedback/find?conv_uid=${conv_uid}&conv_index=${conv_index}`, undefined);

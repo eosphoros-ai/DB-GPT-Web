@@ -15,13 +15,12 @@ import { getInitMessage } from '@/utils';
 
 const ChatContainer = () => {
   const searchParams = useSearchParams();
-  const { scene, chatId, model, setModel } = useContext(ChatContext);
+  const { scene, chatId, model, setModel, history, setHistory } = useContext(ChatContext);
   const chat = useChat({});
   const initMessage = (searchParams && searchParams.get('initMessage')) ?? '';
 
   const [loading, setLoading] = useState<boolean>(false);
   const [chartsData, setChartsData] = useState<Array<ChartData>>();
-  const [history, setHistory] = useState<ChatHistoryResponse>([]);
 
   const getHistory = async () => {
     setLoading(true);
@@ -68,8 +67,7 @@ const ChatContainer = () => {
         const index = tempHistory.length - 1;
         setHistory([...tempHistory]);
         chat({
-          context: content,
-          data: { ...data, chat_mode: scene || 'chat_normal', model_name: model },
+          data: { ...data, chat_mode: scene || 'chat_normal', model_name: model, user_input: content },
           chatId,
           onMessage: (message) => {
             tempHistory[index].context = message;

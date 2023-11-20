@@ -1,64 +1,74 @@
 import React, { useState, useRef, useCallback, useEffect, useContext } from 'react';
-import {MoreHoriz, CloseRounded} from '@mui/icons-material';
-import {MenuButton, Button, Menu, MenuItem, Dropdown, Box, Grid, IconButton, Slider, Select, Option, Textarea, Typography, styled, Sheet} from '@mui/joy';
+import { MoreHoriz, CloseRounded } from '@mui/icons-material';
+import {
+  MenuButton,
+  Button,
+  Menu,
+  MenuItem,
+  Dropdown,
+  Box,
+  Grid,
+  IconButton,
+  Slider,
+  Select,
+  Option,
+  Textarea,
+  Typography,
+  styled,
+  Sheet,
+} from '@mui/joy';
 import { message, Tooltip } from 'antd';
-import { apiInterceptors, getChatFeedBackSelect, getChatFeedBackItme, postChatFeedBackForm } from '@/client/api';
+import { apiInterceptors, getChatFeedBackItme, postChatFeedBackForm } from '@/client/api';
 import { ChatContext } from '@/app/chat-context';
 import { ChatFeedBackSchema } from '@/types/db';
 import { useTranslation } from 'react-i18next';
+import { FeedBack } from '@/types/chat';
 
 type Props = {
   conv_index: number;
-  question: string|any;
-  knowledge_space: string 
+  question: any;
+  knowledge_space: string;
+  select_param?: FeedBack;
 };
 
-const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
+const ChatFeedback = ({ conv_index, question, knowledge_space, select_param }: Props) => {
   const { t } = useTranslation();
-  const { chatId } = useContext(ChatContext)
+  const { chatId } = useContext(ChatContext);
   const [ques_type, setQuesType] = useState('');
   const [score, setScore] = useState(4);
   const [text, setText] = useState('');
   const action = useRef(null);
   const [messageApi, contextHolder] = message.useMessage();
-  const [select_param, setSelectParam] = useState({});
 
-  useEffect(() => {
-    apiInterceptors(getChatFeedBackSelect()).then(res => {
-      console.log(res);
-      setSelectParam(res[1] ?? {});
-    }).catch(err => {
-      console.log(err);
-    });
-  }, []);
-
-  const handleOpenChange = useCallback((event:any, isOpen:boolean) => {
-    if (isOpen) {
-      apiInterceptors(getChatFeedBackItme(chatId, conv_index))
-        .then(res => {
-          const finddata = res[1] ?? {};
-          setQuesType(finddata.ques_type ?? '');
-          setScore(parseInt(finddata.score ?? '4'));
-          setText(finddata.messages ?? '');
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    }
-    else {
-      setQuesType('');
-      setScore(4);
-      setText('');
-    }
-  }, [chatId, conv_index]);
+  const handleOpenChange = useCallback(
+    (event: any, isOpen: boolean) => {
+      if (isOpen) {
+        apiInterceptors(getChatFeedBackItme(chatId, conv_index))
+          .then((res) => {
+            const finddata = res[1] ?? {};
+            setQuesType(finddata.ques_type ?? '');
+            setScore(parseInt(finddata.score ?? '4'));
+            setText(finddata.messages ?? '');
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        setQuesType('');
+        setScore(4);
+        setText('');
+      }
+    },
+    [chatId, conv_index],
+  );
 
   const marks = [
-    { value: 0, label: '0', },
-    { value: 1, label: '1', },
-    { value: 2, label: '2', },
-    { value: 3, label: '3', },
-    { value: 4, label: '4', },
-    { value: 5, label: '5', },
+    { value: 0, label: '0' },
+    { value: 1, label: '1' },
+    { value: 2, label: '2' },
+    { value: 3, label: '3' },
+    { value: 4, label: '4' },
+    { value: 5, label: '5' },
   ];
   function valueText(value: number) {
     return {
@@ -67,7 +77,7 @@ const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
       2: t('Lost'),
       3: t('Incorrect'),
       4: t('Verbose'),
-      5: t('Best')
+      5: t('Best'),
     }[value];
   }
   const Item = styled(Sheet)(({ theme }) => ({
@@ -79,39 +89,37 @@ const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
     justifyContent: 'center',
     borderRadius: 4,
     width: '100%',
-    height: '100%'
+    height: '100%',
   }));
-  const handleSubmit = (event:any) => {
+  const handleSubmit = (event: any) => {
     event.preventDefault();
-    const formData : ChatFeedBackSchema = {
-      conv_uid : chatId,
-      conv_index : conv_index,
-      question : question,
-      knowledge_space : knowledge_space,
-      score : score,
-      ques_type : ques_type,
-      messages : text
+    const formData: ChatFeedBackSchema = {
+      conv_uid: chatId,
+      conv_index: conv_index,
+      question: question,
+      knowledge_space: knowledge_space,
+      score: score,
+      ques_type: ques_type,
+      messages: text,
     };
     console.log(formData);
-    apiInterceptors(postChatFeedBackForm({
-      data: formData
-    }))
-      .then(res => {
-        messageApi.open({ type: 'success', content: 'save success', });
+    apiInterceptors(
+      postChatFeedBackForm({
+        data: formData,
+      }),
+    )
+      .then((res) => {
+        messageApi.open({ type: 'success', content: 'save success' });
       })
-      .catch(err => {
-        messageApi.open({ type: 'error', content: 'save error', });
+      .catch((err) => {
+        messageApi.open({ type: 'error', content: 'save error' });
       });
   };
   return (
     <Dropdown onOpenChange={handleOpenChange}>
       {contextHolder}
       <Tooltip title={t('Rating')}>
-        <MenuButton
-          slots={{ root: IconButton }}
-          slotProps={{ root: { variant: 'plain', color: 'primary' } }}
-          sx={{ borderRadius: 40 }}
-        >
+        <MenuButton slots={{ root: IconButton }} slotProps={{ root: { variant: 'plain', color: 'primary' } }} sx={{ borderRadius: 40 }}>
           <MoreHoriz />
         </MenuButton>
       </Tooltip>
@@ -159,23 +167,27 @@ const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
                     ),
                     indicator: null,
                   })}
-                  sx={{ width: '100%' }} >
-                  {Object.keys(select_param)?.map((paramItem) => (
-                    <Option key={paramItem} value={paramItem}>
-                      {select_param[paramItem]}
-                    </Option>
-                  ))}
+                  sx={{ width: '100%' }}
+                >
+                  {select_param &&
+                    Object.keys(select_param)?.map((paramItem) => (
+                      <Option key={paramItem} value={paramItem}>
+                        {select_param[paramItem]}
+                      </Option>
+                    ))}
                 </Select>
               </Grid>
               <Grid xs={3}>
                 <Item>
-                  <Tooltip title={
-                    <Box>
-                      <div>
-                        {t('feed_back_desc')}
-                      </div>
-                    </Box>
-                  } variant="solid" placement="left">
+                  <Tooltip
+                    title={
+                      <Box>
+                        <div>{t('feed_back_desc')}</div>
+                      </Box>
+                    }
+                    variant="solid"
+                    placement="left"
+                  >
                     {t('Q_A_Rating')}
                   </Tooltip>
                 </Item>
@@ -203,14 +215,16 @@ const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
                   maxRows={4}
                   endDecorator={
                     <Typography level="body-xs" sx={{ ml: 'auto' }}>
-                     {t('input_count') + text.length + t('input_unit')}
+                      {t('input_count') + text.length + t('input_unit')}
                     </Typography>
                   }
                   sx={{ width: '100%', fontSize: 14 }}
                 />
               </Grid>
               <Grid xs={13}>
-                <Button type="submit" variant="outlined" sx={{ width: '100%', height: '100%' }}>{t('submit')}</Button>
+                <Button type="submit" variant="outlined" sx={{ width: '100%', height: '100%' }}>
+                  {t('submit')}
+                </Button>
               </Grid>
             </Grid>
           </form>
@@ -218,5 +232,5 @@ const ChatFeedback = ({ conv_index, question, knowledge_space }: Props) => {
       </Menu>
     </Dropdown>
   );
-}
+};
 export default ChatFeedback;

@@ -48,6 +48,7 @@ export type IChatDialogueMessageSchema = {
   order: number;
   time_stamp: number | string | null;
   model_name: string;
+  retry?: boolean;
 };
 
 export type ModelType =
@@ -87,7 +88,19 @@ export type ModelType =
 
 export type LLMOption = { label: string; icon: string };
 
+export type FeedBack = {
+  information?: string;
+  just_fun?: string;
+  others?: string;
+  work_study?: string;
+};
+
 export type Reference = {
   name: string;
   pages: Array<number>;
+};
+
+export type IDB = {
+  param: string;
+  type: string;
 };

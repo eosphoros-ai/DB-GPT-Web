@@ -9,7 +9,6 @@ type Props = {
 
 type ChatParams = {
   chatId: string;
-  context: string;
   data?: Record<string, any>;
   onMessage: (message: string) => void;
   onClose?: () => void;
@@ -21,8 +20,8 @@ const useChat = ({ queryAgentURL = '/api/v1/chat/completions' }: Props) => {
   const ctrl = useMemo(() => new AbortController(), []);
 
   const chat = useCallback(
-    async ({ context, data, chatId, onMessage, onClose, onDone, onError }: ChatParams) => {
-      if (!context) {
+    async ({ data, chatId, onMessage, onClose, onDone, onError }: ChatParams) => {
+      if (!data?.user_input && !data?.doc_id) {
         message.warning(i18n.t('NoContextTip'));
         return;
       }
@@ -30,7 +29,6 @@ const useChat = ({ queryAgentURL = '/api/v1/chat/completions' }: Props) => {
       const parmas = {
         ...data,
         conv_uid: chatId,
-        user_input: context,
       };
 
       if (!parmas.conv_uid) {

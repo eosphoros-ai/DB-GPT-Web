@@ -38,9 +38,15 @@ export type Prompt = {
   scene: string;
   template: string;
 };
+
+export type Summary = {
+  max_iteration: number;
+  concurrency_limit: number;
+};
 export type IArguments = {
   embedding: Embedding;
   prompt: Prompt;
+  summary: Summary;
 };
 
 export type DocumentParams = {
@@ -102,4 +108,10 @@ export type StepChangeParams = {
   label: 'forward' | 'back' | 'finish';
   spaceName?: string;
   docType?: string;
+};
+
+export type SummaryParams = {
+  doc_id: number;
+  model_name: string;
+  conv_uid: string;
 };

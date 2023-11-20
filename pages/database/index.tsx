@@ -9,30 +9,9 @@ import DBCard from '@/components/database/db-card';
 import { DeleteFilled, EditFilled, PlusOutlined } from '@ant-design/icons';
 import { DBOption, DBType, DbListResponse, DbSupportTypeResponse } from '@/types/db';
 import MuiLoading from '@/components/common/loading';
+import { dbMapper } from '@/utils';
 
 type DBItem = DbListResponse[0];
-
-const dbMapper: Record<DBType, { label: string; icon: string; desc: string }> = {
-  mysql: { label: 'MySQL', icon: '/icons/mysql.png', desc: 'Fast, reliable, scalable open-source relational database management system.' },
-  mssql: { label: 'MSSQL', icon: '/icons/mssql.png', desc: 'Powerful, scalable, secure relational database system by Microsoft.' },
-  duckdb: { label: 'DuckDB', icon: '/icons/duckdb.png', desc: 'In-memory analytical database with efficient query processing.' },
-  sqlite: { label: 'Sqlite', icon: '/icons/sqlite.png', desc: 'Lightweight embedded relational database with simplicity and portability.' },
-  clickhouse: { label: 'ClickHouse', icon: '/icons/clickhouse.png', desc: 'Columnar database for high-performance analytics and real-time queries.' },
-  oracle: { label: 'Oracle', icon: '/icons/oracle.png', desc: 'Robust, scalable, secure relational database widely used in enterprises.' },
-  access: { label: 'Access', icon: '/icons/access.png', desc: 'Easy-to-use relational database for small-scale applications by Microsoft.' },
-  mongodb: { label: 'MongoDB', icon: '/icons/mongodb.png', desc: 'Flexible, scalable NoSQL document database for web and mobile apps.' },
-  db2: { label: 'DB2', icon: '/icons/db2.png', desc: 'Scalable, secure relational database system developed by IBM.' },
-  hbase: { label: 'HBase', icon: '/icons/hbase.png', desc: 'Distributed, scalable NoSQL database for large structured/semi-structured data.' },
-  redis: { label: 'Redis', icon: '/icons/redis.png', desc: 'Fast, versatile in-memory data structure store as cache, DB, or broker.' },
-  cassandra: { label: 'Cassandra', icon: '/icons/cassandra.png', desc: 'Scalable, fault-tolerant distributed NoSQL database for large data.' },
-  couchbase: { label: 'Couchbase', icon: '/icons/couchbase.png', desc: 'High-performance NoSQL document database with distributed architecture.' },
-  postgresql: {
-    label: 'PostgreSQL',
-    icon: '/icons/postgresql.png',
-    desc: 'Powerful open-source relational database with extensibility and SQL standards.',
-  },
-  spark: { label: 'Spark', icon: '/icons/spark.png', desc: 'Unified engine for large-scale data analytics.' },
-};
 
 export function isFileDb(dbTypeList: DBOption[], dbType: DBType) {
   return dbTypeList.find((item) => item.value === dbType)?.isFileDb;
@@ -60,6 +39,7 @@ function Database() {
   const dbTypeList = useMemo(() => {
     const supportDbList = dbSupportList.map((item) => {
       const { db_type, is_file_db } = item;
+
       return { ...dbMapper[db_type], value: db_type, isFileDb: is_file_db };
     }) as DBOption[];
     const unSupportDbList = Object.keys(dbMapper)
