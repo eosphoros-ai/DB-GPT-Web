@@ -8,18 +8,47 @@ import { Reference } from '@/types/chat';
 import { AutoChart, BackEndChartType, getChartType } from '@/components/chart';
 import { CodePreview } from './code-preview';
 import { Datum } from '@antv/ava';
+import rehypeRaw from 'rehype-raw';
 
 type MarkdownComponent = Parameters<typeof ReactMarkdown>['0']['components'];
 
+const customeTags: (keyof JSX.IntrinsicElements)[] = ['custom-view', 'chart-view', 'references'];
+
+function matchCustomeTagValues(context: string) {
+  const matchValues = customeTags.reduce<string[]>((acc, tagName) => {
+    const tagReg = new RegExp(`<${tagName}[^>]*\/?>`, 'gi');
+    context = context.replace(tagReg, (matchVal) => {
+      acc.push(matchVal);
+      return '';
+    });
+    return acc;
+  }, []);
+  return { context, matchValues };
+}
+
 const basicComponents: MarkdownComponent = {
   code({ inline, node, className, children, style, ...props }) {
+    /**
+     * @description
+     * In some cases, tags are nested within code syntax,
+     * so it is necessary to extract the tags present in the code block and render them separately.
+     */
+    const { context, matchValues } = matchCustomeTagValues(Array.isArray(children) ? children.join('\n') : children);
     const match = /language-(\w+)/.exec(className || '');
-    return !inline && match ? (
-      <CodePreview code={children as string} language={match?.[1] ?? 'javascript'} />
-    ) : (
-      <code {...props} style={style} className="px-[6px] py-[2px] rounded bg-gray-700 text-gray-100 dark:bg-gray-100 dark:text-gray-800 text-sm">
-        {children}
-      </code>
+
+    return (
+      <>
+        {!inline && match ? (
+          <CodePreview code={context} language={match?.[1] ?? 'javascript'} />
+        ) : (
+          <code {...props} style={style} className="px-[6px] py-[2px] rounded bg-gray-700 text-gray-100 dark:bg-gray-100 dark:text-gray-800 text-sm">
+            {children}
+          </code>
+        )}
+        <ReactMarkdown components={markdownComponents} rehypePlugins={[rehypeRaw]}>
+          {matchValues.join('\n')}
+        </ReactMarkdown>
+      </>
     );
   },
   ul({ children }) {
@@ -91,43 +120,10 @@ const basicComponents: MarkdownComponent = {
       </blockquote>
     );
   },
-  references({ children }) {
-    let referenceData;
-    try {
-      referenceData = JSON.parse(children as string);
-    } catch (error) {
-      console.log(error);
-      return <p className="text-sm">Render Reference Error!</p>;
-    }
-    const references = referenceData?.references;
-    if (!references || references?.length < 1) {
-      return null;
-    }
-    return (
-      <div className="border-t-[1px] border-gray-300 mt-3 py-2">
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-          <LinkOutlined className="mr-2" />
-          <span className="font-semibold">{referenceData.title}</span>
-        </p>
-        {references.map((reference: Reference, index: number) => (
-          <p key={`file_${index}`} className="text-sm font-normal block ml-2 h-6 leading-6 overflow-hidden">
-            <span className="inline-block w-6">[{index + 1}]</span>
-            <span className="mr-4 text-blue-400">{reference.name}</span>
-            {reference?.pages?.map((page, index) => (
-              <>
-                <span key={`file_page_${index}`}>{page}</span>
-                {index < reference?.pages.length - 1 && <span key={`file_page__${index}`}>,</span>}
-              </>
-            ))}
-          </p>
-        ))}
-      </div>
-    );
-  },
 };
 
 const extraComponents: MarkdownComponent = {
-  'chart-view': function ({ content }) {
+  'chart-view': function ({ content, children }) {
     let data: {
       data: Datum[];
       type: BackEndChartType;
@@ -174,6 +170,40 @@ const extraComponents: MarkdownComponent = {
     return (
       <div>
         <Tabs defaultActiveKey={data?.type === 'response_table' ? 'data' : 'chart'} items={TabItems} size="small" />
+        {children}
+      </div>
+    );
+  },
+  references({ children }) {
+    let referenceData;
+    try {
+      referenceData = JSON.parse(children as string);
+    } catch (error) {
+      console.log(error);
+      return <p className="text-sm">Render Reference Error!</p>;
+    }
+    const references = referenceData?.references;
+    if (!references || references?.length < 1) {
+      return null;
+    }
+    return (
+      <div className="border-t-[1px] border-gray-300 mt-3 py-2">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+          <LinkOutlined className="mr-2" />
+          <span className="font-semibold">{referenceData.title}</span>
+        </p>
+        {references.map((reference: Reference, index: number) => (
+          <p key={`file_${index}`} className="text-sm font-normal block ml-2 h-6 leading-6 overflow-hidden">
+            <span className="inline-block w-6">[{index + 1}]</span>
+            <span className="mr-4 text-blue-400">{reference.name}</span>
+            {reference?.pages?.map((page, index) => (
+              <>
+                <span key={`file_page_${index}`}>{page}</span>
+                {index < reference?.pages.length - 1 && <span key={`file_page__${index}`}>,</span>}
+              </>
+            ))}
+          </p>
+        ))}
       </div>
     );
   },

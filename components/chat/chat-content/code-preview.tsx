@@ -12,11 +12,11 @@ export function CodePreview({ code, language }: { code: string; language: string
         type="text"
         icon={<CopyOutlined />}
         onClick={() => {
-          const success = copy(code as string);
+          const success = copy(code);
           message[success ? 'success' : 'error'](success ? 'Copy success' : 'Copy failed');
         }}
       />
-      <SyntaxHighlighter language={language as string} style={oneDark}>
+      <SyntaxHighlighter language={language} style={oneDark}>
         {code}
       </SyntaxHighlighter>
     </div>
