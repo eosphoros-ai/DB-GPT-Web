@@ -14,11 +14,6 @@ type MarkdownComponent = Parameters<typeof ReactMarkdown>['0']['components'];
 
 const customeTags: (keyof JSX.IntrinsicElements)[] = ['custom-view', 'chart-view', 'references'];
 
-/**
- * @description
- * In some cases, tags are nested within code syntax,
- * so it is necessary to extract the tags present in the code block and render them separately.
- */
 function matchCustomeTagValues(context: string) {
   const matchValues = customeTags.reduce<string[]>((acc, tagName) => {
     const tagReg = new RegExp(`<${tagName}[^>]*\/?>`, 'gi');
@@ -33,6 +28,11 @@ function matchCustomeTagValues(context: string) {
 
 const basicComponents: MarkdownComponent = {
   code({ inline, node, className, children, style, ...props }) {
+    /**
+     * @description
+     * In some cases, tags are nested within code syntax,
+     * so it is necessary to extract the tags present in the code block and render them separately.
+     */
     const { context, matchValues } = matchCustomeTagValues(Array.isArray(children) ? children.join('\n') : children);
     const match = /language-(\w+)/.exec(className || '');
 
