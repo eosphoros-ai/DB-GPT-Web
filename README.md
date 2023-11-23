@@ -17,8 +17,8 @@ _<p align="center">DB-GPT Chat UI, LLM to Vision.</p>_
   <a href="https://github.com/eosphoros-ai/DB-GPT-Web/issues">
     <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/eosphoros-ai/DB-GPT-Web" />
   </a>
-  <a href="https://discord.gg/vqBrcV7Nd">
-    <img alt="Discord" src="https://dcbadge.vercel.app/api/server/vqBrcV7Nd?compact=true&style=flat" />
+  <a href="https://discord.gg/7uQnPuveTY">
+    <img alt="Discord" src="https://dcbadge.vercel.app/api/server/7uQnPuveTY?compact=true&style=flat" />
   </a>
 </p>
 
