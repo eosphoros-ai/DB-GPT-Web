@@ -56,6 +56,12 @@ const ChatContainer = () => {
     getChartsData(history);
   }, [history.length]);
 
+  useEffect(() => {
+    return () => {
+      setHistory([]);
+    };
+  }, []);
+
   const handleChat = useCallback(
     (content: string, data?: Record<string, any>) => {
       return new Promise<void>((resolve) => {
