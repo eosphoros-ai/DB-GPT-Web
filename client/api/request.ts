@@ -15,6 +15,7 @@ import { PostAgentHubUpdateParams, PostAgentQueryParams, PostAgentPluginResponse
 import {
   AddKnowledgeParams,
   ArgumentsParams,
+  ChunkContentPrams,
   ChunkListParams,
   DocumentParams,
   IArguments,
@@ -147,8 +148,8 @@ export const uploadDocument = (knowLedgeName: string, data: FormData) => {
   return POST<FormData, number>(`/knowledge/${knowLedgeName}/document/upload`, data);
 };
 
-export const getChunkList = (spaceName: string, data: ChunkListParams) => {
-  return POST<ChunkListParams, IChunkList>(`/knowledge/${spaceName}/chunk/list`, data);
+export const getChunkList = (spaceName: string, data: ChunkListParams | ChunkContentPrams) => {
+  return POST<ChunkListParams | ChunkContentPrams, IChunkList>(`/knowledge/${spaceName}/chunk/list`, data);
 };
 
 export const delDocument = (spaceName: string, data: Record<string, string>) => {

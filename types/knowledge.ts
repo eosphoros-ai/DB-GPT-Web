@@ -84,6 +84,10 @@ export type ChunkListParams = {
   page_size: number;
 };
 
+export type ChunkContentPrams = {
+  id: number;
+};
+
 type IChunk = {
   content: string;
   doc_name: string;

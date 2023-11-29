@@ -1,6 +1,6 @@
 import { LinkOutlined, ReadOutlined, SyncOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
-import { Table, Image, Tag, Tabs, TabsProps } from 'antd';
+import { Table, Image, Tag, Tabs, TabsProps, Popover } from 'antd';
 import { format } from 'sql-formatter';
 
 import { Reference } from '@/types/chat';
@@ -8,6 +8,7 @@ import { AutoChart, BackEndChartType, getChartType } from '@/components/chart';
 import { CodePreview } from './code-preview';
 import { Datum } from '@antv/ava';
 import rehypeRaw from 'rehype-raw';
+import ChunkContent from './chunk-content';
 
 type MarkdownComponent = Parameters<typeof ReactMarkdown>['0']['components'];
 
@@ -119,50 +120,6 @@ const basicComponents: MarkdownComponent = {
       </blockquote>
     );
   },
-  references({ children }) {
-    let referenceData;
-    try {
-      referenceData = JSON.parse(children as string);
-    } catch (error) {
-      console.log(error);
-      return <p className="text-sm">Render Reference Error!</p>;
-    }
-    const references = referenceData?.references;
-    if (!references || references?.length < 1) {
-      return null;
-    }
-    return (
-      <div className="border-t-[1px] border-gray-300 mt-3 py-2">
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-          <LinkOutlined className="mr-2" />
-          <span className="font-semibold">{referenceData.title}</span>
-        </p>
-        {references.map((reference: Reference, index: number) => (
-          <p key={`file_${index}`} className="text-sm font-normal block ml-2 h-6 leading-6 overflow-hidden">
-            <span className="inline-block w-6">[{index + 1}]</span>
-            <span className="mr-4 text-blue-400">{reference.name}</span>
-            {reference?.pages?.map((page, index) => (
-              <>
-                <span key={`file_page_${index}`}>{page}</span>
-                {index < reference?.pages.length - 1 && <span key={`file_page__${index}`}>,</span>}
-              </>
-            ))}
-          </p>
-        ))}
-      </div>
-    );
-  },
-  summary({ children }) {
-    return (
-      <div>
-        <p className="mb-2">
-          <ReadOutlined className="mr-2" />
-          <span className="font-semibold">Document Summary</span>
-        </p>
-        <div>{children}</div>
-      </div>
-    );
-  },
 };
 
 const extraComponents: MarkdownComponent = {
@@ -239,14 +196,29 @@ const extraComponents: MarkdownComponent = {
           <p key={`file_${index}`} className="text-sm font-normal block ml-2 h-6 leading-6 overflow-hidden">
             <span className="inline-block w-6">[{index + 1}]</span>
             <span className="mr-4 text-blue-400">{reference.name}</span>
-            {reference?.pages?.map((page, index) => (
+            {reference?.chunks?.map((chunkId, index) => (
               <>
-                <span key={`file_page_${index}`}>{page}</span>
-                {index < reference?.pages.length - 1 && <span key={`file_page__${index}`}>,</span>}
+                <Popover content={<ChunkContent chunkId={chunkId} />} title="Chunk Content">
+                  <span className="cursor-pointer text-blue-500 ml-2" key={`file_page_${index}`}>
+                    {chunkId}
+                  </span>
+                </Popover>
+                {index < reference?.chunks.length - 1 && <span key={`file_page__${index}`}>,</span>}
               </>
             ))}
           </p>
         ))}
+      </div>
+    );
+  },
+  summary({ children }) {
+    return (
+      <div>
+        <p className="mb-2">
+          <ReadOutlined className="mr-2" />
+          <span className="font-semibold">Document Summary</span>
+        </p>
+        <div>{children}</div>
       </div>
     );
   },
