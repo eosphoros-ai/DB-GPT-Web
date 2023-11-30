@@ -68,6 +68,12 @@ export default function DocUploadForm(props: IProps) {
         );
         break;
     }
+
+    if (!res?.[1]) {
+      setSpinning(false);
+      return;
+    }
+
     synchChecked && handleSync?.(spaceName as string, res?.[1] as number);
     setSpinning(false);
     handleStepChange({ label: 'finish' });
