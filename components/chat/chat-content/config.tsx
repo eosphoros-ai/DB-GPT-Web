@@ -205,7 +205,7 @@ const extraComponents: MarkdownComponent = {
         {references.map((reference: Reference, index: number) => (
           <div key={`file_${index}`} className="text-sm font-normal block ml-2 h-6 leading-6 overflow-hidden">
             <span className="inline-block w-6">[{index + 1}]</span>
-            <span className="mr-4 text-blue-400">{reference.name}</span>
+            <span className="mr-2 lg:mr-4 text-blue-400">{reference.name}</span>
             {reference?.chunks?.map((chunk: IChunk | number, index) => (
               <span key={`chunk_${index}`}>
                 {typeof chunk === 'object' ? (
@@ -214,7 +214,7 @@ const extraComponents: MarkdownComponent = {
                       <div className="max-w-4xl py-4 border-t border-gray-500">
                         <p>{chunk?.content || 'No Content'}</p>
                         <p className="mt-2 font-bold mr-2 border-t border-gray-500 pt-2">MetaData</p>
-                        <p>{chunk.meta_info || 'No MetaData'}</p>
+                        <p>{chunk?.meta_info || 'No MetaData'}</p>
                       </div>
                     }
                     title="Chunk Content"
