@@ -88,7 +88,7 @@ export type ChunkContentPrams = {
   id: number;
 };
 
-type IChunk = {
+export type IChunk = {
   content: string;
   doc_name: string;
   doc_type: string;

@@ -8,11 +8,11 @@ import { AutoChart, BackEndChartType, getChartType } from '@/components/chart';
 import { CodePreview } from './code-preview';
 import { Datum } from '@antv/ava';
 import rehypeRaw from 'rehype-raw';
-import ChunkContent from './chunk-content';
+import { IChunk } from '@/types/knowledge';
 
 type MarkdownComponent = Parameters<typeof ReactMarkdown>['0']['components'];
 
-const customeTags: (keyof JSX.IntrinsicElements)[] = ['custom-view', 'chart-view', 'references'];
+const customeTags: (keyof JSX.IntrinsicElements)[] = ['custom-view', 'chart-view', 'references', 'summary'];
 
 function matchCustomeTagValues(context: string) {
   const matchValues = customeTags.reduce<string[]>((acc, tagName) => {
@@ -174,15 +174,25 @@ const extraComponents: MarkdownComponent = {
       </div>
     );
   },
-  references({ children }) {
+  references: function ({ title, references, children }) {
     let referenceData;
-    try {
-      referenceData = JSON.parse(children as string);
-    } catch (error) {
-      console.log(error);
-      return <p className="text-sm">Render Reference Error!</p>;
+    // Low version compatibility, read data from children
+    if (children) {
+      try {
+        referenceData = JSON.parse(children as string);
+        title = referenceData.title;
+        references = referenceData.references;
+      } catch (error) {
+        // return <p className="text-sm text-red-500">Render Reference Error!</p>;
+      }
+    } else {
+      // new version, read from tag props.
+      try {
+        references = JSON.parse(references as string);
+      } catch (error) {
+        // return <p className="text-sm text-red-500">Render Reference Error!</p>;
+      }
     }
-    const references = referenceData?.references;
     if (!references || references?.length < 1) {
       return null;
     }
@@ -190,28 +200,43 @@ const extraComponents: MarkdownComponent = {
       <div className="border-t-[1px] border-gray-300 mt-3 py-2">
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
           <LinkOutlined className="mr-2" />
-          <span className="font-semibold">{referenceData.title}</span>
+          <span className="font-semibold">{title}</span>
         </p>
         {references.map((reference: Reference, index: number) => (
-          <p key={`file_${index}`} className="text-sm font-normal block ml-2 h-6 leading-6 overflow-hidden">
+          <div key={`file_${index}`} className="text-sm font-normal block ml-2 h-6 leading-6 overflow-hidden">
             <span className="inline-block w-6">[{index + 1}]</span>
             <span className="mr-4 text-blue-400">{reference.name}</span>
-            {reference?.chunks?.map((chunkId, index) => (
-              <>
-                <Popover content={<ChunkContent chunkId={chunkId} />} title="Chunk Content">
-                  <span className="cursor-pointer text-blue-500 ml-2" key={`file_page_${index}`}>
-                    {chunkId}
+            {reference?.chunks?.map((chunk: IChunk | number, index) => (
+              <span key={`chunk_${index}`}>
+                {typeof chunk === 'object' ? (
+                  <Popover
+                    content={
+                      <div className="max-w-4xl py-4 border-t border-gray-500">
+                        <p>{chunk?.content || 'No Content'}</p>
+                        <p className="mt-2 font-bold mr-2 border-t border-gray-500 pt-2">MetaData</p>
+                        <p>{chunk.meta_info || 'No MetaData'}</p>
+                      </div>
+                    }
+                    title="Chunk Content"
+                  >
+                    <span className="cursor-pointer text-blue-500 ml-2" key={`chunk_content_${chunk?.id}`}>
+                      {chunk?.id}
+                    </span>
+                  </Popover>
+                ) : (
+                  <span className="cursor-pointer text-blue-500 ml-2" key={`chunk_id_${chunk}`}>
+                    {chunk}
                   </span>
-                </Popover>
-                {index < reference?.chunks.length - 1 && <span key={`file_page__${index}`}>,</span>}
-              </>
+                )}
+                {index < reference?.chunks.length - 1 && <span key={`chunk_comma_${index}`}>,</span>}
+              </span>
             ))}
-          </p>
+          </div>
         ))}
       </div>
     );
   },
-  summary({ children }) {
+  summary: function ({ children }) {
     return (
       <div>
         <p className="mb-2">

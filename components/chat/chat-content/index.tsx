@@ -63,17 +63,17 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
   const { context, model_name, role } = content;
   const isRobot = role === 'view';
 
-  const { relations, value, cachePlguinContext } = useMemo<{ relations: string[]; value: string; cachePlguinContext: DBGPTView[] }>(() => {
+  const { relations, value, cachePluginContext } = useMemo<{ relations: string[]; value: string; cachePluginContext: DBGPTView[] }>(() => {
     if (typeof context !== 'string') {
       return {
         relations: [],
         value: '',
-        cachePlguinContext: [],
+        cachePluginContext: [],
       };
     }
     const [value, relation] = context.split('\trelations:');
     const relations = relation ? relation.split(',') : [];
-    const cachePlguinContext: DBGPTView[] = [];
+    const cachePluginContext: DBGPTView[] = [];
 
     let cacheIndex = 0;
     const result = value.replace(/<dbgpt-view[^>]*>[^<]*<\/dbgpt-view>/gi, (matchVal) => {
@@ -82,7 +82,7 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
         const pluginContext = JSON.parse(pluginVal) as DBGPTView;
         const replacement = `<custom-view>${cacheIndex}</custom-view>`;
 
-        cachePlguinContext.push({
+        cachePluginContext.push({
           ...pluginContext,
           result: formatMarkdownVal(pluginContext.result ?? ''),
         });
@@ -96,7 +96,7 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
     });
     return {
       relations,
-      cachePlguinContext,
+      cachePluginContext,
       value: result,
     };
   }, [context]);
@@ -105,10 +105,10 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
     () => ({
       'custom-view'({ children }) {
         const index = +children.toString();
-        if (!cachePlguinContext[index]) {
+        if (!cachePluginContext[index]) {
           return children;
         }
-        const { name, status, err_msg, result } = cachePlguinContext[index];
+        const { name, status, err_msg, result } = cachePluginContext[index];
         const { bgClass, icon } = pluginViewStatusMapper[status] ?? {};
         return (
           <div className="bg-white dark:bg-[#212121] rounded-lg overflow-hidden my-2 flex flex-col lg:max-w-[80%]">
@@ -129,7 +129,7 @@ function ChatContent({ children, content, isChartChat, onLinkClick }: PropsWithC
         );
       },
     }),
-    [context, cachePlguinContext],
+    [context, cachePluginContext],
   );
 
   if (!isRobot && !context) return <div className="h-12"></div>;
