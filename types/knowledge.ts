@@ -93,6 +93,7 @@ export type IChunk = {
   gmt_modified: string;
   id: string | number;
   meta_info: string;
+  recall_score?: string | number;
 };
 export type IChunkList = {
   data: Array<IChunk>;

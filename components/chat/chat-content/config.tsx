@@ -183,14 +183,16 @@ const extraComponents: MarkdownComponent = {
         title = referenceData.title;
         references = referenceData.references;
       } catch (error) {
-        // return <p className="text-sm text-red-500">Render Reference Error!</p>;
+        console.log('parse references failed', error);
+        return <p className="text-sm text-red-500">Render Reference Error!</p>;
       }
     } else {
       // new version, read from tag props.
       try {
         references = JSON.parse(references as string);
       } catch (error) {
-        // return <p className="text-sm text-red-500">Render Reference Error!</p>;
+        console.log('parse references failed', error);
+        return <p className="text-sm text-red-500">Render Reference Error!</p>;
       }
     }
     if (!references || references?.length < 1) {
@@ -211,13 +213,16 @@ const extraComponents: MarkdownComponent = {
                 {typeof chunk === 'object' ? (
                   <Popover
                     content={
-                      <div className="max-w-4xl py-4 border-t border-gray-500">
+                      <div className="max-w-4xl">
+                        <p className="mt-2 font-bold mr-2 border-t border-gray-500 pt-2">Content:</p>
                         <p>{chunk?.content || 'No Content'}</p>
-                        <p className="mt-2 font-bold mr-2 border-t border-gray-500 pt-2">MetaData</p>
+                        <p className="mt-2 font-bold mr-2 border-t border-gray-500 pt-2">MetaData:</p>
                         <p>{chunk?.meta_info || 'No MetaData'}</p>
+                        <p className="mt-2 font-bold mr-2 border-t border-gray-500 pt-2">Score:</p>
+                        <p>{chunk?.recall_score || ''}</p>
                       </div>
                     }
-                    title="Chunk Content"
+                    title="Chunk Information"
                   >
                     <span className="cursor-pointer text-blue-500 ml-2" key={`chunk_content_${chunk?.id}`}>
                       {chunk?.id}
