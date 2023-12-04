@@ -62,4 +62,5 @@ export const dbMapper: Record<DBType, { label: string; icon: string; desc: strin
   },
   spark: { label: 'Spark', icon: '/icons/spark.png', desc: 'Unified engine for large-scale data analytics.' },
   space: { label: 'Space', icon: '/icons/knowledge.png', desc: 'knowledge analytics.' },
+  starrocks: { label: 'StarRocks', icon: '/icons/starrocks.png', desc: 'Distributed, columnar storage, high-performance, analytics, real-time, scalable, advanced, integration, rapid, instant.'}
 };
