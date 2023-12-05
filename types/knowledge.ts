@@ -84,7 +84,7 @@ export type ChunkListParams = {
   page_size: number;
 };
 
-type IChunk = {
+export type IChunk = {
   content: string;
   doc_name: string;
   doc_type: string;
@@ -93,6 +93,7 @@ type IChunk = {
   gmt_modified: string;
   id: string | number;
   meta_info: string;
+  recall_score?: string | number;
 };
 export type IChunkList = {
   data: Array<IChunk>;

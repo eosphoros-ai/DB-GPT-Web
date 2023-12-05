@@ -97,7 +97,7 @@ export type FeedBack = {
 
 export type Reference = {
   name: string;
-  pages: Array<number>;
+  chunks: Array<number>;
 };
 
 export type IDB = {

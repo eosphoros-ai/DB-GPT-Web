@@ -21,7 +21,6 @@ import {
   IChunkList,
   IDocumentResponse,
   ISpace,
-  SummaryParams,
 } from '@/types/knowledge';
 import { UpdatePromptParams, IPrompt, PromptParams } from '@/types/prompt';
 
