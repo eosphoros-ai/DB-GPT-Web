@@ -50,6 +50,7 @@ export const dbMapper: Record<DBType, { label: string; icon: string; desc: strin
   oracle: { label: 'Oracle', icon: '/icons/oracle.png', desc: 'Robust, scalable, secure relational database widely used in enterprises.' },
   access: { label: 'Access', icon: '/icons/access.png', desc: 'Easy-to-use relational database for small-scale applications by Microsoft.' },
   mongodb: { label: 'MongoDB', icon: '/icons/mongodb.png', desc: 'Flexible, scalable NoSQL document database for web and mobile apps.' },
+  starrocks: { label: 'StarRocks', icon: '/icons/starrocks.png', desc: 'An Open-Source, High-Performance Analytical Database.' },
   db2: { label: 'DB2', icon: '/icons/db2.png', desc: 'Scalable, secure relational database system developed by IBM.' },
   hbase: { label: 'HBase', icon: '/icons/hbase.png', desc: 'Distributed, scalable NoSQL database for large structured/semi-structured data.' },
   redis: { label: 'Redis', icon: '/icons/redis.png', desc: 'Fast, versatile in-memory data structure store as cache, DB, or broker.' },
@@ -62,5 +63,4 @@ export const dbMapper: Record<DBType, { label: string; icon: string; desc: strin
   },
   spark: { label: 'Spark', icon: '/icons/spark.png', desc: 'Unified engine for large-scale data analytics.' },
   space: { label: 'Space', icon: '/icons/knowledge.png', desc: 'knowledge analytics.' },
-  starrocks: { label: 'StarRocks', icon: '/icons/starrocks.png', desc: 'Distributed, columnar storage, high-performance, analytics, real-time, scalable, advanced, integration, rapid, instant.'}
 };

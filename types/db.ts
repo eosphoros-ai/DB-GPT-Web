@@ -11,6 +11,7 @@ export type DBType =
   | 'db2'
   | 'access'
   | 'mongodb'
+  | 'starrocks'
   | 'hbase'
   | 'redis'
   | 'cassandra'
@@ -47,7 +48,7 @@ export type ChatFeedBackSchema = {
   score: number;
   ques_type: string;
   messages: string;
-}
+};
 
 export type PromptProps = {
   id: number;
