@@ -26,12 +26,12 @@ function DBSelector() {
   );
 
   useEffect(() => {
-    if (dbOpts.length && !dbParam) {
+    if (dbOpts?.length && !dbParam) {
       setDbParam(dbOpts[0].name);
     }
   }, [dbOpts, setDbParam, dbParam]);
 
-  if (!dbOpts.length) return null;
+  if (!dbOpts?.length) return null;
 
   return (
     <Select
