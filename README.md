@@ -1,3 +1,5 @@
+<h1>This repository has been put into the <a href="https://github.com/eosphoros-ai/DB-GPT/tree/main/web">DB-GPT/web</a>. If there are issues and pull requests, please go to <a href="https://github.com/eosphoros-ai/DB-GPT">DB-GPT</a>. However, the latest code is regularly synchronized to this repository
+</h1>
 
 <h1 align="center">
   <a href="https://dbgpt.site"><img width="96" src="https://github.com/eosphoros-ai/DB-GPT-Web/assets/10321453/062ee3ea-fac2-4437-a392-f4bc5451d116" alt="DB-GPT"></a>
@@ -26,8 +28,8 @@ _<p align="center">DB-GPT Chat UI, LLM to Vision.</p>_
 
 ## 👋 Introduction
 
-***DB-GPT-Web*** is an **Open source chat UI** for [**DB-GPT**](https://github.com/eosphoros-ai/DB-GPT).
-Also, it is a **LLM to Vision** solution. 
+**_DB-GPT-Web_** is an **Open source chat UI** for [**DB-GPT**](https://github.com/eosphoros-ai/DB-GPT).
+Also, it is a **LLM to Vision** solution.
 
 [DB-GPT-Web](https://dbgpt.site) is an Open source Tailwind and Next.js based chat UI for AI and GPT projects. It beautify a lot of markdown labels, such as `table`, `thead`, `th`, `td`, `code`, `h1`, `h2`, `ul`, `li`, `a`, `img`. Also it define some custom labels to adapted to AI-specific scenarios. Such as `plugin running`, `knowledge name`, `Chart view`, and so on.
 
@@ -47,9 +49,11 @@ npm install
 ```
 
 ### Usage
+
 ```sh
 cp .env.example .env
 ```
+
 edit the `API_BASE_URL` to the real address
 
 ```sh
@@ -72,27 +76,39 @@ cp -r -f /Db-GPT-Web/out/* /DB-GPT/pilot/server/static/
 For full documentation, visit [document](https://db-gpt.readthedocs.io/en/latest/index.html).
 
 ## 📺 Screenshots
+
 Run on an RTX 4090 GPU.
 
 #### Agent
+
 ![Agent](./screenshots/agent.gif)
+
 #### ChatExcel
+
 ![ChatExcel](./screenshots/chatexcel.gif)
+
 #### Knowledge
+
 ![Knowledge](./screenshots/knowledge.gif)
+
 #### Models
+
 ![models](./screenshots/models.gif)
+
 #### FastChat
+
 ![FastChat](./screenshots/fastchat.gif)
+
 #### vllm
+
 ![vllm](./screenshots/vllm.gif)
 
 ## Usage
 
-  [react-markdown](https://github.com/remarkjs/react-markdown#readme) for markdown support.
-  [ant-design](https://github.com/ant-design/ant-design) for ui components.
-  [next.js](https://github.com/vercel/next.js) for server side rendering.
-  [@antv/g2](https://github.com/antvis/g2#readme) for charts.
+[react-markdown](https://github.com/remarkjs/react-markdown#readme) for markdown support.
+[ant-design](https://github.com/ant-design/ant-design) for ui components.
+[next.js](https://github.com/vercel/next.js) for server side rendering.
+[@antv/g2](https://github.com/antvis/g2#readme) for charts.
 
 ## License
 
