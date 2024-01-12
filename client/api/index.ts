@@ -41,7 +41,6 @@ ins.interceptors.request.use((request) => {
   if (!request.timeout) {
     request.timeout = isLongTimeApi ? 60000 : 10000;
   }
-  request.headers['user-id'] = '2da0e570f4104cf7a35c2305712b4334';
   return request;
 });
 
