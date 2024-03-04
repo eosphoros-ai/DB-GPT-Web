@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios';
-import { GET, POST } from '.';
+import { DELETE, GET, POST, PUT } from '.';
 import { DbListResponse, DbSupportTypeResponse, PostDbParams, ChatFeedBackSchema } from '@/types/db';
 import { DialogueListResponse, IChatDialogueSchema, NewDialogueParam, SceneResponse, ChatHistoryResponse, FeedBack, IDB } from '@/types/chat';
 import { IModelData, StartModelParams, BaseModelParams, SupportModel } from '@/types/model';
@@ -11,7 +11,13 @@ import {
   PostEditorSQLRunParams,
   PostSQLEditorSubmitParams,
 } from '@/types/editor';
-import { PostAgentHubUpdateParams, PostAgentQueryParams, PostAgentPluginResponse, PostAgentMyPluginResponse } from '@/types/agent';
+import {
+  PostAgentHubUpdateParams,
+  PostAgentQueryParams,
+  PostAgentPluginResponse,
+  PostAgentMyPluginResponse,
+  GetDBGPTsListResponse,
+} from '@/types/agent';
 import {
   AddKnowledgeParams,
   ArgumentsParams,
@@ -26,6 +32,8 @@ import {
   ISyncBatchResponse,
 } from '@/types/knowledge';
 import { UpdatePromptParams, IPrompt, PromptParams } from '@/types/prompt';
+import { IFlow, IFlowNode, IFlowResponse, IFlowUpdateParam } from '@/types/flow';
+import { IAgent, IApp, IAppData, ITeamModal } from '@/types/app';
 
 /** App */
 export const postScenes = () => {
@@ -211,6 +219,9 @@ export const postAgentUpload = (user = '', data: FormData, config?: Omit<AxiosRe
     ...config,
   });
 };
+export const getDbgptsList = () => {
+  return GET<undefined, GetDBGPTsListResponse>('/api/v1/dbgpts/list');
+};
 
 /** chat feedback **/
 export const getChatFeedBackSelect = () => {
@@ -239,4 +250,78 @@ export const updatePrompt = (data: UpdatePromptParams) => {
 
 export const addPrompt = (data: UpdatePromptParams) => {
   return POST<UpdatePromptParams, []>('/prompt/add', data);
+};
+
+/** AWEL Flow */
+export const addFlow = (data: IFlowUpdateParam) => {
+  return POST<IFlowUpdateParam, IFlow>('/api/v1/serve/awel/flows', data);
+};
+
+export const getFlows = () => {
+  return GET<null, IFlowResponse>('/api/v1/serve/awel/flows');
+};
+
+export const getFlowById = (id: string) => {
+  return GET<null, IFlow>(`/api/v1/serve/awel/flows/${id}`);
+};
+
+export const updateFlowById = (id: string, data: IFlowUpdateParam) => {
+  return PUT<IFlowUpdateParam, IFlow>(`/api/v1/serve/awel/flows/${id}`, data);
+};
+
+export const deleteFlowById = (id: string) => {
+  return DELETE<null, null>(`/api/v1/serve/awel/flows/${id}`);
+};
+
+export const getFlowNodes = () => {
+  return GET<null, Array<IFlowNode>>(`/api/v1/serve/awel/nodes`);
+};
+
+/** app */
+export const addApp = (data: IApp) => {
+  return POST<IApp, []>('/api/v1/app/create', data);
+};
+
+export const getAppList = (data: Record<string, string>) => {
+  return POST<Record<string, string>, IAppData>('/api/v1/app/list', data);
+};
+
+export const collectApp = (data: Record<string, string>) => {
+  return POST<Record<string, string>, []>('/api/v1/app/collect', data);
+};
+
+export const unCollectApp = (data: Record<string, string>) => {
+  return POST<Record<string, string>, []>('/api/v1/app/uncollect', data);
+};
+
+export const delApp = (data: Record<string, string>) => {
+  return POST<Record<string, string>, []>('/api/v1/app/remove', data);
+};
+
+export const getAgents = () => {
+  return GET<object, IAgent[]>('/api/v1/agents/list', {});
+};
+
+export const getTeamMode = () => {
+  return GET<null, string[]>('/api/v1/team-mode/list');
+};
+
+export const getResourceType = () => {
+  return GET<null, string[]>('/api/v1/resource-type/list');
+};
+
+export const getResource = (data: Record<string, string>) => {
+  return GET<Record<string, string>, []>(`/api/v1/app/resources/list?type=${data.type}`);
+};
+
+export const updateApp = (data: IApp) => {
+  return POST<IApp, []>('/api/v1/app/edit', data);
+};
+
+export const getAppStrategy = () => {
+  return GET<null, []>(`/api/v1/llm-strategy/list`);
+};
+
+export const getAppStrategyValues = (type: string) => {
+  return GET<string, []>(`/api/v1/llm-strategy/value/list?type=${type}`);
 };
