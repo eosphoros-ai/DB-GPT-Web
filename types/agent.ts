@@ -59,3 +59,17 @@ export type IMyPlugin = {
 };
 
 export type PostAgentMyPluginResponse = IMyPlugin[];
+
+export type GetDBGPTsListResponse = {
+  app_code: string;
+  app_describe: string;
+  app_name: string;
+
+  language: string;
+  sys_code: string;
+  updated_at: string;
+  team_mode: string;
+  id: number;
+  user_code: string;
+  created_at: string;
+}[];

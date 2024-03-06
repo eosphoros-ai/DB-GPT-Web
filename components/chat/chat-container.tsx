@@ -15,7 +15,7 @@ import { getInitMessage } from '@/utils';
 
 const ChatContainer = () => {
   const searchParams = useSearchParams();
-  const { scene, chatId, model, setModel, history, setHistory } = useContext(ChatContext);
+  const { scene, chatId, model, agent, setModel, history, setHistory } = useContext(ChatContext);
   const chat = useChat({});
   const initMessage = (searchParams && searchParams.get('initMessage')) ?? '';
 
@@ -76,7 +76,11 @@ const ChatContainer = () => {
           data: { ...data, chat_mode: scene || 'chat_normal', model_name: model, user_input: content },
           chatId,
           onMessage: (message) => {
-            tempHistory[index].context = message;
+            if (data?.incremental) {
+              tempHistory[index].context += message;
+            } else {
+              tempHistory[index].context = message;
+            }
             setHistory([...tempHistory]);
           },
           onDone: () => {
@@ -95,7 +99,7 @@ const ChatContainer = () => {
         });
       });
     },
-    [history, chat, model],
+    [history, chat, chatId, model, agent, scene],
   );
 
   return (
@@ -122,7 +126,7 @@ const ChatContainer = () => {
         )}
         {/** chat panel */}
         <div
-          className={classNames('flex flex-1 flex-col', {
+          className={classNames('flex flex-1 flex-col overflow-hidden', {
             'px-0 xl:pl-4 h-2/5 w-full xl:w-auto xl:h-full border-t xl:border-t-0 xl:border-l dark:border-gray-800': scene === 'chat_dashboard',
             'h-full lg:px-8': scene !== 'chat_dashboard',
           })}
